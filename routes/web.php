@@ -1,11 +1,16 @@
 <?php
 
 use App\Http\Controllers\CiclistaController;
+use App\Http\Controllers\EquipoController;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome');
 
-Route::get('ciclistas', [CiclistaController::class, 'index'])
+Route::get('equipos', [EquipoController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('equipos'); 
+
+    Route::get('ciclistas', [CiclistaController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('ciclistas'); 
 

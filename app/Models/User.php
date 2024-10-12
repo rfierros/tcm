@@ -6,7 +6,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
@@ -47,8 +46,9 @@ class User extends Authenticatable
         ];
     }
 
-    public function ciclistas(): HasMany
+    // Relación con el modelo `Equipo`
+    public function equipos()
     {
-        return $this->hasMany(Ciclista::class);
-    }    
+        return $this->hasOne(Equipo::class, 'user_id');
+    }
 }

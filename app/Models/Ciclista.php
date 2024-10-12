@@ -10,12 +10,18 @@ class Ciclista extends Model
 {
     use HasFactory;
 
+    protected $table = 'ciclistas'; // Nombre de la tabla
+
+    // Definir los campos que pueden ser asignados masivamente
     protected $fillable = [
-        'nombre',
+        'nombre', 'pais', 'pos_ini', 'pos_fin', 'pts', 'especialidad', 'edad', 
+        'lla', 'mon', 'col', 'cri', 'pro', 'pav', 'spr', 'acc', 'des', 'com',
+        'ene', 'res', 'res', 'media', 'equipo_id'
     ];
 
-    public function user(): BelongsTo
+    // Relación de pertenencia a un equipo
+    public function equipo()
     {
-        return $this->belongsTo(User::class);
-    }
+        return $this->belongsTo(Equipo::class, 'id');
+    }     
 }

@@ -6,6 +6,7 @@ Implemneted features:
 
 - User roles and permissions to facilitate multi-user access and management.
 - Cyclists CRUD.
+- Added Teams, My team and views.
 
 This system aims to provide a robust tool for cycling enthusiasts and managers looking to simulate and manage virtual teams with real-world cycling performance considerations.
 

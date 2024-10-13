@@ -13,4 +13,11 @@ class CiclistaController extends Controller
             //
         ]);
     }
+
+    public function miEquipo()
+    {
+        return view('my-ciclistas', [
+            //
+        ]);
+    }
 }

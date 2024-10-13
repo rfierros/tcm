@@ -39,6 +39,7 @@ return new class extends Migration
 
         // Insertar usuarios iniciales basados en los Owners de los equipos
         DB::table('users')->insert([
+            ['name' => 'Pawa', 'email' => 'pawa@user.com', 'password' => bcrypt('pawa')],
             ['name' => 'Admin', 'email' => 'admin@user.com', 'password' => bcrypt('admin')],
             ['name' => 'BarbaRoja', 'email' => 'user1@user.com', 'password' => bcrypt('password')],
             ['name' => 'Jonathan9', 'email' => 'user2@user.com', 'password' => bcrypt('password')],
@@ -54,7 +55,6 @@ return new class extends Migration
             ['name' => 'Junkillo', 'email' => 'user12@user.com', 'password' => bcrypt('password')],
             ['name' => 'SrBecedas', 'email' => 'user13@user.com', 'password' => bcrypt('password')],
             ['name' => 'Modialba', 'email' => 'user14@user.com', 'password' => bcrypt('password')],
-            ['name' => 'Pawa', 'email' => 'pawa@user.com', 'password' => bcrypt('pawa')],
             ['name' => 'Dangar Ewoks', 'email' => 'user16@user.com', 'password' => bcrypt('password')],
             ['name' => 'Zarcisha', 'email' => 'user17@user.com', 'password' => bcrypt('password')],
             ['name' => 'DANIRIVSD', 'email' => 'user18@user.com', 'password' => bcrypt('password')],

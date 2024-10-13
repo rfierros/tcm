@@ -22,6 +22,6 @@ class Ciclista extends Model
     // Relación de pertenencia a un equipo
     public function equipo()
     {
-        return $this->belongsTo(Equipo::class, 'id');
+        return $this->belongsTo(Equipo::class, 'equipo_id');
     }     
 }

@@ -13,16 +13,19 @@ new class extends Component {
         // $this->ciclistas = Ciclista::with('user') 
         //     ->latest()
         //     ->get(); 
-        $this->getCiclistas(); 
+        $this->getMyCiclistas(); 
     }
  
     // Si se crea un Ciclista hay un listener para el evento de creacion que actualizará la lista de Ciclistas
     #[On('ciclista-created')]
-    public function getCiclistas(): void
+    public function getMyCiclistas(): void
     {
-        $this->ciclistas = Ciclista::with('equipo.user')
-            ->latest()
-            ->get();
+        $this->ciclistas = Ciclista::whereHas('equipo', function($query) {
+            $query->where('user_id', Auth::id());
+        })
+        ->with('equipo.user') // Esto carga los equipos y usuarios asociados
+        ->latest()
+        ->get();
     } 
 }; ?>
 

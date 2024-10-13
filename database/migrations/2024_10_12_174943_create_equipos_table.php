@@ -26,7 +26,7 @@ return new class extends Migration
 
         // Insertar equipos iniciales con `user_id` correspondiente
         DB::table('equipos')->insert([
-            ['temporada' => 4, 'nombre_equipo' => 'Lidl', 'user_id' => 1], // user_id 1 corresponde a 'BarbaRoja'
+            ['temporada' => 4, 'nombre_equipo' => 'F1 Paddock', 'user_id' => 1], // user_id 1 corresponde a 'Pawa' para pruebas
             ['temporada' => 4, 'nombre_equipo' => 'Sky', 'user_id' => null],
             ['temporada' => 4, 'nombre_equipo' => 'Phonak', 'user_id' => 2], // user_id 2 corresponde a 'Jonathan9'
             ['temporada' => 4, 'nombre_equipo' => 'Trek - Segafredo', 'user_id' => 3],
@@ -41,7 +41,7 @@ return new class extends Migration
             ['temporada' => 4, 'nombre_equipo' => 'Kaiku', 'user_id' => 12],
             ['temporada' => 4, 'nombre_equipo' => 'Xacobeo', 'user_id' => 13],
             ['temporada' => 4, 'nombre_equipo' => 'Repsol', 'user_id' => 14],
-            ['temporada' => 4, 'nombre_equipo' => 'F1 Paddock', 'user_id' => 15],
+            ['temporada' => 4, 'nombre_equipo' => 'Lidl', 'user_id' => 15],
             ['temporada' => 4, 'nombre_equipo' => 'Kimetsu No Yaiba', 'user_id' => 16],
             ['temporada' => 4, 'nombre_equipo' => 'Mercatone Uno', 'user_id' => 17],
             ['temporada' => 4, 'nombre_equipo' => 'Nike', 'user_id' => 18],

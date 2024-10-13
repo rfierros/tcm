@@ -10,7 +10,11 @@ Route::get('equipos', [EquipoController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('equipos'); 
 
-    Route::get('ciclistas', [CiclistaController::class, 'index'])
+Route::get('mi_equipo', [CiclistaController::class, 'miEquipo'])
+    ->middleware(['auth', 'verified'])
+    ->name('mi_equipo'); 
+
+Route::get('ciclistas', [CiclistaController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('ciclistas'); 
 

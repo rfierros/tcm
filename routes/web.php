@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome');
 
+Route::view('/reglamento', 'reglamento')->name('reglamento');
+
 Route::get('equipos', [EquipoController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('equipos'); 

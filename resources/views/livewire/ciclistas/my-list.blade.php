@@ -3,10 +3,12 @@
 use Livewire\Volt\Component;
 use Livewire\Attributes\On; 
 use App\Models\Ciclista;
+use App\Models\Equipo;
 use Illuminate\Database\Eloquent\Collection; 
 
 new class extends Component {
     public Collection $ciclistas;
+    public $equipo;
  
     public function mount(): void
     {
@@ -14,6 +16,7 @@ new class extends Component {
         //     ->latest()
         //     ->get(); 
         $this->getMyCiclistas(); 
+        $this->equipo = Equipo::where('user_id', Auth::id())->first();
     }
  
     // Si se crea un Ciclista hay un listener para el evento de creacion que actualizará la lista de Ciclistas
@@ -35,6 +38,9 @@ new class extends Component {
     <div class="flex flex-col">
         <div class="overflow-x-auto">
             <div class="inline-block min-w-full">
+                    <h3 class="font-semibold text-xl text-gray-800 leading-tight mb-4">
+                       {{ $equipo->nombre_equipo }}
+                    </h3>                     
                 <div class="overflow-hidden border rounded-lg">
                     <table class="min-w-full divide-y divide-neutral-200">
                         <thead class="bg-neutral-50">

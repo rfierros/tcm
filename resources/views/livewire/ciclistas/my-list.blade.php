@@ -148,26 +148,9 @@ new class extends Component {
                     <h3 class="font-semibold text-xl text-gray-800 leading-tight mb-4">
                        {{ $equipo->nombre_equipo }}
                     </h3> 
-                    <div class="flex space-x-2">
-                        <!-- Botón para activar/desactivar el filtro U24 -->
-                        <button
-                            class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                            :class="{ 'bg-blue-700': filterU24 }"
-                            @click="filterU24 = !filterU24"
-                        >
-                            U24
-                        </button>
-                        <!-- Botón para activar/desactivar el filtro Conti -->
-                        <button
-                            class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-                            :class="{ 'bg-green-700': filterConti }"
-                            @click="filterConti = !filterConti"
-                        >
-                            Conti .1
-                        </button>
+                    <div class="flex space-x-4">
 
-
-                        <div x-data="{ filterU24: false }" class="flex items-center">
+                        <div class="flex items-center">
                         <!-- Switch para activar/desactivar filtro U24 -->
                             <button
                                 type="button"
@@ -189,6 +172,31 @@ new class extends Component {
                             <!-- Etiqueta -->
                             <span class="ml-3 text-sm" id="annual-billing-label">
                                 <span class="font-medium text-gray-900">U24</span>
+                            </span>
+                        </div>
+
+                        <div class="flex items-center">
+                        <!-- Switch para activar/desactivar filtro Conti -->
+                            <button
+                                type="button"
+                                @click="filterConti = !filterConti"
+                                :aria-checked="filterConti.toString()"
+                                class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
+                                :class="{ 'bg-indigo-600': filterConti, 'bg-gray-200': !filterConti }"
+                                role="switch"
+                                aria-labelledby="annual-billing-label"
+                            >
+                                <!-- Cambia la posición del círculo según el estado de `filterConti` -->
+                                <span
+                                aria-hidden="true"
+                                class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                                :class="{ 'translate-x-5': filterConti, 'translate-x-0': !filterConti }"
+                                ></span>
+                            </button>
+                        
+                            <!-- Etiqueta -->
+                            <span class="ml-3 text-sm" id="annual-billing-label">
+                                <span class="font-medium text-gray-900">Conti .1</span>
                             </span>
                         </div>
 

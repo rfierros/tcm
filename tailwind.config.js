@@ -8,11 +8,13 @@ export default {
         './storage/framework/views/*.php',
         './resources/views/**/*.blade.php',
     ],
-
     theme: {
         extend: {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+            },
+            fontSize: {
+                'xxs': ['0.625rem', '0.75rem'], // font-size: 0.625rem; line-height: 0.75rem
             },
         },
     },

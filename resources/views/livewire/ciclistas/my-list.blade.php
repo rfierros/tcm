@@ -101,5 +101,160 @@ new class extends Component {
     </div>
 </div>
 
+<div class="p-10">
+    <div class="flex flex-col">
+        <div class="bg-green-50">
+            <div x-data="{
+                column: '',
+                order: 'asc',
+                filterU24: false,
+                filterConti: false,
+                sort(column) {
+                    if (this.column === column) {
+                        this.order = this.order === 'asc' ? 'desc' : 'asc';
+                    } else {
+                        this.column = column;
+                        this.order = 'asc';
+                    }
+                },
+                sortedCiclistas() {
+                    let filteredData = [...{{ $ciclistas }}];
+
+                    // Aplicar filtro de corredores U24
+                    if (this.filterU24) {
+                        filteredData = filteredData.filter(ciclista => ciclista.edad <= 24 && ciclista.media < 75);
+                    }
+
+                    // Aplicar filtro Conti (stats menores a 78)
+                    if (this.filterConti) {
+                        filteredData = filteredData.filter(ciclista =>
+                            ['lla', 'mon', 'col', 'cri', 'pro', 'pav', 'spr', 'acc', 'des', 'com', 'ene', 'res', 'rec'].every(stat => ciclista[stat] < 78)
+                        );
+                    }
+
+                    return filteredData.sort((a, b) => {
+                        let modifier = this.order === 'asc' ? 1 : -1;
+                        if (a[this.column] < b[this.column]) return -1 * modifier;
+                        if (a[this.column] > b[this.column]) return 1 * modifier;
+                        return 0;
+                    });
+                },
+                formatNumber(value) {
+                    const [integerPart, decimalPart] = value.toFixed(2).split('.');
+                    return { integerPart, decimalPart };
+                }                
+            }">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-semibold text-xl text-gray-800 leading-tight mb-4">
+                       {{ $equipo->nombre_equipo }}
+                    </h3> 
+                    <div class="flex space-x-2">
+                        <!-- Botón para activar/desactivar el filtro U24 -->
+                        <button
+                            class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                            :class="{ 'bg-blue-700': filterU24 }"
+                            @click="filterU24 = !filterU24"
+                        >
+                            U24
+                        </button>
+                        <!-- Botón para activar/desactivar el filtro Conti -->
+                        <button
+                            class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                            :class="{ 'bg-green-700': filterConti }"
+                            @click="filterConti = !filterConti"
+                        >
+                            Conti .1
+                        </button>
+
+
+                        <div x-data="{ filterU24: false }" class="flex items-center">
+                        <!-- Switch para activar/desactivar filtro U24 -->
+                            <button
+                                type="button"
+                                @click="filterU24 = !filterU24"
+                                :aria-checked="filterU24.toString()"
+                                class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
+                                :class="{ 'bg-indigo-600': filterU24, 'bg-gray-200': !filterU24 }"
+                                role="switch"
+                                aria-labelledby="annual-billing-label"
+                            >
+                                <!-- Cambia la posición del círculo según el estado de `filterU24` -->
+                                <span
+                                aria-hidden="true"
+                                class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                                :class="{ 'translate-x-5': filterU24, 'translate-x-0': !filterU24 }"
+                                ></span>
+                            </button>
+                        
+                            <!-- Etiqueta -->
+                            <span class="ml-3 text-sm" id="annual-billing-label">
+                                <span class="font-medium text-gray-900">U24</span>
+                            </span>
+                        </div>
+
+
+
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-neutral-200">
+                        <thead>
+                            <tr>
+                                <th class="px-2 py-1.5 text-xs" @click="sort('nombre')">Ciclista</th>
+                                <th class="px-2 py-1.5 text-xs" @click="sort('pais')">País</th>
+                                <th class="px-2 py-1.5 text-xs" @click="sort('especialidad')">especialidad</th>
+                                <th class="px-2 py-1.5 text-xs" @click="sort('edad')">edad</th>
+                                <th class="px-2 py-1.5 text-xs" @click="sort('lla')">lla</th>
+                                <th class="px-2 py-1.5 text-xs" @click="sort('mon')">mon</th>
+                                <th class="px-2 py-1.5 text-xs" @click="sort('col')">col</th>
+                                <th class="px-2 py-1.5 text-xs" @click="sort('cri')">cri</th>
+                                <th class="px-2 py-1.5 text-xs" @click="sort('pro')">pro</th>
+                                <th class="px-2 py-1.5 text-xs" @click="sort('pav')">pav</th>
+                                <th class="px-2 py-1.5 text-xs" @click="sort('spr')">spr</th>
+                                <th class="px-2 py-1.5 text-xs" @click="sort('acc')">acc</th>
+                                <th class="px-2 py-1.5 text-xs" @click="sort('des')">des</th>
+                                <th class="px-2 py-1.5 text-xs" @click="sort('com')">com</th>
+                                <th class="px-2 py-1.5 text-xs" @click="sort('ene')">ene</th>
+                                <th class="px-2 py-1.5 text-xs" @click="sort('res')">res</th>
+                                <th class="px-2 py-1.5 text-xs" @click="sort('rec')">rec</th>
+                                <th class="px-2 py-1.5 text-xs" @click="sort('media')">media</th>
+                                <th class="px-2 py-1.5 text-xs" @click="sort('pts')">pts</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-for="ciclista in sortedCiclistas()" :key="ciclista.id">
+                                <tr>
+                                    <td class="px-2 py-1.5 text-xs" x-text="`${ciclista.apellido}, ${ciclista.nombre.charAt(0)}.`"></td>
+                                    <td class="px-2 py-1.5 text-xs" x-text="ciclista.pais"></td>
+                                    <td class="px-2 py-1.5 text-xs" x-text="ciclista.especialidad"></td>
+                                    <td class="px-2 py-1.5 text-xs" x-text="ciclista.edad"></td>
+                            <td class="px-2 py-1.5 text-xs">
+                                <span x-text="formatNumber(ciclista.lla).integerPart"></span><span x-text="'.' + formatNumber(ciclista.lla).decimalPart" class="text-xxs"></span>
+                            </td>
+                                    <td class="px-2 py-1.5 text-xs" x-text="ciclista.mon"></td>
+                                    <td class="px-2 py-1.5 text-xs" x-text="ciclista.col"></td>
+                                    <td class="px-2 py-1.5 text-xs" x-text="ciclista.cri"></td>
+                                    <td class="px-2 py-1.5 text-xs" x-text="ciclista.pro"></td>
+                                    <td class="px-2 py-1.5 text-xs" x-text="ciclista.pav"></td>
+                                    <td class="px-2 py-1.5 text-xs" x-text="ciclista.spr"></td>
+                                    <td class="px-2 py-1.5 text-xs" x-text="ciclista.acc"></td>
+                                    <td class="px-2 py-1.5 text-xs" x-text="ciclista.des"></td>
+                                    <td class="px-2 py-1.5 text-xs" x-text="ciclista.com"></td>
+                                    <td class="px-2 py-1.5 text-xs" x-text="ciclista.ene"></td>
+                                    <td class="px-2 py-1.5 text-xs" x-text="ciclista.res"></td>
+                                    <td class="px-2 py-1.5 text-xs" x-text="ciclista.rec"></td>
+                                    <td class="px-2 py-1.5 text-xs" x-text="ciclista.media"></td>
+                                    <td class="px-2 py-1.5 text-xs" x-text="ciclista.pts"></td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 </div>

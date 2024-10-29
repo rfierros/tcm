@@ -13,16 +13,16 @@ return new class extends Migration
     {
         Schema::create('resultados', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('carrera_id')->constrained()->onDelete('cascade');
-            $table->foreignId('ciclista_id')->constrained()->onDelete('cascade');
             $table->integer('temporada'); // Temporada a la que pertenece este resultado
+            $table->foreignId('carrera_id')->constrained()->onDelete('cascade');
             $table->integer('etapa'); // Etapa específica
+            $table->foreignId('ciclista_id')->constrained()->onDelete('cascade');
+            $table->foreignId('equipo_id')->constrained()->onDelete('cascade');
             $table->integer('posicion')->nullable(); // Posición del ciclista en esta etapa
             $table->time('tiempo')->nullable(); // Tiempo en formato HH:MM:SS
             $table->timestamps();
         });
     }
-
     /**
      * Reverse the migrations.
      */

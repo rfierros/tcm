@@ -74,5 +74,39 @@ class Carrera extends Model
         // Si no hay conflictos, inscribir el ciclista
         $this->ciclistas()->attach($ciclista->id, ['inscrito_at' => now()]);
     }
+
+    public function maxCorredoresPermitidos()
+    {
+        if ($this->tipo === 'GV') {
+            return 8;
+        } elseif ($this->categoria === 'U24') {
+            return 5;
+        }
+        return 7;
+    }
+
+    // Validar inscripción de los corredores y conflictos
+    public function validarInscripcion(array $ciclistasIds)
+    {
+        $maxPermitido = $this->maxCorredoresPermitidos();
+        if (count($ciclistasIds) > $maxPermitido) {
+            throw new \Exception("No puedes inscribir más de $maxPermitido corredores en esta carrera.");
+        }
+
+        foreach ($ciclistasIds as $ciclistaId) {
+            if ($this->existeConflictoDeCalendario($ciclistaId)) {
+                throw new \Exception("El ciclista con ID $ciclistaId ya está inscrito en una carrera que se solapa.");
+            }
+        }
+
+        return true;
+    }
+
+    public function corredoresInscritos(int $equipoId)
+    {
+        return Resultado::where('carrera_id', $this->id)
+                        ->where('equipo_id', $equipoId)
+                        ->get();
+    }
 }
 

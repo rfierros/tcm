@@ -16,7 +16,7 @@ class Ciclista extends Model
     protected $fillable = [
         'nombre', 'pais', 'pos_ini', 'pos_fin', 'pts', 'especialidad', 'edad', 
         'lla', 'mon', 'col', 'cri', 'pro', 'pav', 'spr', 'acc', 'des', 'com',
-        'ene', 'res', 'res', 'media', 'equipo_id'
+        'ene', 'res', 'media', 'equipo_id'
     ];
 
     // Relación de pertenencia a un equipo

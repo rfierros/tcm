@@ -60,7 +60,7 @@ new class extends Component {
     } 
 }; ?>
 
-<div class="mt-6 bg-white shadow-sm rounded-lg divide-y"> 
+<div class="mt-6 bg-white divide-y rounded-lg shadow-sm"> 
 
 
 
@@ -109,22 +109,29 @@ new class extends Component {
                 return colors[especialidad.toLowerCase()] || 'bg-gray-500 text-white';
             }
         }">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="font-semibold text-xl text-gray-800 leading-tight mb-4">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="mb-4 text-xl font-semibold leading-tight text-gray-800">
                     {{ $equipo->nombre_equipo }}
                 </h3> 
                 <div class="flex space-x-4">
                     <fieldset aria-label="Choose a filter option">
-                        <div class="mt-2 mb-1 grid grid-cols-3 gap-3 sm:grid-cols-6">
+                        <div class="grid grid-cols-3 gap-3 mt-2 mb-1 sm:grid-cols-6">
                             @foreach($botones as $boton => $label)
                                 <label :class="{
                                     'bg-indigo-600 text-white hover:bg-indigo-500 ring-0': selectedFilter === '{{ $boton }}',
                                     'ring-1 ring-gray-300 bg-white text-gray-900 hover:bg-gray-50': selectedFilter !== '{{ $boton }}'
-                                }" class="flex cursor-pointer items-center justify-center rounded-md px-3 py-3 text-sm font-semibold uppercase focus:outline-none sm:flex-1">
+                                }" class="flex items-center justify-center px-3 py-3 text-sm font-semibold uppercase rounded-md cursor-pointer focus:outline-none sm:flex-1">
                                     <input type="radio" name="filter-option" value="{{ $boton }}" class="sr-only" @click="selectedFilter = '{{ $boton }}'">
                                     <span>{{ $label }}</span>
                                 </label>
                             @endforeach
+                            <label :class="{
+                                'bg-indigo-600 text-white hover:bg-indigo-500 ring-0': selectedFilter === 'U24',
+                                'ring-1 ring-gray-300 bg-white text-gray-900 hover:bg-gray-50': selectedFilter !== 'U24'
+                            }" class="flex items-center justify-center px-3 py-3 text-sm font-semibold text-gray-900 uppercase bg-white rounded-md cursor-pointer focus:outline-none sm:flex-1 ring-1 ring-gray-300 hover:bg-gray-50">
+                                <input type="radio" name="filter-option" value="colores" class="sr-only" @click="selectedFilter = 'U24'">
+                                <span>Colores</span>
+                            </label>
                         </div>
                     </fieldset>
                 </div>
@@ -141,8 +148,8 @@ new class extends Component {
                                             {{ $label }}
                                         </span>
                                         <div class="flex flex-col text-gray-400">
-                                            <span @click="sort('{{ $column }}', 'desc')" class="cursor-pointer leading-none">˄</span>
-                                            <span @click="sort('{{ $column }}', 'asc')" class="cursor-pointer leading-none">˅</span>
+                                            <span @click="sort('{{ $column }}', 'desc')" class="leading-none cursor-pointer">˄</span>
+                                            <span @click="sort('{{ $column }}', 'asc')" class="leading-none cursor-pointer">˅</span>
                                         </div>
                                     </div>
                                 </th>
@@ -153,11 +160,10 @@ new class extends Component {
                         <template x-for="ciclista in sortedCiclistas()" :key="ciclista.id">
                             <tr class="hover:bg-slate-100">
                                 <template x-for="(label, field) in {{ json_encode($columns) }}" :key="field">
-                                    <td class="px-2 py-1.5 text-xs">
+                                    <td x:class="{ 'bg-red-200': colorMode }" class="px-2 py-1.5 text-xs">
                                         <template x-if="['lla', 'mon', 'col', 'cri', 'pro', 'pav', 'spr', 'acc', 'des', 'com', 'ene', 'res', 'rec', 'media'].includes(field)">
                                             <span>
-                                                <span x-text="formatNumber(ciclista[field]).integerPart"></span>
-                                                <span x-text="'.' + formatNumber(ciclista[field]).decimalPart" class="text-xxs text-gray-400"></span>
+                                                <span x-text="formatNumber(ciclista[field]).integerPart" class="text-xs"></span><span x-text="'.' + formatNumber(ciclista[field]).decimalPart" class="inline-block text-gray-400 text-xxs"></span>
                                             </span>
                                         </template>
                                         <template x-if="['especialidad'].includes(field)">

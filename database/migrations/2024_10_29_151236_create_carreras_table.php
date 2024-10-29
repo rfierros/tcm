@@ -14,11 +14,11 @@ return new class extends Migration
     {
         Schema::create('carreras', function (Blueprint $table) {
             $table->id();
+            $table->integer('temporada');
             $table->string('nombre');
             $table->integer('num_etapas');
             $table->enum('categoria', ['U24', 'WT', 'Conti']); // Nueva columna para la categoría
             $table->enum('tipo', ['Vuelta', 'Clasica', 'Monumento', 'Continental', 'GV']); // Valores permitidos para tipo
-            $table->integer('temporada');
             $table->integer('dia_inicio');
             $table->timestamps();
         });

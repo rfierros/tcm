@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('calendarios', function (Blueprint $table) {
             $table->id();
+            $table->integer('temporada'); // Temporada a la que pertenece
             $table->foreignId('carrera_id')->constrained()->onDelete('cascade');
             $table->integer('dia'); // Día específico de competición en esa temporada
-            $table->integer('temporada'); // Temporada a la que pertenece
             $table->integer('etapa')->nullable(); // Número de la etapa
             $table->timestamps();
         });

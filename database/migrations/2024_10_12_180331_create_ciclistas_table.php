@@ -15,6 +15,7 @@ return new class extends Migration
         Schema::create('ciclistas', function (Blueprint $table) {
             $table->id();
 
+            $table->integer('temporada'); // Temporada del equipo
             $table->integer('clave_id')->unique(); // Define `clave_id` como un campo único. Es el id de las excel
             $table->string('apellido');                      // Nombre del ciclista
             $table->string('nombre');                    // Apellido del ciclista

@@ -22,41 +22,6 @@ return new class extends Migration
             $table->integer('dia_inicio');
             $table->timestamps();
         });
-
-
-        // Inserción de los registros iniciales para pruebas
-        DB::table('carreras')->insert([
-            [
-                'nombre' => 'New Zealand Cycle Classic',
-                'num_etapas' => 5,
-                'dia_inicio' => 8,
-                'tipo' => 'Vuelta',
-                'categoria' => 'U24',
-                'temporada' => 4,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'nombre' => 'Down Under',
-                'num_etapas' => 6,
-                'dia_inicio' => 9,
-                'tipo' => 'Vuelta',
-                'categoria' => 'WT',
-                'temporada' => 4,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'nombre' => 'Clàssica C. Valenciana',
-                'num_etapas' => 1,
-                'dia_inicio' => 14,
-                'tipo' => 'Clasica',
-                'categoria' => 'Conti',
-                'temporada' => 4,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-        ]);
     }
 
     /**

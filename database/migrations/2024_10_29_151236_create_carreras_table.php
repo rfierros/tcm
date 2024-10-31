@@ -15,6 +15,7 @@ return new class extends Migration
         Schema::create('carreras', function (Blueprint $table) {
             $table->id();
             $table->integer('temporada');
+            $table->integer('bloque');
             $table->string('nombre');
             $table->integer('num_etapas');
             $table->enum('categoria', ['U24', 'WT', 'Conti']); // Nueva columna para la categoría

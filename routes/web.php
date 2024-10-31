@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\CiclistaController;
 use App\Http\Controllers\EquipoController;
+use App\Http\Controllers\CarreraController;
+use App\Http\Controllers\CalendarioController;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome');
@@ -19,6 +21,14 @@ Route::get('mi_equipo', [CiclistaController::class, 'miEquipo'])
 Route::get('ciclistas', [CiclistaController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('ciclistas'); 
+
+    Route::get('carreras', [CarreraController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('carreras'); 
+
+    Route::get('calendarios', [CalendarioController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('calendarios'); 
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])

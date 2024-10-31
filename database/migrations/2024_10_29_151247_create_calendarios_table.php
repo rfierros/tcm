@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('calendarios', function (Blueprint $table) {
             $table->id();
+            $table->integer('bloque'); // Bloque de carreras al que pertenece o 'Semana' de retransmisión en Twitch, que es la que marca el límite para tener lista la convocatoria (Sabado a las 22.30) 
             $table->integer('temporada'); // Temporada a la que pertenece
             $table->foreignId('carrera_id')->constrained()->onDelete('cascade');
             $table->integer('dia'); // Día específico de competición en esa temporada

@@ -54,6 +54,7 @@ return new class extends Migration
 
         DB::table('ciclistas')->insert([
             [
+                'temporada' => 4,
                 'clave_id' => 1,
                 'apellido' => 'De los Palotes',
                 'nombre' => 'Perico',
@@ -83,6 +84,7 @@ return new class extends Migration
                 'updated_at' => now()
             ],
             [
+                'temporada' => 4,
                 'clave_id' => 2,
                 'apellido' => 'Piccolo',
                 'nombre' => 'Rocco',
@@ -112,6 +114,7 @@ return new class extends Migration
                 'updated_at' => now()
             ],
             [
+                'temporada' => 4,
                 'clave_id' => 4,
                 'apellido' => 'Gomes',
                 'nombre' => 'Nuno',
@@ -141,6 +144,7 @@ return new class extends Migration
                 'updated_at' => now()
             ],
             [
+                'temporada' => 4,
                 'clave_id' => 3,
                 'apellido' => 'Horner',
                 'nombre' => 'Cristiano',
@@ -174,6 +178,7 @@ return new class extends Migration
 
         DB::table('ciclistas')->insert([
             [
+                'temporada' => 4,
                 'clave_id' => 6001,
                 'apellido' => 'Vendrame',
                 'nombre' => 'A.',
@@ -203,6 +208,7 @@ return new class extends Migration
                 'updated_at' => now()
             ],
             [
+                'temporada' => 4,
                 'clave_id' => 12952,
                 'apellido' => 'Gonzalez',
                 'nombre' => 'Ab.',
@@ -232,6 +238,7 @@ return new class extends Migration
                 'updated_at' => now()
             ],
             [
+                'temporada' => 4,
                 'clave_id' => 3859,
                 'apellido' => 'Pedersen',
                 'nombre' => 'C.',
@@ -261,6 +268,7 @@ return new class extends Migration
                 'updated_at' => now()
             ],
             [
+                'temporada' => 4,
                 'clave_id' => 14064,
                 'apellido' => 'Lemmen',
                 'nombre' => 'B.',
@@ -290,6 +298,7 @@ return new class extends Migration
                 'updated_at' => now()
             ],
             [
+                'temporada' => 4,
                 'clave_id' => 11759,
                 'apellido' => 'Craps',
                 'nombre' => 'L.',
@@ -319,6 +328,7 @@ return new class extends Migration
                 'updated_at' => now()
             ],
             [
+                'temporada' => 4,
                 'clave_id' => 7072,
                 'apellido' => 'Hänninen',
                 'nombre' => 'J.',
@@ -348,6 +358,7 @@ return new class extends Migration
                 'updated_at' => now()
             ],
             [
+                'temporada' => 4,
                 'clave_id' => 14253,
                 'apellido' => 'Vercher',
                 'nombre' => 'M.',
@@ -377,6 +388,7 @@ return new class extends Migration
                 'updated_at' => now()
             ],
             [
+                'temporada' => 4,
                 'clave_id' => 7190,
                 'apellido' => 'Drizners',
                 'nombre' => 'J.',
@@ -406,6 +418,7 @@ return new class extends Migration
                 'updated_at' => now()
             ],
             [
+                'temporada' => 4,
                 'clave_id' => 14343,
                 'apellido' => 'Okamika',
                 'nombre' => 'A.',
@@ -435,6 +448,7 @@ return new class extends Migration
                 'updated_at' => now()
             ],
             [
+                'temporada' => 4,
                 'clave_id' => 3484,
                 'apellido' => 'Mullen',
                 'nombre' => 'R.',
@@ -464,6 +478,7 @@ return new class extends Migration
                 'updated_at' => now()
             ],
             [
+                'temporada' => 4,
                 'clave_id' => 5675,
                 'apellido' => 'Ciccone',
                 'nombre' => 'G.',
@@ -493,6 +508,7 @@ return new class extends Migration
                 'updated_at' => now()
             ],
             [
+                'temporada' => 4,
                 'clave_id' => 6000,
                 'apellido' => 'Sosa',
                 'nombre' => 'I.',
@@ -522,6 +538,7 @@ return new class extends Migration
                 'updated_at' => now()
             ],
             [
+                'temporada' => 4,
                 'clave_id' => 14338,
                 'apellido' => 'Thompson',
                 'nombre' => 'R.',
@@ -551,6 +568,7 @@ return new class extends Migration
                 'updated_at' => now()
             ],
             [
+                'temporada' => 4,
                 'clave_id' => 14278,
                 'apellido' => 'Gloag',
                 'nombre' => 'T.',
@@ -580,6 +598,7 @@ return new class extends Migration
                 'updated_at' => now()
             ],
             [
+                'temporada' => 4,
                 'clave_id' => 3662,
                 'apellido' => 'Figueiredo',
                 'nombre' => 'F.',
@@ -609,6 +628,7 @@ return new class extends Migration
                 'updated_at' => now()
             ],
             [
+                'temporada' => 4,
                 'clave_id' => 7051,
                 'apellido' => 'Bagioli',
                 'nombre' => 'A.',
@@ -638,6 +658,7 @@ return new class extends Migration
                 'updated_at' => now()
             ],
             [
+                'temporada' => 4,
                 'clave_id' => 7040,
                 'apellido' => 'Rex',
                 'nombre' => 'L.',
@@ -667,6 +688,7 @@ return new class extends Migration
                 'updated_at' => now()
             ],
             [
+                'temporada' => 4,
                 'clave_id' => 14183,
                 'apellido' => 'Kielich',
                 'nombre' => 'T.',
@@ -696,6 +718,7 @@ return new class extends Migration
                 'updated_at' => now()
             ],
             [
+                'temporada' => 4,
                 'clave_id' => 7122,
                 'apellido' => 'Beullens',
                 'nombre' => 'C.',
@@ -725,6 +748,7 @@ return new class extends Migration
                 'updated_at' => now()
             ],
             [
+                'temporada' => 4,
                 'clave_id' => 1939,
                 'apellido' => 'Kristoff',
                 'nombre' => 'A.',
@@ -754,6 +778,7 @@ return new class extends Migration
                 'updated_at' => now()
             ],
             [
+                'temporada' => 4,
                 'clave_id' => 7303,
                 'apellido' => 'Kooij',
                 'nombre' => 'O.',
@@ -783,6 +808,7 @@ return new class extends Migration
                 'updated_at' => now()
             ],
             [
+                'temporada' => 4,
                 'clave_id' => 3060,
                 'apellido' => 'Coquard',
                 'nombre' => 'B.',
@@ -812,6 +838,7 @@ return new class extends Migration
                 'updated_at' => now()
             ],
             [
+                'temporada' => 4,
                 'clave_id' => 3777,
                 'apellido' => 'Capiot',
                 'nombre' => 'A.',
@@ -841,6 +868,7 @@ return new class extends Migration
                 'updated_at' => now()
             ],
             [
+                'temporada' => 4,
                 'clave_id' => 14327,
                 'apellido' => 'Lund Andersen',
                 'nombre' => 'T.',
@@ -870,6 +898,7 @@ return new class extends Migration
                 'updated_at' => now()
             ],
             [
+                'temporada' => 4,
                 'clave_id' => 6422,
                 'apellido' => 'Zijlaard',
                 'nombre' => 'M.',
@@ -899,6 +928,7 @@ return new class extends Migration
                 'updated_at' => now()
             ],
             [
+                'temporada' => 4,
                 'clave_id' => 10502,
                 'apellido' => 'Mahoudo',
                 'nombre' => 'N.',
@@ -928,6 +958,7 @@ return new class extends Migration
                 'updated_at' => now()
             ],
             [
+                'temporada' => 4,
                 'clave_id' => 6386,
                 'apellido' => 'Sajnok',
                 'nombre' => 'S.',
@@ -957,6 +988,7 @@ return new class extends Migration
                 'updated_at' => now()
             ],
             [
+                'temporada' => 4,
                 'clave_id' => 6629,
                 'apellido' => 'Viviani',
                 'nombre' => 'A.',

@@ -33,6 +33,7 @@ class CalendarioSeeder extends Seeder
                     'dia' => $carrera->dia_inicio + $etapa - 1, // Día específico de la etapa
                     'temporada' => $carrera->temporada,
                     'etapa' => $etapa,
+                    'bloque' => $carrera->bloque,
                 ]);
             }
         }
@@ -57,6 +58,7 @@ class CalendarioSeeder extends Seeder
                     'dia' => $carrera->dia_inicio + $etapa - 1, // Día específico de la etapa
                     'temporada' => $carrera->temporada,
                     'etapa' => $etapa,
+                    'bloque' => $carrera->bloque,
                 ]);
             }
         }

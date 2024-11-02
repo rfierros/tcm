@@ -86,11 +86,11 @@ new class extends Component {
 };
 ?>
 
-<div class="flex flex-col h-full">
+<div class="flex flex-col h-full bg-sky-100">
     <!-- Encabezado con controles de navegación -->
     <header class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
         <h1 class="text-base font-semibold text-gray-900">
-            <time datetime="2024-11">Días de competición</time>
+            <time datetime="2024-11">DPRRRUUUEBA</time>
         </h1>
         <div class="flex items-center"> 
             <div class="relative flex items-center bg-white rounded-md shadow-sm">

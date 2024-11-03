@@ -14,6 +14,8 @@ new class extends Component {
     {
         $this->getCalendarios();
         $this->getCarreras();
+        $this->getMaxDiaInicio();
+
     }
 
     #[On('calendario-created')]
@@ -83,10 +85,15 @@ new class extends Component {
             ->groupBy('dia')
             ->toArray();
     }
+public function getMaxDiaInicio(): int
+{
+    // Obtiene el valor máximo de la columna 'dia_inicio' de la tabla 'carreras'
+    return Carrera::max('dia_inicio');
+}
 };
 ?>
 
-<div class="flex flex-col h-full bg-sky-100">
+<div class="flex flex-col h-full bg-pink-700">
     <!-- Encabezado con controles de navegación -->
     <header class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
         <h1 class="text-base font-semibold text-gray-900">
@@ -107,12 +114,56 @@ new class extends Component {
         </div>
     </header>
 
+<div class="flex flex-col h-full overflow-x-auto">
+    <!-- Cabecera de los días con flexbox -->
+    <div class="flex text-sm font-medium text-center text-gray-500 border-b border-gray-200">
+        @for ($dia = $diaMinimo; $dia <= $diaMaximo; $dia++)
+            <div class="py-2 min-w-[35px] bg-gray-100">{{ $dia }}</div>
+        @endfor
+    </div>
+
+    <!-- Filas de carreras con flexbox -->
+    @foreach ($this->carreras as $carrera)
+        @php
+            $colStart = $carrera['dia_inicio'] - $diaMinimo;  // Calcular el día de inicio relativo
+            $colSpan = $carrera['num_etapas']; // Número de días o etapas
+        @endphp
+
+        <!-- Carrera con clase de color dinámica según categoría y tipo -->
+        <div class="p-4 m-1 min-w-[35px] rounded-lg text-xs font-semibold {{ $carrera['colorClass'] }}"
+             style="margin-left: {{ $colStart * 35 }}px; width: {{ $colSpan * 35 }}px;">
+            {{ $carrera['nombre'] }} ({{ $carrera['num_etapas'] }} días)
+        </div>
+    @endforeach
+</div>
+
+
+
+<div class="p-2 mt-6 bg-white rounded-lg shadow-sm">
+    <h1 class="mb-6 text-2xl font-bold">Calendario de Carreras</h1>
+    <div class="flex gap-2 overflow-x-auto">
+        @foreach ($calendariosByDay as $day => $carreras)
+            <div class="flex-1 min-w-[150px] border border-neutral-200 rounded-lg p-1">
+                <h2 class="text-xs font-medium text-center uppercase text-neutral-500">Día {{ $day }}</h2>
+                <div class="mt-4 space-y-2">
+                    @foreach ($carreras as $carrera)
+                        {{-- @if ($carrera['etapa'] == 1) --}}
+                        <div class="p-2 rounded-lg bg-neutral-100 ">
+                            <strong>{{ $carrera['carrera']['nombre'] }}</strong> - Etapa {{ $carrera['etapa'] }}
+                        </div>
+                        {{-- @endif --}}
+                    @endforeach
+                </div>
+            </div>
+        @endforeach
+    </div>
+</div>
 
 
 
 
 
-    <!-- Estructura del calendario principal -->
+
     <div class="flex flex-col overflow-auto bg-white">
         <!-- Cabecera de los días de la semana -->
         {{-- <div class="grid grid-cols-7 text-sm font-medium text-center text-gray-500 border-b border-gray-200">
@@ -152,10 +203,6 @@ new class extends Component {
             @endforeach
         </div>
     </div>
-
-
-
-
 
 
 

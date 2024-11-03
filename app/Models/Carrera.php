@@ -54,6 +54,11 @@ class Carrera extends Model
         return $this->hasMany(Resultado::class, 'carrera_id');
     }
 
+    public function etapas()
+    {
+        return $this->hasMany(Etapa::class);
+    }
+
     // Función para inscribir un ciclista en la carrera, validando conflictos de fechas
     public function inscribirCiclista(Ciclista $ciclista)
     {

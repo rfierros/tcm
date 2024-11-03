@@ -16,6 +16,14 @@ En caso de tenerlos en el Seeder, como es nuestro caso, lo lanzamos.
 php artisan db:seed --class=CarreraSeeder
 ```
 
+**Cargamos el Seeder de Etapa**
+Una vez tenemos definidas las carreras que van a componer una temporada lanzamos este Seeder que generará las Etapas automáticamente.
+Solo genera las etapas, pero habría que editar los perfiles etapa a etapa.
+
+```php
+   php artisan db:seed --class=EtapaSeeder
+```
+
 **Cargamos el Seeder de Calendario**
 Una vez tenemos definidas las carreras que van a componer una temporada lanzamos este Seeder que generará el Calendario automáticamente.
 En este caso hemos hecho 2 procesos para la misma tarea. Elegimos cual de las 2 opciones nos gusta más.

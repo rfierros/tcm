@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('carrera_id')->constrained('carreras')->onDelete('cascade'); // Relación con 'carreras'
             $table->integer('temporada'); // Año o temporada
+            $table->integer('num_etapa'); // etapa
             $table->integer('dia'); // Día específico de la etapa
             $table->enum('perfil', ['llano', 'montaña', 'media-montaña', 'cre', 'cri'])->nullable(); // Perfil de la etapa
             $table->string('imagen')->nullable(); // Ruta o URL de la imagen de la etapa

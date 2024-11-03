@@ -130,6 +130,58 @@ new class extends Component {
                                 <input type="radio" name="filter-option" value="colores" class="sr-only" @click="selectedFilter = 'U24'">
                                 <span>Colores</span>
                             </label>
+                                <div>
+                                        <label :class="{
+                                                'bg-pink-600 text-white hover:bg-pink-500 ring-0': selectedFilter === 'Option',
+                                                'ring-1 ring-gray-300 bg-white text-xxs text-gray-900 hover:bg-gray-50': selectedFilter !== 'Option'
+                                            }"
+                                            class="flex items-center justify-center flex-1 w-1/2 px-1 py-0.5 text-xs font-semibold text-gray-900 uppercase bg-white rounded-md cursor-pointer h-1/3 focus:outline-none ring-1 ring-gray-300 hover:bg-gray-50">
+                                            <input type="radio" :value="'ard'" name="filter-option" class="sr-only" @click="selectedFilter = 'ard'">
+                                            <span x-text="'ard'"></span>
+                                        </label>
+                                        <label :class="{
+                                                'bg-pink-600 text-white hover:bg-pink-500 ring-0': selectedFilter === 'Option',
+                                                'ring-1 ring-gray-300 bg-white text-xxs text-gray-900 hover:bg-gray-50': selectedFilter !== 'Option'
+                                            }"
+                                            class="flex items-center justify-center flex-1 w-1/2 px-1 py-0.5 text-xs font-semibold text-gray-900 uppercase bg-white rounded-md cursor-pointer h-1/3 focus:outline-none ring-1 ring-gray-300 hover:bg-gray-50">
+                                            <input type="radio" :value="'cro'" name="filter-option" class="sr-only" @click="selectedFilter = 'cro'">
+                                            <span x-text="'cro'"></span>
+                                        </label>
+                                        <label :class="{
+                                                'bg-pink-600 text-white hover:bg-pink-500 ring-0': selectedFilter === 'Option',
+                                                'ring-1 ring-gray-300 bg-white text-xxs text-gray-900 hover:bg-gray-50': selectedFilter !== 'Option'
+                                            }"
+                                            class="flex items-center justify-center flex-1 w-1/2 px-1 py-0.5 text-xs font-semibold text-gray-900 uppercase bg-white rounded-md cursor-pointer h-1/3 focus:outline-none ring-1 ring-gray-300 hover:bg-gray-50">
+                                            <input type="radio" :value="'esc'" name="filter-option" class="sr-only" @click="selectedFilter = 'esc'">
+                                            <span x-text="'esc'"></span>
+                                        </label>
+                                </div>
+                                <div>
+                                        <label :class="{
+                                                'bg-pink-600 text-white hover:bg-pink-500 ring-0': selectedFilter === 'Option',
+                                                'ring-1 ring-gray-300 bg-white text-xxs text-gray-900 hover:bg-gray-50': selectedFilter !== 'Option'
+                                            }"
+                                            class="flex items-center justify-center flex-1 w-1/2 px-1 py-0.5 text-xs font-semibold text-gray-900 uppercase bg-white rounded-md cursor-pointer h-1/3 focus:outline-none ring-1 ring-gray-300 hover:bg-gray-50">
+                                            <input type="radio" :value="'spr'" name="filter-option" class="sr-only" @click="selectedFilter = 'spr'">
+                                            <span x-text="'spr'"></span>
+                                        </label>
+                                        <label :class="{
+                                                'bg-pink-600 text-white hover:bg-pink-500 ring-0': selectedFilter === 'Option',
+                                                'ring-1 ring-gray-300 bg-white text-xxs text-gray-900 hover:bg-gray-50': selectedFilter !== 'Option'
+                                            }"
+                                            class="flex items-center justify-center flex-1 w-1/2 px-1 py-0.5 text-xs font-semibold text-gray-900 uppercase bg-white rounded-md cursor-pointer h-1/3 focus:outline-none ring-1 ring-gray-300 hover:bg-gray-50">
+                                            <input type="radio" :value="'com'" name="filter-option" class="sr-only" @click="selectedFilter = 'com'">
+                                            <span x-text="'com'"></span>
+                                        </label>
+                                        <label :class="{
+                                                'bg-pink-600 text-white hover:bg-pink-500 ring-0': selectedFilter === 'Option',
+                                                'ring-1 ring-gray-300 bg-white text-xxs text-gray-900 hover:bg-gray-50': selectedFilter !== 'Option'
+                                            }"
+                                            class="flex items-center justify-center flex-1 w-1/2 px-1 py-0.5 text-xs font-semibold text-gray-900 uppercase bg-white rounded-md cursor-pointer h-1/3 focus:outline-none ring-1 ring-gray-300 hover:bg-gray-50">
+                                            <input type="radio" :value="'fla'" name="filter-option" class="sr-only" @click="selectedFilter = 'fla'">
+                                            <span x-text="'fla'"></span>
+                                        </label>
+                                </div>
                         </div>
                     </fieldset>
                 </div>

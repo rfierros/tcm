@@ -22,41 +22,41 @@ new class extends Component {
 }; 
 ?>
 
+
+
+
 <div class="mt-6 bg-white divide-y rounded-lg shadow-sm"> 
     <div class="p-10">
-        <div class="flex flex-col">
-            <div class="overflow-x-auto">
-                <div class="inline-block min-w-full">
-                    <div class="overflow-hidden border rounded-lg">
-                        <table class="min-w-full divide-y divide-neutral-200">
-                            <thead class="bg-neutral-50">
-                                <tr class="text-neutral-500">
-                                    <th class="px-2 py-1.5 text-xs font-medium text-left uppercase">Nombre</th>
-                                    <th class="px-2 py-1.5 text-xs font-medium text-left uppercase">Categoría</th>
-                                    <th class="px-2 py-1.5 text-xs font-medium text-left uppercase">Tipo</th>
-                                    <th class="px-2 py-1.5 text-xs font-medium text-left uppercase">Temporada</th>
-                                    <th class="px-2 py-1.5 text-xs font-medium text-left uppercase">Día de Inicio</th>
-                                    <th class="px-2 py-1.5 text-xs font-medium text-left uppercase">N° de Etapas</th>
-                                    <th class="px-2 py-1.5 text-xs font-medium text-right uppercase">Semana</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-neutral-200">
-                                @foreach ($carreras as $carrera)
-                                <tr class="text-neutral-800">
-                                    <td class="px-2 py-1.5 text-sm font-medium whitespace-nowrap">{{ $carrera->nombre }}</td>
-                                    <td class="px-2 py-1.5 text-sm whitespace-nowrap">{{ $carrera->categoria }}</td>
-                                    <td class="px-2 py-1.5 text-sm whitespace-nowrap">{{ $carrera->tipo }}</td>
-                                    <td class="px-2 py-1.5 text-sm whitespace-nowrap">{{ $carrera->temporada }}</td>
-                                    <td class="px-2 py-1.5 text-sm whitespace-nowrap">{{ $carrera->dia_inicio }}</td>
-                                    <td class="px-2 py-1.5 text-sm whitespace-nowrap">{{ $carrera->num_etapas }}</td>
-                                    <td class="px-2 py-1.5 text-sm whitespace-nowrap">{{ $carrera->bloque }}</td>
-                                </tr>
-                                @endforeach 
-                            </tbody>
-                        </table>
+        <div x-data="{            
+            getColor(categoria) {
+                const colors = {
+                    'WT': 'bg-pink-600/30 text-pink-600',
+                    'Conti': 'bg-yellow-400/30 text-yellow-500',
+                    'U24': 'bg-green-500/30 text-green-600',
+                };
+                return colors[categoria] || 'bg-gray-500 text-white';
+            }
+        }">
+
+            <h3 class="mb-4 text-xl font-semibold leading-tight text-gray-800">Carreras</h3>
+            <ul role="list" class="grid grid-cols-1 gap-5 mt-3 sm:grid-cols-2 sm:gap-6 md:grid-cols-3 xl:grid-cols-4">
+                @foreach ($carreras as $carrera)
+                <li class="flex col-span-1 rounded-md shadow-sm">
+                    <!-- Usamos x-bind:class y pasamos la categoría desde el backend -->
+                    <div x-bind:class="getColor('{{ $carrera->categoria }}')" 
+                         class="flex items-center justify-center flex-shrink-0 w-16 text-sm font-medium rounded-l-md">
+                        {{ $carrera->categoria }}
                     </div>
-                </div>
-            </div>
+                    <div class="flex items-center justify-between flex-1 truncate bg-white border-t border-b border-r border-gray-200 rounded-r-md">
+                        <div class="flex-1 px-4 py-2 text-sm truncate">
+                            <a href="#" class="font-medium text-gray-900 hover:text-gray-600">{{ $carrera->nombre }}</a>
+                            <p class="text-gray-500">{{ $carrera->tipo }} - {{ $carrera->num_etapas }} etapas</p>
+                        </div>
+                    </div>
+                </li>
+                @endforeach
+            </ul>
+
         </div>
     </div>
 </div>

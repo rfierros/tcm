@@ -8,6 +8,12 @@ Seguiremos los siguientes pasos para asegurarnos de la integridad de la BD.
 php artisan migrate:fresh --seed
 ```
 
+**Cargamos el Seeder de Ciclistas**
+
+```php
+php artisan db:seed --class=CiclistaSeeder
+```
+
 **Cargamos el Seeder de Carreras**
 O si no lo tenemos, debemos crear los registros necesarios de una tempoarada.
 En caso de tenerlos en el Seeder, como es nuestro caso, lo lanzamos. 

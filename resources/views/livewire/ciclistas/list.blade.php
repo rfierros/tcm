@@ -26,7 +26,7 @@ new class extends Component {
     } 
 }; ?>
 
-<div class="mt-6 bg-white shadow-sm rounded-lg divide-y"> 
+<div class="mt-6 bg-white divide-y rounded-lg shadow-sm"> 
 
 <div class="p-10">
     <div class="flex flex-col">
@@ -127,12 +127,12 @@ new class extends Component {
             });
         }
     }">
-        <div class="flex justify-between items-center mb-4">
+        <div class="flex items-center justify-between mb-4">
             <h1 class="text-lg font-bold">Mi tabla</h1>
             <div class="flex space-x-2">
                 <!-- Botón para activar/desactivar el filtro U24 -->
                 <button
-                    class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    class="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600"
                     :class="{ 'bg-blue-700': filterU24 }"
                     @click="filterU24 = !filterU24"
                 >
@@ -140,7 +140,7 @@ new class extends Component {
                 </button>
                 <!-- Botón para activar/desactivar el filtro Conti -->
                 <button
-                    class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                    class="px-4 py-2 text-white bg-green-500 rounded hover:bg-green-600"
                     :class="{ 'bg-green-700': filterConti }"
                     @click="filterConti = !filterConti"
                 >

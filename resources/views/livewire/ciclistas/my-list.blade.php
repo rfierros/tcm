@@ -79,11 +79,9 @@ new class extends Component {
 
                 // Aplicar filtros en base al valor de selectedFilter
                 if (this.selectedFilter === 'U24') {
-                    filteredData = filteredData.filter(ciclista => ciclista.edad <= 24 && ciclista.media < 75);
+                    filteredData = filteredData.filter(ciclista => ciclista.u24);
                 } else if (this.selectedFilter === 'Conti') {
-                    filteredData = filteredData.filter(ciclista =>
-                        ['lla', 'mon', 'col', 'cri', 'pro', 'pav', 'spr', 'acc', 'des', 'com', 'ene', 'res', 'rec'].every(stat => ciclista[stat] < 78)
-                    );
+                    filteredData = filteredData.filter(ciclista => ciclista.conti);
                 }
 
                 return filteredData.sort((a, b) => {

@@ -39,8 +39,9 @@ class EtapasList extends Component
                             <tbody class="divide-y divide-neutral-200">
                                 @foreach ($carrera->etapas as $etapa)
                                 <tr class="text-neutral-800">
+                                         
                                     <td class="px-2 py-1.5 text-sm font-medium whitespace-nowrap">{{ $carrera->nombre }}</td>
-                                    <td class="px-2 py-1.5 text-sm whitespace-nowrap">{{ $etapa->num_etapa }}</td>
+                                    <td class="px-2 py-1.5 text-sm whitespace-nowrap"><a href="{{ route('etapas.show', [$carrera->slug, $etapa->id]) }}" class="text-blue-500 hover:underline">Etapa {{ $carrera->num_etapa }}</a></td>
                                     <td class="px-2 py-1.5 text-sm whitespace-nowrap">{{ $etapa->dia }}</td>
                                     <td class="px-2 py-1.5 text-sm whitespace-nowrap">{{ $etapa->perfil }}</td>
                                     <td class="px-2 py-1.5 text-sm whitespace-nowrap">{{ $etapa->dia_inicio }}</td>

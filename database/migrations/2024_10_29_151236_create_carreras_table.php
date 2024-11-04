@@ -17,9 +17,10 @@ return new class extends Migration
             $table->integer('temporada');
             $table->integer('bloque');
             $table->string('nombre');
+            $table->string('slug')->unique()->after('nombre');
             $table->integer('num_etapas');
             $table->enum('categoria', ['U24', 'WT', 'Conti']); // Nueva columna para la categoría
-            $table->enum('tipo', ['Vuelta', 'Clasica', 'Monumento', 'Continental', 'GV']); // Valores permitidos para tipo
+            $table->enum('tipo', ['Vuelta', 'Clásica', 'Monumento', 'Continental', 'GV']); // Valores permitidos para tipo
             $table->integer('dia_inicio');
             $table->timestamps();
         });

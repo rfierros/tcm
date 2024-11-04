@@ -47,11 +47,11 @@ new class extends Component {
         // Mapa de colores para combinaciones de categoría y tipo
         $colorMap = [
             'WT-Vuelta' => 'bg-gray-300 text-gray-700',
-            'WT-Clasica' => 'bg-sky-400 text-sky-900',
-            'Conti-Clasica' => 'bg-amber-700 text-amber-950',
+            'WT-Clásica' => 'bg-sky-400 text-sky-900',
+            'Conti-ásica' => 'bg-amber-700 text-amber-950',
             'Conti-Vuelta' => 'bg-green-200 text-green-900',
             'U24-Vuelta' => 'bg-green-500 text-green-900',
-            'U24-Clasica' => 'bg-stone-700 text-white',
+            'U24-Clásica' => 'bg-stone-700 text-white',
             'WT-Monumento' => 'bg-blue-100 text-blue-700',
             'WT-GV' => 'bg-teal-100 text-teal-700'
         ];

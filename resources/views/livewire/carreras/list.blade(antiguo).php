@@ -43,7 +43,7 @@ new class extends Component {
                             <tbody class="divide-y divide-neutral-200">
                                 @foreach ($carreras as $carrera)
                                 <tr class="text-neutral-800">
-                                    <td class="px-2 py-1.5 text-sm font-medium whitespace-nowrap"><a href="{{ route('etapas.index', $carrera->id) }}">{{ $carrera->nombre }}</a></td>
+                                    <td class="px-2 py-1.5 text-sm font-medium whitespace-nowrap"><a href="{{ route('etapas.index', $carrera->slug) }}">{{ $carrera->nombre }}</a></td>
                                     <td class="px-2 py-1.5 text-sm whitespace-nowrap">{{ $carrera->categoria }}</td>
                                     <td class="px-2 py-1.5 text-sm whitespace-nowrap">{{ $carrera->tipo }}</td>
                                     <td class="px-2 py-1.5 text-sm whitespace-nowrap">{{ $carrera->temporada }}</td>

@@ -22,8 +22,12 @@ Route::get('mi_equipo', [CiclistaController::class, 'miEquipo'])
 Route::get('ciclistas', [CiclistaController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('ciclistas'); 
-
-Route::get('/etapas/{carrera}', [EtapaController::class, 'index'])->name('etapas.index');
+Route::get('/etapas/{carrera:slug}/{etapa}', [EtapaController::class, 'show'])
+->middleware(['auth', 'verified'])
+->name('etapas.show');
+Route::get('/etapas/{carrera:slug}', [EtapaController::class, 'index'])
+->middleware(['auth', 'verified'])
+->name('etapas.index');
 Route::get('carreras', [CarreraController::class, 'index'])
 ->middleware(['auth', 'verified'])
 ->name('carreras'); 

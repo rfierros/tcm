@@ -17,7 +17,7 @@ class Carrera extends Model
 
     // Valores permitidos para 'categoria' y 'tipo'
     const CATEGORIAS = ['U24', 'WT', 'Conti'];
-    const TIPOS = ['Vuelta', 'Clasica', 'Monumento', 'Continental', 'GV'];
+    const TIPOS = ['Vuelta', 'Clásica', 'Monumento', 'Continental', 'GV'];
 
     // Accessor para validar el valor de 'categoria'
     public function setCategoriaAttribute($value)

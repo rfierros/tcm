@@ -10,6 +10,7 @@ Implemneted features:
 - Added filters for cyclists that allows to find easily the right ones for an specific competition.
 - Added Calendar, Races and Results models.
 - Added Etapa model.
+- Added import Cyclists process from csv file.
 
 This system aims to provide a robust tool for cycling enthusiasts and managers looking to simulate and manage virtual teams with real-world cycling performance considerations.
 

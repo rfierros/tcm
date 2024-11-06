@@ -10,6 +10,13 @@ php artisan migrate:fresh --seed
 
 **Cargamos el Seeder de Ciclistas**
 
+Cargamos el Seeder, o bien el archivo .csv con todos los corredores.
+Así cargamos el archivo:
+```php
+php artisan import:corredores
+```
+
+Así cargamos el seeder:
 ```php
 php artisan db:seed --class=CiclistaSeeder
 ```

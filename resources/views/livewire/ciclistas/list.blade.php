@@ -3,22 +3,52 @@
 use Livewire\Volt\Component;
 use Livewire\Attributes\On; 
 use App\Models\Ciclista;
+use App\Models\Equipo;
 use Illuminate\Database\Eloquent\Collection; 
 
 new class extends Component {
     public Collection $ciclistas;
+    public $equipo;
+
+    public $columns = [ // Campo => Cabecera
+        'apellido' => 'Ciclista',
+        'pais' => 'pais',
+        'especialidad' => 'tipo',
+        'edad' => 'edad',
+        'lla' => 'lla',
+        'mon' => 'mon',
+        'col' => 'col',
+        'cri' => 'cri',
+        'pro' => 'pro',
+        'pav' => 'pav',
+        'spr' => 'spr',
+        'acc' => 'acc',
+        'des' => 'des',
+        'com' => 'com',
+        'ene' => 'ene',
+        'res' => 'res',
+        'rec' => 'rec',
+        'media' => 'media',
+        'pts' => 'pts',
+    ];
+
+    public $botones = [ // Campo => Cabecera
+        'WT' => 'WT',
+        'Conti' => 'Conti .1',
+        'U24' => 'U24',
+    ];
  
     public function mount(): void
     {
         // $this->ciclistas = Ciclista::with('user') 
         //     ->latest()
         //     ->get(); 
-        $this->getCiclistas(); 
+        $this->getAllCiclistas(); 
     }
  
     // Si se crea un Ciclista hay un listener para el evento de creacion que actualizará la lista de Ciclistas
     #[On('ciclista-created')]
-    public function getCiclistas(): void
+    public function getAllCiclistas(): void
     {
         $this->ciclistas = Ciclista::with('equipo.user')
             ->latest()
@@ -28,187 +58,177 @@ new class extends Component {
 
 <div class="mt-6 bg-white divide-y rounded-lg shadow-sm"> 
 
+
+
 <div class="p-10">
     <div class="flex flex-col">
-        <div class="overflow-x-auto">
-            <div class="inline-block min-w-full">
-                <div class="overflow-hidden border rounded-lg">
-                    <table class="min-w-full divide-y divide-neutral-200">
-                        <thead class="bg-neutral-50">
-                            <tr class="text-neutral-500">
-                                <th class="px-2 py-1.5 text-xs font-medium text-left uppercase">Ciclista</th>
-                                <th class="px-2 py-1.5 text-xs font-medium text-left uppercase">Pais</th>
-                                <th class="px-2 py-1.5 text-xs font-medium text-left uppercase">especialidad</th>
-                                <th class="px-2 py-1.5 text-xs font-medium text-left uppercase">edad</th>
-                                <th class="px-2 py-1.5 text-xs font-medium text-left uppercase">lla</th>
-                                <th class="px-2 py-1.5 text-xs font-medium text-left uppercase">mon</th>
-                                <th class="px-2 py-1.5 text-xs font-medium text-left uppercase">col</th>
-                                <th class="px-2 py-1.5 text-xs font-medium text-left uppercase">cri</th>
-                                <th class="px-2 py-1.5 text-xs font-medium text-left uppercase">pro</th>
-                                <th class="px-2 py-1.5 text-xs font-medium text-left uppercase">pav</th>
-                                <th class="px-2 py-1.5 text-xs font-medium text-left uppercase">spr</th>
-                                <th class="px-2 py-1.5 text-xs font-medium text-left uppercase">acc</th>
-                                <th class="px-2 py-1.5 text-xs font-medium text-left uppercase">des</th>
-                                <th class="px-2 py-1.5 text-xs font-medium text-left uppercase">com</th>
-                                <th class="px-2 py-1.5 text-xs font-medium text-left uppercase">ene</th>
-                                <th class="px-2 py-1.5 text-xs font-medium text-left uppercase">res</th>
-                                <th class="px-2 py-1.5 text-xs font-medium text-left uppercase">rec</th>
-                                <th class="px-2 py-1.5 text-xs font-medium text-left uppercase">media</th>                                
-                                <th class="px-2 py-1.5 text-xs font-medium text-left uppercase">Puntos</th>
-                                <th class="px-2 py-1.5 text-xs font-medium text-left uppercase">Equipo</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-neutral-200">
-                            @foreach ($ciclistas as $ciclista)
-                            <tr class="text-neutral-800">
-                                <td class="px-2 py-1.5 text-xs font-medium whitespace-nowrap">{{ $ciclista->apellido }}, {{ strtoupper(substr($ciclista->nombre, 0, 1)) }}.</td>
-                                <td class="px-2 py-1.5 text-xs whitespace-nowrap">{{ $ciclista->pais }}</td>
-                                <td class="px-2 py-1.5 text-xs whitespace-nowrap">{{ $ciclista->especialidad }}</td>
-                                <td class="px-2 py-1.5 text-xs whitespace-nowrap">{{ $ciclista->edad }}</td>
-                                <td class="px-2 py-1.5 text-xs whitespace-nowrap">{{ $ciclista->lla }}</td>
-                                <td class="px-2 py-1.5 text-xs whitespace-nowrap">{{ $ciclista->mon }}</td>
-                                <td class="px-2 py-1.5 text-xs whitespace-nowrap">{{ $ciclista->col }}</td>
-                                <td class="px-2 py-1.5 text-xs whitespace-nowrap">{{ $ciclista->cri }}</td>
-                                <td class="px-2 py-1.5 text-xs whitespace-nowrap">{{ $ciclista->pro }}</td>
-                                <td class="px-2 py-1.5 text-xs whitespace-nowrap">{{ $ciclista->pav }}</td>
-                                <td class="px-2 py-1.5 text-xs whitespace-nowrap">{{ $ciclista->spr }}</td>
-                                <td class="px-2 py-1.5 text-xs whitespace-nowrap">{{ $ciclista->acc }}</td>
-                                <td class="px-2 py-1.5 text-xs whitespace-nowrap">{{ $ciclista->des }}</td>
-                                <td class="px-2 py-1.5 text-xs whitespace-nowrap">{{ $ciclista->com }}</td>
-                                <td class="px-2 py-1.5 text-xs whitespace-nowrap">{{ $ciclista->ene }}</td>
-                                <td class="px-2 py-1.5 text-xs whitespace-nowrap">{{ $ciclista->res }}</td>
-                                <td class="px-2 py-1.5 text-xs whitespace-nowrap">{{ $ciclista->rec }}</td>
-                                <td class="px-2 py-1.5 text-xs whitespace-nowrap">{{ $ciclista->media }}</td>
-                                <td class="px-2 py-1.5 text-xs whitespace-nowrap">{{ $ciclista->pts }}</td>
-                                <td class="px-2 py-1.5 text-xs whitespace-nowrap">{{ $ciclista->equipo->nombre_equipo }}</td>
-                            </tr>
-                            @endforeach 
+        <div x-data="{
+            column: '',
+            order: 'asc',
+            selectedFilter: 'WT',  // Valor inicial para mostrar todos los registros
+            sort(column, order) {
+                this.column = column;
+                this.order = order;
+            },
+            sortedCiclistas() {
+                let filteredData = [...{{ $ciclistas }}];
 
-                        </tbody>
-                    </table>
+                // Aplicar filtros en base al valor de selectedFilter
+                if (this.selectedFilter === 'U24') {
+                    filteredData = filteredData.filter(ciclista => ciclista.u24);
+                } else if (this.selectedFilter === 'Conti') {
+                    filteredData = filteredData.filter(ciclista => ciclista.conti);
+                }
+
+                return filteredData.sort((a, b) => {
+                    let modifier = this.order === 'asc' ? 1 : -1;
+                    if (a[this.column] < b[this.column]) return -1 * modifier;
+                    if (a[this.column] > b[this.column]) return 1 * modifier;
+                    return 0;
+                });
+            },
+            formatNumber(value) {
+                const [integerPart, decimalPart] = value.toFixed(2).split('.');
+                return { integerPart, decimalPart };
+            },
+            getBadgeColor(especialidad) {
+                const colors = {
+                    'ardenas': 'bg-pink-600/30 text-pink-600',
+                    'flandes': 'bg-yellow-400/30 text-yellow-500',
+                    'sprinter': 'bg-green-500/30 text-green-600',
+                    'escalador': 'bg-yellow-800/30 text-yellow-800',
+                    'combatividad': 'bg-purple-800/30 text-purple-800',
+                    'croner': 'bg-cyan-400/30 text-cyan-600',
+                };
+                return colors[especialidad.toLowerCase()] || 'bg-gray-500 text-white';
+            }
+        }">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="mb-4 text-xl font-semibold leading-tight text-gray-800">
+                   Ciclistas
+                </h3> 
+                <div class="flex space-x-4">
+                    <fieldset aria-label="Choose a filter option">
+                        <div class="grid grid-cols-3 gap-3 mt-2 mb-1 sm:grid-cols-6">
+                            @foreach($botones as $boton => $label)
+                                <label :class="{
+                                    'bg-indigo-600 text-white hover:bg-indigo-500 ring-0': selectedFilter === '{{ $boton }}',
+                                    'ring-1 ring-gray-300 bg-white text-gray-900 hover:bg-gray-50': selectedFilter !== '{{ $boton }}'
+                                }" class="flex items-center justify-center px-3 py-3 text-sm font-semibold uppercase rounded-md cursor-pointer focus:outline-none sm:flex-1">
+                                    <input type="radio" name="filter-option" value="{{ $boton }}" class="sr-only" @click="selectedFilter = '{{ $boton }}'">
+                                    <span>{{ $label }}</span>
+                                </label>
+                            @endforeach
+                            <label :class="{
+                                'bg-indigo-600 text-white hover:bg-indigo-500 ring-0': selectedFilter === 'U24',
+                                'ring-1 ring-gray-300 bg-white text-gray-900 hover:bg-gray-50': selectedFilter !== 'U24'
+                            }" class="flex items-center justify-center px-3 py-3 text-sm font-semibold text-gray-900 uppercase bg-white rounded-md cursor-pointer focus:outline-none sm:flex-1 ring-1 ring-gray-300 hover:bg-gray-50">
+                                <input type="radio" name="filter-option" value="colores" class="sr-only" @click="selectedFilter = 'U24'">
+                                <span>Colores</span>
+                            </label>
+                                <div>
+                                        <label :class="{
+                                                'bg-pink-600 text-white hover:bg-pink-500 ring-0': selectedFilter === 'Option',
+                                                'ring-1 ring-gray-300 bg-white text-xxs text-gray-900 hover:bg-gray-50': selectedFilter !== 'Option'
+                                            }"
+                                            class="flex items-center justify-center flex-1 w-1/2 px-1 py-0.5 text-xs font-semibold text-gray-900 uppercase bg-white rounded-md cursor-pointer h-1/3 focus:outline-none ring-1 ring-gray-300 hover:bg-gray-50">
+                                            <input type="radio" :value="'ard'" name="filter-option" class="sr-only" @click="selectedFilter = 'ard'">
+                                            <span x-text="'ard'"></span>
+                                        </label>
+                                        <label :class="{
+                                                'bg-pink-600 text-white hover:bg-pink-500 ring-0': selectedFilter === 'Option',
+                                                'ring-1 ring-gray-300 bg-white text-xxs text-gray-900 hover:bg-gray-50': selectedFilter !== 'Option'
+                                            }"
+                                            class="flex items-center justify-center flex-1 w-1/2 px-1 py-0.5 text-xs font-semibold text-gray-900 uppercase bg-white rounded-md cursor-pointer h-1/3 focus:outline-none ring-1 ring-gray-300 hover:bg-gray-50">
+                                            <input type="radio" :value="'cro'" name="filter-option" class="sr-only" @click="selectedFilter = 'cro'">
+                                            <span x-text="'cro'"></span>
+                                        </label>
+                                        <label :class="{
+                                                'bg-pink-600 text-white hover:bg-pink-500 ring-0': selectedFilter === 'Option',
+                                                'ring-1 ring-gray-300 bg-white text-xxs text-gray-900 hover:bg-gray-50': selectedFilter !== 'Option'
+                                            }"
+                                            class="flex items-center justify-center flex-1 w-1/2 px-1 py-0.5 text-xs font-semibold text-gray-900 uppercase bg-white rounded-md cursor-pointer h-1/3 focus:outline-none ring-1 ring-gray-300 hover:bg-gray-50">
+                                            <input type="radio" :value="'esc'" name="filter-option" class="sr-only" @click="selectedFilter = 'esc'">
+                                            <span x-text="'esc'"></span>
+                                        </label>
+                                </div>
+                                <div>
+                                        <label :class="{
+                                                'bg-pink-600 text-white hover:bg-pink-500 ring-0': selectedFilter === 'Option',
+                                                'ring-1 ring-gray-300 bg-white text-xxs text-gray-900 hover:bg-gray-50': selectedFilter !== 'Option'
+                                            }"
+                                            class="flex items-center justify-center flex-1 w-1/2 px-1 py-0.5 text-xs font-semibold text-gray-900 uppercase bg-white rounded-md cursor-pointer h-1/3 focus:outline-none ring-1 ring-gray-300 hover:bg-gray-50">
+                                            <input type="radio" :value="'spr'" name="filter-option" class="sr-only" @click="selectedFilter = 'spr'">
+                                            <span x-text="'spr'"></span>
+                                        </label>
+                                        <label :class="{
+                                                'bg-pink-600 text-white hover:bg-pink-500 ring-0': selectedFilter === 'Option',
+                                                'ring-1 ring-gray-300 bg-white text-xxs text-gray-900 hover:bg-gray-50': selectedFilter !== 'Option'
+                                            }"
+                                            class="flex items-center justify-center flex-1 w-1/2 px-1 py-0.5 text-xs font-semibold text-gray-900 uppercase bg-white rounded-md cursor-pointer h-1/3 focus:outline-none ring-1 ring-gray-300 hover:bg-gray-50">
+                                            <input type="radio" :value="'com'" name="filter-option" class="sr-only" @click="selectedFilter = 'com'">
+                                            <span x-text="'com'"></span>
+                                        </label>
+                                        <label :class="{
+                                                'bg-pink-600 text-white hover:bg-pink-500 ring-0': selectedFilter === 'Option',
+                                                'ring-1 ring-gray-300 bg-white text-xxs text-gray-900 hover:bg-gray-50': selectedFilter !== 'Option'
+                                            }"
+                                            class="flex items-center justify-center flex-1 w-1/2 px-1 py-0.5 text-xs font-semibold text-gray-900 uppercase bg-white rounded-md cursor-pointer h-1/3 focus:outline-none ring-1 ring-gray-300 hover:bg-gray-50">
+                                            <input type="radio" :value="'fla'" name="filter-option" class="sr-only" @click="selectedFilter = 'fla'">
+                                            <span x-text="'fla'"></span>
+                                        </label>
+                                </div>
+                        </div>
+                    </fieldset>
                 </div>
             </div>
-        </div>
 
-<div class="bg-green-50">
-    <div x-data="{
-        column: '',
-        order: 'asc',
-        filterU24: false,
-        filterConti: false,
-        sort(column) {
-            if (this.column === column) {
-                this.order = this.order === 'asc' ? 'desc' : 'asc';
-            } else {
-                this.column = column;
-                this.order = 'asc';
-            }
-        },
-        sortedCiclistas() {
-            let filteredData = [...{{ $ciclistas }}];
-
-            // Aplicar filtro de corredores U24
-            if (this.filterU24) {
-                filteredData = filteredData.filter(ciclista => ciclista.edad <= 24);
-            }
-
-            // Aplicar filtro Conti (stats menores a 78)
-            if (this.filterConti) {
-                filteredData = filteredData.filter(ciclista =>
-                    ['lla', 'mon', 'col', 'cri', 'pro', 'pav', 'spr', 'acc', 'des', 'com', 'ene', 'res', 'rec'].every(stat => ciclista[stat] < 78)
-                );
-            }
-
-            return filteredData.sort((a, b) => {
-                let modifier = this.order === 'asc' ? 1 : -1;
-                if (a[this.column] < b[this.column]) return -1 * modifier;
-                if (a[this.column] > b[this.column]) return 1 * modifier;
-                return 0;
-            });
-        }
-    }">
-        <div class="flex items-center justify-between mb-4">
-            <h1 class="text-lg font-bold">Mi tabla</h1>
-            <div class="flex space-x-2">
-                <!-- Botón para activar/desactivar el filtro U24 -->
-                <button
-                    class="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600"
-                    :class="{ 'bg-blue-700': filterU24 }"
-                    @click="filterU24 = !filterU24"
-                >
-                    U24
-                </button>
-                <!-- Botón para activar/desactivar el filtro Conti -->
-                <button
-                    class="px-4 py-2 text-white bg-green-500 rounded hover:bg-green-600"
-                    :class="{ 'bg-green-700': filterConti }"
-                    @click="filterConti = !filterConti"
-                >
-                    Conti
-                </button>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-neutral-200">
+                    <thead>
+                        <tr>
+                            @foreach($columns as $column => $label)
+                                <th class="px-2 py-1.5 text-xxs leading-none uppercase">
+                                    <div class="flex items-center space-x-2">
+                                        <span @click="sort('{{ $column }}', order === 'asc' ? 'desc' : 'asc')" class="cursor-pointer">
+                                            {{ $label }}
+                                        </span>
+                                        <div class="flex flex-col text-gray-400">
+                                            <span @click="sort('{{ $column }}', 'desc')" class="leading-none cursor-pointer">˄</span>
+                                            <span @click="sort('{{ $column }}', 'asc')" class="leading-none cursor-pointer">˅</span>
+                                        </div>
+                                    </div>
+                                </th>
+                            @endforeach
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template x-for="ciclista in sortedCiclistas()" :key="ciclista.id">
+                            <tr class="hover:bg-slate-100">
+                                <template x-for="(label, field) in {{ json_encode($columns) }}" :key="field">
+                                    <td x:class="{ 'bg-red-200': colorMode }" class="px-2 py-1.5 text-xs">
+                                        <template x-if="['lla', 'mon', 'col', 'cri', 'pro', 'pav', 'spr', 'acc', 'des', 'com', 'ene', 'res', 'rec', 'media'].includes(field)">
+                                            <span>
+                                                <span x-text="formatNumber(ciclista[field]).integerPart" class="text-xs"></span><span x-text="'.' + formatNumber(ciclista[field]).decimalPart" class="inline-block text-gray-400 text-xxs"></span>
+                                            </span>
+                                        </template>
+                                        <template x-if="['especialidad'].includes(field)">
+                                                <span :class="getBadgeColor(ciclista.especialidad)" class="px-1 py-0.5 rounded text-xxs">
+                                                    <span x-text="ciclista.especialidad.slice(0, 3).toUpperCase()"></span>
+                                                </span>
+                                            
+                                        </template>
+                                        <template x-if="!['especialidad', 'lla', 'mon', 'col', 'cri', 'pro', 'pav', 'spr', 'acc', 'des', 'com', 'ene', 'res', 'rec', 'media'].includes(field)">
+                                            <span x-text="ciclista[field]"></span>
+                                        </template>
+                                    </td>
+                                </template>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
             </div>
         </div>
-
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-neutral-200">
-                <thead>
-                    <tr>
-                        <th class="px-2 py-1.5 text-xs" @click="sort('nombre')">Ciclista</th>
-                        <th class="px-2 py-1.5 text-xs" @click="sort('pais')">País</th>
-                        <th class="px-2 py-1.5 text-xs" @click="sort('especialidad')">especialidad</th>
-                        <th class="px-2 py-1.5 text-xs" @click="sort('edad')">edad</th>
-                        <th class="px-2 py-1.5 text-xs" @click="sort('lla')">lla</th>
-                        <th class="px-2 py-1.5 text-xs" @click="sort('mon')">mon</th>
-                        <th class="px-2 py-1.5 text-xs" @click="sort('col')">col</th>
-                        <th class="px-2 py-1.5 text-xs" @click="sort('cri')">cri</th>
-                        <th class="px-2 py-1.5 text-xs" @click="sort('pro')">pro</th>
-                        <th class="px-2 py-1.5 text-xs" @click="sort('pav')">pav</th>
-                        <th class="px-2 py-1.5 text-xs" @click="sort('spr')">spr</th>
-                        <th class="px-2 py-1.5 text-xs" @click="sort('acc')">acc</th>
-                        <th class="px-2 py-1.5 text-xs" @click="sort('des')">des</th>
-                        <th class="px-2 py-1.5 text-xs" @click="sort('com')">com</th>
-                        <th class="px-2 py-1.5 text-xs" @click="sort('ene')">ene</th>
-                        <th class="px-2 py-1.5 text-xs" @click="sort('res')">res</th>
-                        <th class="px-2 py-1.5 text-xs" @click="sort('rec')">rec</th>
-                        <th class="px-2 py-1.5 text-xs" @click="sort('media')">media</th>
-                        <th class="px-2 py-1.5 text-xs" @click="sort('pts')">pts</th>
-                        <th class="px-2 py-1.5 text-xs" @click="sort('equipo->nombre_equipo')">Equipo</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <template x-for="ciclista in sortedCiclistas()" :key="ciclista.id">
-                        <tr>
-                            <td class="px-2 py-1.5 text-xs" x-text="`${ciclista.apellido}, ${ciclista.nombre.charAt(0)}.`"></td>
-                            <td class="px-2 py-1.5 text-xs" x-text="ciclista.pais"></td>
-                            <td class="px-2 py-1.5 text-xs" x-text="ciclista.especialidad"></td>
-                            <td class="px-2 py-1.5 text-xs" x-text="ciclista.edad"></td>
-                            <td class="px-2 py-1.5 text-xs" x-text="ciclista.lla"></td>
-                            <td class="px-2 py-1.5 text-xs" x-text="ciclista.mon"></td>
-                            <td class="px-2 py-1.5 text-xs" x-text="ciclista.col"></td>
-                            <td class="px-2 py-1.5 text-xs" x-text="ciclista.cri"></td>
-                            <td class="px-2 py-1.5 text-xs" x-text="ciclista.pro"></td>
-                            <td class="px-2 py-1.5 text-xs" x-text="ciclista.pav"></td>
-                            <td class="px-2 py-1.5 text-xs" x-text="ciclista.spr"></td>
-                            <td class="px-2 py-1.5 text-xs" x-text="ciclista.acc"></td>
-                            <td class="px-2 py-1.5 text-xs" x-text="ciclista.des"></td>
-                            <td class="px-2 py-1.5 text-xs" x-text="ciclista.com"></td>
-                            <td class="px-2 py-1.5 text-xs" x-text="ciclista.ene"></td>
-                            <td class="px-2 py-1.5 text-xs" x-text="ciclista.res"></td>
-                            <td class="px-2 py-1.5 text-xs" x-text="ciclista.rec"></td>
-                            <td class="px-2 py-1.5 text-xs" x-text="ciclista.media"></td>
-                            <td class="px-2 py-1.5 text-xs" x-text="ciclista.pts"></td>
-                            <td class="px-2 py-1.5 text-xs" x-text="ciclista.equipo->nombre_equipo"></td>
-                        </tr>
-                    </template>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-
-
-
-
     </div>
 </div>
 

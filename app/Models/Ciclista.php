@@ -14,9 +14,9 @@ class Ciclista extends Model
 
     // Definir los campos que pueden ser asignados masivamente
     protected $fillable = [
-        'temporada', 'nombre', 'pais', 'pos_ini', 'pos_fin', 'pts', 'especialidad', 'edad', 
+        'clave_id', 'temporada', 'nombre', 'apellido', 'pais', 'pos_ini', 'pos_fin', 'pts', 'especialidad', 'edad', 
         'lla', 'mon', 'col', 'cri', 'pro', 'pav', 'spr', 'acc', 'des', 'com',
-        'ene', 'res', 'media', 'equipo_id', 'conti', 'u24'
+        'ene', 'res', 'rec', 'media', 'equipo_id', 'conti', 'u24'
     ];
 
     // Relación de pertenencia a un equipo

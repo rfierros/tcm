@@ -11,7 +11,7 @@ new class extends Component {
     public $equipo;
 
     public $columns = [ // Campo => Cabecera
-        'apellido' => 'Ciclista',
+        'nom_ape' => 'Ciclista',
         'pais' => 'pais',
         'especialidad' => 'tipo',
         'edad' => 'edad',

@@ -10,9 +10,6 @@ new class extends Component {
  
     public function mount(): void
     {
-        // $this->equipos = Equipo::with('user') 
-        //     ->latest()
-        //     ->get(); 
         $this->getEquipos(); 
     }
  

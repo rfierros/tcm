@@ -20,13 +20,16 @@ new class extends Component {
     #[On('equipo-created')]
     public function getEquipos(): void
     {
-        $this->equipos = Equipo::with('user')
-            ->latest()
+        $temporada = config('tcm.temporada');
+
+        // Filtrar las carreras por la temporada actual
+        $this->equipos = Equipo::where('temporada', $temporada)
+            ->orderBy('nombre_equipo')
             ->get();
     } 
 }; ?>
 
-<div class="mt-6 bg-white shadow-sm rounded-lg divide-y"> 
+<div class="mt-6 bg-white divide-y rounded-lg shadow-sm"> 
 
 <div class="p-10">
     <div class="flex flex-col">

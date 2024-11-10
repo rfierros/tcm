@@ -41,7 +41,7 @@ return new class extends Migration
         DB::table('users')->insert([
             ['name' => 'Pawa', 'email' => 'pawa@user.com', 'password' => bcrypt('pawa')],
             ['name' => 'Admin', 'email' => 'admin@user.com', 'password' => bcrypt('admin')],
-            ['name' => 'BarbaRoja', 'email' => 'user1@user.com', 'password' => bcrypt('password')],
+            ['name' => 'BarbaRoja', 'email' => 'lidl@user.com', 'password' => bcrypt('lidl')],
             ['name' => 'Jonathan9', 'email' => 'user2@user.com', 'password' => bcrypt('password')],
             ['name' => 'Washington', 'email' => 'user3@user.com', 'password' => bcrypt('password')],
             ['name' => 'SergiOsilla', 'email' => 'user4@user.com', 'password' => bcrypt('password')],
@@ -52,7 +52,7 @@ return new class extends Migration
             ['name' => 'Danel', 'email' => 'user9@user.com', 'password' => bcrypt('password')],
             ['name' => 'JamesFP', 'email' => 'user10@user.com', 'password' => bcrypt('password')],
             ['name' => 'Manolopro', 'email' => 'user11@user.com', 'password' => bcrypt('password')],
-            ['name' => 'Junkillo', 'email' => 'user12@user.com', 'password' => bcrypt('password')],
+            ['name' => 'Junkillo', 'email' => 'kaiku@user.com', 'password' => bcrypt('kaiku')],
             ['name' => 'SrBecedas', 'email' => 'user13@user.com', 'password' => bcrypt('password')],
             ['name' => 'Modialba', 'email' => 'user14@user.com', 'password' => bcrypt('password')],
             ['name' => 'Dangar Ewoks', 'email' => 'user16@user.com', 'password' => bcrypt('password')],

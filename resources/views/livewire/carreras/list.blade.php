@@ -17,7 +17,14 @@ new class extends Component {
     #[On('carrera-created')]
     public function getCarreras(): void
     {
-      $this->carreras = Carrera::orderBy('dia_inicio')->orderBy('bloque')->orderBy('id')->get();
+        $temporada = config('tcm.temporada');
+
+        // Filtrar las carreras por la temporada actual
+        $this->carreras = Carrera::where('temporada', $temporada)
+            ->orderBy('dia_inicio')
+            ->orderBy('bloque')
+            ->orderBy('id')
+            ->get();
     } 
 }; 
 ?>

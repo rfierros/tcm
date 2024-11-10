@@ -40,9 +40,6 @@ new class extends Component {
  
     public function mount(): void
     {
-        // $this->ciclistas = Ciclista::with('user') 
-        //     ->latest()
-        //     ->get(); 
         $this->getMyCiclistas(); 
         $this->equipo = Equipo::where('user_id', Auth::id())->first();
     }
@@ -50,14 +47,17 @@ new class extends Component {
     // Si se crea un Ciclista hay un listener para el evento de creacion que actualizará la lista de Ciclistas
     #[On('ciclista-created')]
     public function getMyCiclistas(): void
-    {
-        $this->ciclistas = Ciclista::whereHas('equipo', function($query) {
-            $query->where('user_id', Auth::id());
-        })
-        ->with('equipo.user') // Esto carga los equipos y usuarios asociados
-        ->latest()
-        ->get();
-    } 
+        {
+            $temporada = config('tcm.temporada');
+
+            $this->ciclistas = Ciclista::whereHas('equipo', function($query) {
+                $query->where('user_id', Auth::id());
+            })
+            ->where('temporada', $temporada)
+            ->with('equipo.user') // Esto carga los equipos y usuarios asociados
+            ->orderBy('media','desc')
+            ->get();
+        }     
 }; ?>
 
 <div class="mt-6 bg-white divide-y rounded-lg shadow-sm"> 

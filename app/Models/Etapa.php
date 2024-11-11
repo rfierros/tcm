@@ -9,7 +9,7 @@ class Etapa extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['carrera_id', 'temporada', 'num_etapa', 'dia', 'perfil', 'imagen'];
+    protected $fillable = ['carrera_id', 'temporada', 'num_etapa', 'nombre', 'km', 'dia', 'perfil', 'tipo', 'imagen'];
 
     public function carrera()
     {

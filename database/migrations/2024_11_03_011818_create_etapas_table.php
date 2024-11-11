@@ -17,8 +17,11 @@ return new class extends Migration
             $table->foreignId('slug'); // Relación con 'carreras'
             $table->integer('temporada'); // Año o temporada
             $table->integer('num_etapa'); // etapa
+            $table->string('nombre')->nullable(); // nombre 
+            $table->integer('km')->nullable(); // kms
             $table->integer('dia'); // Día específico de la etapa
-            $table->enum('perfil', ['llano', 'montaña', 'media-montaña', 'cre', 'cri'])->nullable(); // Perfil de la etapa
+            $table->enum('perfil', ['llano', 'montaña', 'media-montaña'])->nullable(); // Perfil de la etapa
+            $table->enum('tipo', ['normal', 'cre', 'cri'])->nullable(); // tipo de la etapa
             $table->string('imagen')->nullable(); // Ruta o URL de la imagen de la etapa
             $table->timestamps();
         });

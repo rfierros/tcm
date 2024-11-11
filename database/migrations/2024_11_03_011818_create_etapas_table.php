@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('etapas', function (Blueprint $table) {
             $table->id();
             $table->foreignId('carrera_id')->constrained('carreras')->onDelete('cascade'); // Relación con 'carreras'
+            $table->foreignId('slug'); // Relación con 'carreras'
             $table->integer('temporada'); // Año o temporada
             $table->integer('num_etapa'); // etapa
             $table->integer('dia'); // Día específico de la etapa

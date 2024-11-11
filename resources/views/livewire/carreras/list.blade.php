@@ -49,7 +49,7 @@ new class extends Component {
             <ul role="list" class="grid grid-cols-1 gap-5 mt-3 sm:grid-cols-2 sm:gap-6 md:grid-cols-3 xl:grid-cols-4">
                 @foreach ($carreras as $carrera)
                 <li>
-                    <a href="{{ route('etapas.index', $carrera->slug) }}" class="flex items-center justify-between w-full p-2 space-x-3 text-left border border-gray-300 rounded-lg shadow-sm group hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                    <a href="{{ route('etapas', $carrera->slug) }}" class="flex items-center justify-between w-full p-2 space-x-3 text-left border border-gray-300 rounded-lg shadow-sm group hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                     <span class="flex items-center flex-1 min-w-0 space-x-3">
                         <div class="flex-shrink-0">
                             <span x-bind:class="getColor('{{ $carrera->categoria }}')" class="inline-flex items-center justify-center w-10 h-10 text-xs rounded-lg">

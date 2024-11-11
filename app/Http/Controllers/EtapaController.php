@@ -12,11 +12,13 @@ class EtapaController extends Controller
     public function index(Carrera $carrera)
     {
         // Obtener las etapas de la carrera
-        $etapas = $carrera->etapas; // Esto asume que existe una relación 'etapas' en el modelo Carrera
-        return view('livewire.etapas.list', compact('carrera', 'etapas'));
+        $etapas = $carrera->etapas()->orderBy('num_etapa')->get();
+        $slugCarrera = $carrera->slug;
+
+        return view('etapas', compact('carrera', 'etapas', 'slugCarrera'));
     }
 
-    // Muestra la información de una etapa.
+    // Muestra la información de una etapa específica
     public function show(Carrera $carrera, Etapa $etapa)
     {
         // Validar que la etapa pertenezca a la carrera seleccionada
@@ -26,5 +28,4 @@ class EtapaController extends Controller
 
         return view('livewire.etapas.show', compact('carrera', 'etapa'));
     }
-
 }

@@ -20,6 +20,7 @@ class EtapaSeeder extends Seeder
             for ($i = 1; $i <= $carrera->num_etapas; $i++) {
                 Etapa::create([
                     'carrera_id' => $carrera->id,
+                    'slug' => $carrera->slug,
                     'temporada' => $carrera->temporada,
                     'num_etapa' => $i, //Numero de etapa
                     'dia' => $carrera->dia_inicio + $i - 1, // Día de la etapa

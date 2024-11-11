@@ -27,7 +27,10 @@ Route::get('/etapas/{carrera:slug}/{etapa}', [EtapaController::class, 'show'])
 ->name('etapas.show');
 Route::get('/etapas/{carrera:slug}', [EtapaController::class, 'index'])
 ->middleware(['auth', 'verified'])
-->name('etapas.index');
+->name('etapas');
+// Route::get('/etapas/{carrera:slug}', [EtapaController::class, 'index'])
+// ->middleware(['auth', 'verified'])
+// ->name('etapas.index');
 Route::get('carreras', [CarreraController::class, 'index'])
 ->middleware(['auth', 'verified'])
 ->name('carreras'); 

@@ -59,6 +59,12 @@ class Carrera extends Model
         return $this->hasMany(Etapa::class);
     }
 
+    // Indica que el campo slug debe ser utilizado para la resolución automática del modelo
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }    
+
     // Función para inscribir un ciclista en la carrera, validando conflictos de fechas
     public function inscribirCiclista(Ciclista $ciclista)
     {

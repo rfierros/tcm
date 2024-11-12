@@ -63,7 +63,6 @@ new class extends Component {
             <ul role="list" class="grid grid-cols-1 gap-5 mt-3 sm:grid-cols-2 sm:gap-6 md:grid-cols-3 xl:grid-cols-4">
                 @foreach ($etapas as $etapa)
                 <li>
-                    <a href="{{ route('etapas', ['carrera' => $carrera->slug, 'etapa' => $etapa->id]) }}">Ver Etapa</a>
 
                     <a href="{{ route('etapas', $etapa->slug) }}" class="flex items-center justify-between w-full p-2 space-x-3 text-left border border-gray-300 rounded-lg shadow-sm group hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                     <span class="flex items-center flex-1 min-w-0 space-x-3">

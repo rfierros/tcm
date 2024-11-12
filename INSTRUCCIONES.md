@@ -56,3 +56,11 @@ Y una vez dentro de tinker, nótese que le pasamos por parámetro la temporada q
       $seeder = new Database\Seeders\CalendarioSeeder();
       $seeder->runWithTemporada(4);
 ```
+**Lanzar inscripciones a carreras, en caso de que las haya**
+
+Los archivos de cada carrera se llamarán {carrera_id}.ins
+El proceso se lanzará con el número de temporada como parámetro e irá procesando todos los archivos uno a uno, inscribiendo a todos los corredores en la tabla Resultados con la posicion = 0.
+Así lanzamos el proceso (para la temporada 4):
+```php
+php artisan import:inscripciones 4
+```

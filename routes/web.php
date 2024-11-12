@@ -23,21 +23,21 @@ Route::get('ciclistas', [CiclistaController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('ciclistas'); 
 Route::get('/etapas/{carrera:slug}/{etapa}', [EtapaController::class, 'show'])
-->middleware(['auth', 'verified'])
-->name('etapas.show');
+    ->middleware(['auth', 'verified'])
+    ->name('etapas');
 Route::get('/etapas/{carrera:slug}', [EtapaController::class, 'index'])
-->middleware(['auth', 'verified'])
-->name('etapas');
+    ->middleware(['auth', 'verified'])
+    ->name('etapas');
 // Route::get('/etapas/{carrera:slug}', [EtapaController::class, 'index'])
 // ->middleware(['auth', 'verified'])
 // ->name('etapas.index');
 Route::get('carreras', [CarreraController::class, 'index'])
-->middleware(['auth', 'verified'])
-->name('carreras'); 
+    ->middleware(['auth', 'verified'])
+    ->name('carreras'); 
 
 Route::get('calendarios', [CalendarioController::class, 'index'])
-->middleware(['auth', 'verified'])
-->name('calendarios'); 
+    ->middleware(['auth', 'verified'])
+    ->name('calendarios'); 
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])

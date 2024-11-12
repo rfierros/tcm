@@ -19,8 +19,13 @@ class EtapaController extends Controller
     }
 
     // Muestra la información de una etapa específica
-    public function show(Carrera $carrera, Etapa $etapa)
+    public function show(Request $request, Carrera $carrera, Etapa $etapa)
     {
+        // Obtener los parámetros directamente desde la URL
+        $slugCarrera = $request->route('carrera');
+        $etapa = $request->route('etapa');
+        // dd($slugCarrera);
+        dd($request);
         // Validar que la etapa pertenezca a la carrera seleccionada
         if ($etapa->carrera_id !== $carrera->id) {
             abort(404); // Si la etapa no pertenece a la carrera, mostramos 404

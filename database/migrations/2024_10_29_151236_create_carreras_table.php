@@ -16,6 +16,7 @@ return new class extends Migration
             $table->id();
             $table->integer('temporada');
             $table->integer('bloque');
+            $table->integer('num_carrera');
             $table->string('nombre');
             $table->string('slug')->unique()->after('nombre');
             $table->integer('num_etapas');

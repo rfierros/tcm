@@ -7,6 +7,12 @@ use Illuminate\Database\Eloquent\Collection;
 
 new class extends Component {
     public Collection $carreras;
+
+    public $botones = [ // Campo => Cabecera
+        'WT' => 'WT',
+        'Conti' => 'Conti .1',
+        'U24' => 'U24',
+    ];
  
     public function mount(): void
     {
@@ -46,6 +52,25 @@ new class extends Component {
         }">
 
             <h3 class="mb-4 text-xl font-semibold leading-tight text-gray-800">Carreras</h3>
+            <div class="flex space-x-4">
+                    <fieldset aria-label="Choose a filter option">
+                        <div class="grid grid-cols-3 gap-3 mt-2 mb-1 sm:grid-cols-6">
+                            @foreach($botones as $boton => $label)
+                                <label :class="{
+                                    'bg-indigo-600 text-white hover:bg-indigo-500 ring-0': selectedFilter === '{{ $boton }}',
+                                    'ring-1 ring-gray-300 bg-white text-gray-900 hover:bg-gray-50': selectedFilter !== '{{ $boton }}'
+                                }" class="flex items-center justify-center px-3 py-3 text-sm font-semibold uppercase rounded-md cursor-pointer focus:outline-none sm:flex-1">
+                                    <input type="radio" name="filter-option" value="{{ $boton }}" class="sr-only" @click="selectedFilter = '{{ $boton }}'">
+                                    <span>{{ $label }}</span>
+                                </label>
+                            @endforeach
+
+
+
+                        </div>
+                    </fieldset>
+            </div>
+                                
             <ul role="list" class="grid grid-cols-1 gap-5 mt-3 sm:grid-cols-2 sm:gap-6 md:grid-cols-3 xl:grid-cols-4">
                 @foreach ($carreras as $carrera)
                 <li>

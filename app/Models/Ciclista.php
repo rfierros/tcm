@@ -25,6 +25,11 @@ class Ciclista extends Model
         return $this->belongsTo(Equipo::class, 'equipo_id');
     }
 
+    public function resultados()
+    {
+        return $this->hasMany(Resultado::class, 'ciclista_id');
+    }
+
     public function calcularSwitches(): void
     {
         // Regla para el campo `u24`

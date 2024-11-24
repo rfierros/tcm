@@ -21,6 +21,10 @@ return new class extends Migration
             $table->integer('posicion')->nullable(); // Posición del ciclista en esta etapa
             $table->time('tiempo')->nullable(); // Tiempo en formato HH:MM:SS
             $table->timestamps();
+
+        // Índices para optimizar laa consultaa
+        $table->index(['ciclista_id', 'temporada']);
+        $table->index(['temporada', 'carrera_id', 'etapa']);            
         });
     }
     /**

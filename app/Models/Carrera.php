@@ -13,7 +13,7 @@ class Carrera extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['bloque', 'nombre', 'num_etapas', 'categoria', 'tipo', 'temporada', 'dia_inicio'];
+    protected $fillable = ['bloque', 'num_carrera', 'nombre', 'num_etapas', 'categoria', 'tipo', 'temporada', 'dia_inicio'];
 
     // Valores permitidos para 'categoria' y 'tipo'
     const CATEGORIAS = ['U24', 'WT', 'Conti'];

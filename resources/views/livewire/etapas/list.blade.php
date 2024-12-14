@@ -4,17 +4,22 @@ use Livewire\Volt\Component;
 use Livewire\Attributes\On; 
 use App\Models\Carrera;
 use App\Models\Etapa;
+use App\Models\Resultado;
+use App\Models\Ciclista;
+use App\Models\Equipo;
 use Illuminate\Database\Eloquent\Collection; 
 
 new class extends Component {
     public Carrera $carrera;
     public Collection $etapas;
     public string $slugCarrera;
+    public Collection $ciclistas;
  
     public function mount(): void
     {
         $this->getCarrera(); 
         $this->getEtapas(); 
+        $this->getInscripciones();
     }
  
     // Si se crea una Carrera, hay un listener para el evento de creación que actualizará la lista de Carreras
@@ -30,6 +35,7 @@ new class extends Component {
 
             // dd($this->carrera);
     } 
+    
     public function getEtapas(): void
     {
         $temporada = config('tcm.temporada');
@@ -40,6 +46,24 @@ new class extends Component {
             ->orderBy('num_etapa')
             ->get();
     } 
+
+    public function getInscripciones(): void
+    {
+        $equipo = Equipo::where('user_id', Auth::id())->first();
+        
+        if (!$equipo) {
+            $this->ciclistas = collect(); // Si no hay equipo, devolvemos una colección vacía
+            return;
+        }
+
+        $this->ciclistas = Ciclista::whereHas('resultados', function ($query) use ($equipo) {
+            $query->where('etapa', 1)
+                ->where('carrera_id', $this->carrera->id)
+                ->where('equipo_id', $equipo->id); 
+        })->get();
+        // dd( $this->ciclistas); //muestra aqui el valor 33.
+
+    }
 }; 
 ?>
 
@@ -87,38 +111,37 @@ new class extends Component {
     </div>
     <div class="p-10">
         <div x-data="{            
-            getColor(perfil) {
+            formatNumber(value) {
+                const [integerPart, decimalPart] = value.toFixed(2).split('.');
+                return { integerPart, decimalPart };
+            },
+            getBadgeColor(especialidad) {
                 const colors = {
-                    'llano': 'bg-green-50 text-green-600 ring-green-500/10',
-                    'media-montaña': 'bg-yellow-50 text-yellow-800 ring-yellow-600/20',
-                    'montaña': 'bg-red-50 text-red-700 ring-red-600/10',
+                    'ardenas': 'bg-pink-600/30 text-pink-600',
+                    'flandes': 'bg-yellow-400/30 text-yellow-500',
+                    'sprinter': 'bg-green-500/30 text-green-600',
+                    'escalador': 'bg-yellow-800/30 text-yellow-800',
+                    'combatividad': 'bg-purple-800/30 text-purple-800',
+                    'croner': 'bg-cyan-400/30 text-cyan-600',
                 };
-                return colors[perfil] || 'bg-pink-100 text-pink-600 ring-pink-500/10';
-            }
+                return colors[especialidad.toLowerCase()] || 'bg-gray-500 text-white';
+            }            
         }">
 
             <h3 class="mb-4 text-xl font-semibold leading-tight text-gray-800">Inscripciones</h3>
             <ul role="list" class="grid grid-cols-1 gap-5 mt-3 sm:grid-cols-2 sm:gap-6 md:grid-cols-3 xl:grid-cols-4">
-                @foreach ($etapas as $etapa)
-                <li>
-                    <a href="{{ route('etapas', ['carrera' => $carrera->slug, 'etapa' => $etapa->id]) }}">Ver Etapa</a>
 
-                    <a href="{{ route('etapas', $etapa->slug) }}" class="flex items-center justify-between w-full p-2 space-x-3 text-left border border-gray-300 rounded-lg shadow-sm group hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                @foreach ($ciclistas as $ciclista)
+                <li>
+                    <div class="flex items-center justify-between w-full p-2 space-x-3 text-left border border-gray-300 rounded-lg shadow-sm group hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                     <span class="flex items-center flex-1 min-w-0 space-x-3">
-                        <div class="flex-shrink-0">
-                            <span x-bind:class="getColor('{{ $etapa->nombre }}')" class="inline-flex items-center justify-center w-10 h-10 text-xs rounded-lg">
-                                {{ $etapa->num_etapa }} 
-                            </span>
-                        </div>
-                    
                         <span class="flex-1 block min-w-0">
-                        <span class="block text-sm font-medium text-gray-900 truncate">{{ $etapa->nombre }}</span>
-                        <span class="block text-sm font-medium text-gray-500 truncate"><span x-bind:class="getColor('{{ $etapa->perfil }}')" class="inline-flex items-center rounded-md px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset">{{ $etapa->perfil }}</span> - {{ $etapa->km }}km</span>
-                        
+                            <span class="block text-sm font-medium text-gray-900 truncate">{{ $ciclista->nom_ape }}</span>
+                            <span class="block text-sm font-medium text-gray-500 truncate"><span x-bind:class="getBadgeColor('{{ $ciclista->especialidad }}')" class="inline-flex items-center rounded-md px-1.5 py-0.5 text-xs font-medium">{{ $ciclista->especialidad }}</span> - {{ $ciclista->media }}</span>
                         </span>
                     </span>
-                    </a>
-                </li>                
+                    </div>
+                </li>      
                 @endforeach
             </ul>
         

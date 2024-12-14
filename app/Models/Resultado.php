@@ -23,6 +23,11 @@ class Resultado extends Model
         return $this->belongsTo(Ciclista::class, 'ciclista_id');
     }
 
+    public function equipo()
+    {
+        return $this->belongsTo(Equipo::class, 'equipo_id');
+    }
+
     public static function crearResultadosParaInscripcion(int $carreraId, array $ciclistasIds, int $equipoId, int $temporada, int $numEtapas)
     {
         foreach ($ciclistasIds as $ciclistaId) {

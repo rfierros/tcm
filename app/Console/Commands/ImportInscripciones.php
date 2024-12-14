@@ -46,8 +46,15 @@ class ImportInscripciones extends Command
             $equipos = Ciclista::where('temporada', $temporada)->pluck('equipo_id', 'nom_ape')->toArray();
 
             foreach ($files as $filePath) {
-                // Obtener el carrera_id del nombre del archivo (ej: "1.ins" -> carrera_id = 1)
-                $carreraId = (int) pathinfo($filePath, PATHINFO_FILENAME);
+                // Extraer el carrera_id del nombre del archivo (ej: "35.giro-italia.ins" -> carrera_id = 35)
+                preg_match('/^(\d+)\./', pathinfo($filePath, PATHINFO_FILENAME), $matches);
+                $carreraId = isset($matches[1]) ? (int) $matches[1] : null;
+
+                if (!$carreraId) {
+                    $this->warn("El archivo no tiene un formato válido para obtener el carrera_id: $filePath");
+                    continue;
+                }
+
                 $this->info("Procesando inscripciones para la carrera Id: $carreraId");
 
                 $file = fopen($filePath, 'r');

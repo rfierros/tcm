@@ -1,0 +1,722 @@
+[
+   {
+        "categoria": "WT",
+        "tipo": "Monumento",
+        "clasificacion": "general",
+        "valorInicial": 0.1656,
+        "diferencial": 0.0012,
+        "posicionInicial": 31,
+        "n": 138,
+        "valoresEspeciales": {
+             "1": 300,
+             "2": 225,
+             "3": 160,
+             "4": 120,
+             "5": 95,
+             "6": 75,
+             "7": 68,
+             "8": 60,
+             "9": 55,
+            "10": 50,
+            "11": 45,
+            "12": 40,
+            "13": 35,
+            "14": 30,
+            "15": 25,
+            "16": 22,
+            "17": 18,
+            "18": 16,
+            "19": 14,
+            "20": 12,
+            "21": 10,
+            "22": 9,
+            "23": 8,
+            "24": 7,
+            "25": 6,
+            "26": 5,
+            "27": 4,
+            "28": 3,
+            "29": 2,
+            "30": 1
+        }
+    },
+   {
+        "categoria": "WT",
+        "tipo": "Clásica",
+        "clasificacion": "general",
+        "valorInicial": 0.1144,
+        "diferencial": 0.0008,
+        "posicionInicial": 26,
+        "n": 143,
+        "valoresEspeciales": {
+             "1": 200,
+             "2": 150,
+             "3": 110,
+             "4": 90,
+             "5": 80,
+             "6": 70,
+             "7": 62,
+             "8": 54,
+             "9": 46,
+            "10": 40,
+            "11": 25,
+            "12": 20,
+            "13": 18,
+            "14": 15,
+            "15": 13,
+            "16": 11,
+            "17": 9,
+            "18": 8,
+            "19": 7,
+            "20": 6,
+            "21": 5,
+            "22": 4,
+            "23": 3,
+            "24": 2,
+            "25": 1
+        }
+    },
+   {
+        "categoria": "Conti",
+        "tipo": "Clásica",
+        "clasificacion": "general",
+        "valorInicial": 0.0888,
+        "diferencial": 0.0006,
+        "posicionInicial": 21,
+        "n": 148,
+        "valoresEspeciales": {
+             "1": 75,
+             "2": 55,
+             "3": 40,
+             "4": 32,
+             "5": 28,
+             "6": 24,
+             "7": 20,
+             "8": 18,
+             "9": 16,
+            "10": 14,
+            "11": 12,
+            "12": 10,
+            "13": 8,
+            "14": 7,
+            "15": 6,
+            "16": 5,
+            "17": 4,
+            "18": 3,
+            "19": 2,
+            "20": 1
+        }
+    },
+   {
+        "categoria": "U24",
+        "tipo": "Clásica",
+        "clasificacion": "general",
+        "valorInicial": 0.0315,
+        "diferencial": 0.0003,
+        "posicionInicial": 16,
+        "n": 105,
+        "valoresEspeciales": {
+             "1": 45,
+             "2": 30,
+             "3": 18,
+             "4": 15,
+             "5": 12,
+             "6": 10,
+             "7": 9,
+             "8": 8,
+             "9": 7,
+            "10": 6,
+            "11": 5,
+            "12": 4,
+            "13": 3,
+            "14": 2,
+            "15": 1
+        }
+    },
+
+   {
+        "descripcion": "Desde aqui todas los tipos de clasificaciones que dan puntos relativas a las GV",
+        "categoria": "WT",
+        "tipo": "GV",
+        "clasificacion": "general",
+        "valorInicial": 0.243,
+        "diferencial": 0.0015,
+        "posicionInicial": 31,
+        "n": 162,
+        "valoresEspeciales": {
+             "1": 500,
+             "2": 375,
+             "3": 315,
+             "4": 265,
+             "5": 240,
+             "6": 215,
+             "7": 190,
+             "8": 165,
+             "9": 150,
+            "10": 135,
+            "11": 120,
+            "12": 112,
+            "13": 104,
+            "14": 90,
+            "15": 80,
+            "16": 72,
+            "17": 64,
+            "18": 56,
+            "19": 50,
+            "20": 45,
+            "21": 40,
+            "22": 35,
+            "23": 30,
+            "24": 26,
+            "25": 22,
+            "26": 18,
+            "27": 15,
+            "28": 12,
+            "29": 8,
+            "30": 5
+        }
+    },
+   {
+        "categoria": "WT",
+        "tipo": "GV",
+        "clasificacion": "etapa",
+        "valorInicial": 0,
+        "diferencial": 0,
+        "posicionInicial": 0,
+        "n": 0,
+        "valoresEspeciales": {
+             "1": 70,
+             "2": 40,
+             "3": 25,
+             "4": 15,
+             "5": 10,
+             "6": 7,
+             "7": 5,
+             "8": 3,
+             "9": 2,
+            "10": 1
+        }
+    },
+   {
+        "categoria": "WT",
+        "tipo": "GV",
+        "clasificacion": "gene-mon",
+        "valorInicial": 0,
+        "diferencial": 0,
+        "posicionInicial": 0,
+        "n": 0,
+        "valoresEspeciales": {
+             "1": 50,
+             "2": 30,
+             "3": 15
+        }
+    },
+   {
+        "categoria": "WT",
+        "tipo": "GV",
+        "clasificacion": "gene-reg",
+        "valorInicial": 0,
+        "diferencial": 0,
+        "posicionInicial": 0,
+        "n": 0,
+        "valoresEspeciales": {
+             "1": 50,
+             "2": 30,
+             "3": 15
+        }
+    },
+   {
+        "categoria": "WT",
+        "tipo": "GV",
+        "clasificacion": "gene-jov",
+        "valorInicial": 0,
+        "diferencial": 0,
+        "posicionInicial": 0,
+        "n": 0,
+        "valoresEspeciales": {
+             "1": 30,
+             "2": 15,
+             "3": 5
+        }
+    },
+   {
+        "categoria": "WT",
+        "tipo": "GV",
+        "clasificacion": "gene-equi",
+        "valorInicial": 0,
+        "diferencial": 0,
+        "posicionInicial": 0,
+        "n": 0,
+        "valoresEspeciales": {
+             "1": 10
+        }
+    },
+   {
+        "categoria": "WT",
+        "tipo": "GV",
+        "clasificacion": "provi-gene",
+        "valorInicial": 0,
+        "diferencial": 0,
+        "posicionInicial": 0,
+        "n": 0,
+        "valoresEspeciales": {
+             "1": 20
+        }
+    },
+   {
+        "categoria": "WT",
+        "tipo": "GV",
+        "clasificacion": "provi-mon",
+        "valorInicial": 0,
+        "diferencial": 0,
+        "posicionInicial": 0,
+        "n": 0,
+        "valoresEspeciales": {
+             "1": 10
+        }
+    },
+   {
+        "categoria": "WT",
+        "tipo": "GV",
+        "clasificacion": "provi-reg",
+        "valorInicial": 0,
+        "diferencial": 0,
+        "posicionInicial": 0,
+        "n": 0,
+        "valoresEspeciales": {
+             "1": 10
+        }
+    },
+   {
+        "categoria": "WT",
+        "tipo": "GV",
+        "clasificacion": "provi-jov",
+        "valorInicial": 0,
+        "diferencial": 0,
+        "posicionInicial": 0,
+        "n": 0,
+        "valoresEspeciales": {
+             "1": 5
+        }
+    },
+
+   {
+        "descripcion": "Desde aqui todas los tipos de clasificaciones que dan puntos relativas a las Vueltas WT",
+        "categoria": "WT",
+        "tipo": "Vuelta",
+        "clasificacion": "general",
+        "valorInicial": 0.143,
+        "diferencial": 0.001,
+        "posicionInicial": 26,
+        "n": 143,
+        "valoresEspeciales": {
+             "1": 230,
+             "2": 175,
+             "3": 150,
+             "4": 115,
+             "5": 92,
+             "6": 82,
+             "7": 72,
+             "8": 64,
+             "9": 58,
+            "10": 50,
+            "11": 46,
+            "12": 40,
+            "13": 35,
+            "14": 30,
+            "15": 25,
+            "16": 20,
+            "17": 16,
+            "18": 12,
+            "19": 8,
+            "20": 6,
+            "21": 5,
+            "22": 4,
+            "23": 3,
+            "24": 2,
+            "25": 1
+        }
+    },
+   {
+        "categoria": "WT",
+        "tipo": "Vuelta",
+        "clasificacion": "etapa",
+        "valorInicial": 0,
+        "diferencial": 0,
+        "posicionInicial": 0,
+        "n": 0,
+        "valoresEspeciales": {
+             "1": 35,
+             "2": 22,
+             "3": 14,
+             "4": 8,
+             "5": 4,
+             "6": 3,
+             "7": 2,
+             "8": 1
+        }
+    },
+   {
+        "categoria": "WT",
+        "tipo": "Vuelta",
+        "clasificacion": "gene-mon",
+        "valorInicial": 0,
+        "diferencial": 0,
+        "posicionInicial": 0,
+        "n": 0,
+        "valoresEspeciales": {
+             "1": 25,
+             "2": 15,
+             "3": 5
+        }
+    },
+   {
+        "categoria": "WT",
+        "tipo": "Vuelta",
+        "clasificacion": "gene-reg",
+        "valorInicial": 0,
+        "diferencial": 0,
+        "posicionInicial": 0,
+        "n": 0,
+        "valoresEspeciales": {
+             "1": 25,
+             "2": 15,
+             "3": 5
+        }
+    },
+   {
+        "categoria": "WT",
+        "tipo": "Vuelta",
+        "clasificacion": "gene-jov",
+        "valorInicial": 0,
+        "diferencial": 0,
+        "posicionInicial": 0,
+        "n": 0,
+        "valoresEspeciales": {
+             "1": 15,
+             "2": 8,
+             "3": 3
+        }
+    },
+   {
+        "categoria": "WT",
+        "tipo": "Vuelta",
+        "clasificacion": "gene-equi",
+        "valorInicial": 0,
+        "diferencial": 0,
+        "posicionInicial": 0,
+        "n": 0,
+        "valoresEspeciales": {
+             "1": 5
+        }
+    },
+   {
+        "categoria": "WT",
+        "tipo": "Vuelta",
+        "clasificacion": "provi-gene",
+        "valorInicial": 0,
+        "diferencial": 0,
+        "posicionInicial": 0,
+        "n": 0,
+        "valoresEspeciales": {
+             "1": 12
+        }
+    },
+   {
+        "categoria": "WT",
+        "tipo": "Vuelta",
+        "clasificacion": "provi-mon",
+        "valorInicial": 0,
+        "diferencial": 0,
+        "posicionInicial": 0,
+        "n": 0,
+        "valoresEspeciales": {
+             "1": 5
+        }
+    },
+   {
+        "categoria": "WT",
+        "tipo": "Vuelta",
+        "clasificacion": "provi-reg",
+        "valorInicial": 0,
+        "diferencial": 0,
+        "posicionInicial": 0,
+        "n": 0,
+        "valoresEspeciales": {
+             "1": 5
+        }
+    },
+   {
+        "categoria": "WT",
+        "tipo": "Vuelta",
+        "clasificacion": "provi-jov",
+        "valorInicial": 0,
+        "diferencial": 0,
+        "posicionInicial": 0,
+        "n": 0,
+        "valoresEspeciales": {
+             "1": 3
+        }
+    },
+
+   {
+        "descripcion": "Desde aqui todas los tipos de clasificaciones que dan puntos relativas a las Vueltas Conti",
+        "categoria": "Conti",
+        "tipo": "Vuelta",
+        "clasificacion": "general",
+        "valorInicial": 0.1184,
+        "diferencial": 0.0008,
+        "posicionInicial": 21,
+        "n": 148,
+        "valoresEspeciales": {
+             "1": 120,
+             "2": 90,
+             "3": 65,
+             "4": 50,
+             "5": 40,
+             "6": 33,
+             "7": 25,
+             "8": 20,
+             "9": 16,
+            "10": 13,
+            "11": 11,
+            "12": 9,
+            "13": 8,
+            "14": 7,
+            "15": 6,
+            "16": 5,
+            "17": 4,
+            "18": 3,
+            "19": 2,
+            "20": 1
+        }
+    },
+   {
+        "categoria": "Conti",
+        "tipo": "Vuelta",
+        "clasificacion": "etapa",
+        "valorInicial": 0,
+        "diferencial": 0,
+        "posicionInicial": 0,
+        "n": 0,
+        "valoresEspeciales": {
+             "1": 20,
+             "2": 10,
+             "3": 5,
+             "4": 3,
+             "5": 1
+        }
+    },
+   {
+        "categoria": "Conti",
+        "tipo": "Vuelta",
+        "clasificacion": "gene-mon",
+        "valorInicial": 0,
+        "diferencial": 0,
+        "posicionInicial": 0,
+        "n": 0,
+        "valoresEspeciales": {
+             "1": 15,
+             "2": 8,
+             "3": 3
+        }
+    },
+   {
+        "categoria": "Conti",
+        "tipo": "Vuelta",
+        "clasificacion": "gene-reg",
+        "valorInicial": 0,
+        "diferencial": 0,
+        "posicionInicial": 0,
+        "n": 0,
+        "valoresEspeciales": {
+             "1": 15,
+             "2": 8,
+             "3": 3
+        }
+    },
+   {
+        "categoria": "Conti",
+        "tipo": "Vuelta",
+        "clasificacion": "gene-jov",
+        "valorInicial": 0,
+        "diferencial": 0,
+        "posicionInicial": 0,
+        "n": 0,
+        "valoresEspeciales": {
+             "1": 10,
+             "2": 5,
+             "3": 1
+        }
+    },
+   {
+        "categoria": "Conti",
+        "tipo": "Vuelta",
+        "clasificacion": "gene-equi",
+        "valorInicial": 0,
+        "diferencial": 0,
+        "posicionInicial": 0,
+        "n": 0,
+        "valoresEspeciales": {
+             "1": 3
+        }
+    },
+   {
+        "categoria": "Conti",
+        "tipo": "Vuelta",
+        "clasificacion": "provi-gene",
+        "valorInicial": 0,
+        "diferencial": 0,
+        "posicionInicial": 0,
+        "n": 0,
+        "valoresEspeciales": {
+             "1": 8
+        }
+    },
+   {
+        "categoria": "Conti",
+        "tipo": "Vuelta",
+        "clasificacion": "provi-mon",
+        "valorInicial": 0,
+        "diferencial": 0,
+        "posicionInicial": 0,
+        "n": 0,
+        "valoresEspeciales": {
+             "1": 3
+        }
+    },
+   {
+        "categoria": "Conti",
+        "tipo": "Vuelta",
+        "clasificacion": "provi-reg",
+        "valorInicial": 0,
+        "diferencial": 0,
+        "posicionInicial": 0,
+        "n": 0,
+        "valoresEspeciales": {
+             "1": 3
+        }
+    },
+   {
+        "categoria": "Conti",
+        "tipo": "Vuelta",
+        "clasificacion": "provi-jov",
+        "valorInicial": 0,
+        "diferencial": 0,
+        "posicionInicial": 0,
+        "n": 0,
+        "valoresEspeciales": {
+             "1": 1
+        }
+    },
+
+
+   {
+        "descripcion": "Desde aqui todas los tipos de clasificaciones que dan puntos relativas a las Vueltas U24",
+        "categoria": "U24",
+        "tipo": "Vuelta",
+        "clasificacion": "general",
+        "valorInicial": 0.0525,
+        "diferencial": 0.0005,
+        "posicionInicial": 16,
+        "n": 105,
+        "valoresEspeciales": {
+             "1": 60,
+             "2": 45,
+             "3": 28,
+             "4": 20,
+             "5": 15,
+             "6": 12,
+             "7": 10,
+             "8": 8,
+             "9": 7,
+            "10": 6,
+            "11": 5,
+            "12": 4,
+            "13": 3,
+            "14": 2,
+            "15": 1
+        }
+    },
+   {
+        "categoria": "U24",
+        "tipo": "Vuelta",
+        "clasificacion": "etapa",
+        "valorInicial": 0,
+        "diferencial": 0,
+        "posicionInicial": 0,
+        "n": 0,
+        "valoresEspeciales": {
+             "1": 15,
+             "2": 8,
+             "3": 5,
+             "4": 1
+        }
+    },
+   {
+        "categoria": "U24",
+        "tipo": "Vuelta",
+        "clasificacion": "gene-mon",
+        "valorInicial": 0,
+        "diferencial": 0,
+        "posicionInicial": 0,
+        "n": 0,
+        "valoresEspeciales": {
+             "1": 10,
+             "2": 5,
+             "3": 1
+        }
+    },
+   {
+        "categoria": "U24",
+        "tipo": "Vuelta",
+        "clasificacion": "gene-reg",
+        "valorInicial": 0,
+        "diferencial": 0,
+        "posicionInicial": 0,
+        "n": 0,
+        "valoresEspeciales": {
+             "1": 10,
+             "2": 5,
+             "3": 1
+        }
+    },
+   {
+        "categoria": "U24",
+        "tipo": "Vuelta",
+        "clasificacion": "provi-gene",
+        "valorInicial": 0,
+        "diferencial": 0,
+        "posicionInicial": 0,
+        "n": 0,
+        "valoresEspeciales": {
+             "1": 5
+        }
+    },
+   {
+        "categoria": "U24",
+        "tipo": "Vuelta",
+        "clasificacion": "provi-mon",
+        "valorInicial": 0,
+        "diferencial": 0,
+        "posicionInicial": 0,
+        "n": 0,
+        "valoresEspeciales": {
+             "1": 1
+        }
+    },
+   {
+        "categoria": "U24",
+        "tipo": "Vuelta",
+        "clasificacion": "provi-reg",
+        "valorInicial": 0,
+        "diferencial": 0,
+        "posicionInicial": 0,
+        "n": 0,
+        "valoresEspeciales": {
+             "1": 1
+        }
+    }
+
+
+]

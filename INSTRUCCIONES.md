@@ -56,6 +56,15 @@ Y una vez dentro de tinker, nótese que le pasamos por parámetro la temporada q
       $seeder = new Database\Seeders\CalendarioSeeder();
       $seeder->runWithTemporada(4);
 ```
+**Lanzar el script que inserta en BD las puntuaciones especificadas en el puntos.json**
+
+En el archivo puntos.json configuramos como se distribuyen las diferentes puntuaciones segun clasificaciones generales y provisionales.
+El proceso recoge el número de temporada de tcm.temporada e insertará en la tabla Puntos todos los valores especificados en el json.
+Así lanzamos el proceso:
+```php
+php artisan populate:puntos-from-json
+```
+
 **Lanzar inscripciones a carreras, en caso de que las haya**
 
 Los archivos de cada carrera se llamarán {carrera_id}.ins

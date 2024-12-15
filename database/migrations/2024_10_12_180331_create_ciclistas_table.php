@@ -24,7 +24,7 @@ return new class extends Migration
             $table->integer('pos_ini')->nullable();         // Posición inicial (entero hasta 3 posiciones)
             $table->integer('pos_fin')->nullable();         // Posición final (entero hasta 3 posiciones)
             $table->integer('victorias')->nullable();      // Victorias (entero hasta 3 posiciones)
-            $table->decimal('pts', 5, 8)->nullable();      // Puntos (decimal con 8 decimales)
+            $table->decimal('pts', 14, 8)->nullable();      // Puntos (decimal con 8 decimales)
             $table->enum('especialidad', ['escalador', 'combatividad', 'sprinter', 'flandes', 'ardenas', 'croner']); // Enum para limitar valores
             $table->integer('edad')->nullable();           // Edad del ciclista (entero de 2 posiciones)
             $table->decimal('lla', 5, 3)->nullable();      // Valoración LLA (decimal con 3 decimales)
@@ -40,7 +40,7 @@ return new class extends Migration
             $table->decimal('ene', 5, 3)->nullable();      // Valoración ENE (decimal con 3 decimales)
             $table->decimal('res', 5, 3)->nullable();      // Valoración RES (decimal con 3 decimales)
             $table->decimal('rec', 5, 3)->nullable();      // Valoración REC (decimal con 3 decimales)
-            $table->decimal('media', 5, 8)->nullable();    // Media general del ciclista
+            $table->decimal('media', 10, 8)->nullable();    // Media general del ciclista
             // switches para filtrar facilmente los ciclistas
             $table->boolean('conti')->default(false); // Campo conti
             $table->boolean('u24')->default(false);    // Campo u24

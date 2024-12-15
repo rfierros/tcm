@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Resultado;
+use App\Models\Carrera;
 use Illuminate\Console\Command;
 
 class GenerateStartlistXML extends Command
@@ -29,11 +30,21 @@ class GenerateStartlistXML extends Command
         // Obtener parámetros
         $carreraId = $this->argument('carrera_id');
 
+        // Obtener la carrera para recuperar el campo nombre_xml
+        $carrera = Carrera::find($carreraId);
+        if (!$carrera) {
+            $this->error("No se encontró una carrera con ID: $carreraId");
+            return Command::FAILURE;
+        }
+
+        // Validar si el campo nombre_xml está presente
+        $nombreXml = $carrera->nombre_xml ?? 'default';
+
         // Directorio donde se guardará el archivo XML
         $importDir = storage_path('app/imports');
 
         // Nombre del archivo de salida
-        $outputFile = "$importDir/$carreraId.xml";
+        $outputFile = "$importDir/{$carreraId}.{$nombreXml}.xml";
 
         // Crear el directorio si no existe
         if (!is_dir($importDir)) {

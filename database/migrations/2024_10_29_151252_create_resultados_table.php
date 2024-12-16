@@ -19,6 +19,10 @@ return new class extends Migration
             $table->foreignId('ciclista_id')->constrained()->onDelete('cascade');
             $table->foreignId('equipo_id')->constrained()->onDelete('cascade');
             $table->integer('posicion')->nullable(); // Posición del ciclista en esta etapa
+            $table->integer('pos_gral')->nullable(); // Posición del ciclista en la general
+            $table->integer('gral_reg')->nullable(); // Posición del ciclista en la general de la regularidad
+            $table->integer('gral_mon')->nullable(); // Posición del ciclista en la general de la montaña
+            $table->integer('gral_jov')->nullable(); // Posición del ciclista en la general de los jovenes
             $table->time('tiempo')->nullable(); // Tiempo en formato HH:MM:SS
             $table->timestamps();
 

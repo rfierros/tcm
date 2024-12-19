@@ -56,7 +56,8 @@ class ImportCorredores extends Command
                 'temporada' => $temporada,
                 'nombre' => $data['Nombre'],
                 'apellido' => $data['Nombre'],
-                'nom_ape' => $data['Nombre'],
+                'nom_ape' => $data['Nombre'], // nombre + apellido
+                'nom_abrev' => $data['Nombre'], // iniciales + apellido
                 'pais' => $data['Pais'],
                 'especialidad' => strtolower($data['Especialidad']),
                 'edad' => $data['Edad'],

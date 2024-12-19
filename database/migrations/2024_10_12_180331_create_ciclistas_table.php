@@ -19,7 +19,8 @@ return new class extends Migration
             $table->integer('clave_id')->unique(); // Define `clave_id` como un campo único. Es el id de las excel
             $table->string('apellido');                      // Nombre del ciclista
             $table->string('nombre');                    // Apellido del ciclista
-            $table->string('nom_ape');                    // combinacion a mostrar
+            $table->string('nom_ape');                    // Nombre que aparece en las excel de resultados que genera el juego
+            $table->string('nom_abrev');                  // combinacion a mostrar
             $table->string('pais');                        // País del ciclista
             $table->integer('pos_ini')->nullable();         // Posición inicial (entero hasta 3 posiciones)
             $table->integer('pos_fin')->nullable();         // Posición final (entero hasta 3 posiciones)

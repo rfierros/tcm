@@ -8,7 +8,19 @@ Seguiremos los siguientes pasos para asegurarnos de la integridad de la BD.
 php artisan migrate:fresh --seed
 ```
 
-**Cargamos el Seeder de Ciclistas**
+### Ciclistas
+
+**Opción 1: Volcamos el backup de ciclistas del archivo csv**
+Tenemos el archivo storage/app/exports/ciclistas.csv con todos los corredores.
+Lanzamos un proceso para volcar los datos en la BD:
+```php
+php artisan import:cyclists-from-csv
+```
+> Nota: para generar este archivo una vez sabemos que nuestra BD tiene los datos de Ciclistas correctamente debemos lanzar: **php artisan export:cyclists-to-csv**
+
+
+
+**Opción 2: Cargamos el Seeder de Ciclistas**
 
 Cargamos el Seeder, o bien el archivo .csv con todos los corredores.
 Así cargamos el archivo:

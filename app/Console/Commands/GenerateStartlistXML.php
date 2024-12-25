@@ -54,8 +54,8 @@ class GenerateStartlistXML extends Command
             }
         }
 
-        // Obtener registros de resultados de la carrera_id para la etapa 1
-        $resultados = Resultado::where('carrera_id', $carrera->id)
+        // Obtener registros de resultados de la num_carrera para la etapa 1
+        $resultados = Resultado::where('num_carrera', $carrera->num_carrera)
             ->where('etapa', 1)
             ->with(['ciclista', 'equipo']) // Relación con ciclistas y equipos
             ->orderBy('equipo_id')

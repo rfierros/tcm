@@ -9,10 +9,18 @@ class Etapa extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['carrera_id', 'temporada', 'num_etapa', 'nombre', 'km', 'dia', 'perfil', 'tipo', 'imagen'];
+    protected $fillable = ['temporada', 'num_carrera', 'num_etapa', 'slug', 'nombre', 'km', 'dia', 'perfil', 'tipo', 'imagen'];
 
+    /**
+     * Relación con la tabla `Carreras`.
+     * Basada en las claves compuestas: `temporada` y `num_carrera`.
+     */
     public function carrera()
     {
-        return $this->belongsTo(Carrera::class);
+        return $this->belongsTo(
+            Carrera::class,
+            ['temporada', 'num_carrera'],
+            ['temporada', 'num_carrera']
+        );
     }
 }

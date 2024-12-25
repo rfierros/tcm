@@ -43,27 +43,27 @@ class ImportInscripciones extends Command
 
         try {
             // Cargar todos los equipos de la temporada en un array
-            $equipos = Ciclista::where('temporada', $temporada)->pluck('equipo_id', 'nom_ape')->toArray();
+            $equipos = Ciclista::where('temporada', $temporada)->pluck('equipo_id', 'nom_abrev')->toArray();
 
             foreach ($files as $filePath) {
-                // Extraer el carrera_id del nombre del archivo (ej: "35.giro-italia.ins" -> carrera_id = 35)
+                // Extraer el num_carrera del nombre del archivo (ej: "35.giro-italia.ins" -> num_carrera = 35)
                 preg_match('/^(\d+)\./', pathinfo($filePath, PATHINFO_FILENAME), $matches);
-                $carreraId = isset($matches[1]) ? (int) $matches[1] : null;
+                $numCarrera = isset($matches[1]) ? (int) $matches[1] : null;
 
-                if (!$carreraId) {
-                    $this->warn("El archivo no tiene un formato válido para obtener el carrera_id: $filePath");
+                if (!$numCarrera) {
+                    $this->warn("El archivo no tiene un formato válido para obtener el num_carrera: $filePath");
                     continue;
                 }
 
-                $this->info("Procesando inscripciones para la carrera Id: $carreraId");
+                $this->info("Procesando inscripciones para la carrera num: $numCarrera");
 
                 $file = fopen($filePath, 'r');
 
                 // Obtener el número de etapas de la carrera
-                $numEtapas = DB::table('etapas')->where('carrera_id', $carreraId)->count();
+                $numEtapas = DB::table('etapas')->where('num_carrera', $numCarrera)->count();
 
                 if ($numEtapas === 0) {
-                    $this->warn("No se encontraron etapas para la carrera ID: $carreraId");
+                    $this->warn("No se encontraron etapas para la carrera num: $numCarrera");
                     fclose($file);
                     continue;
                 }
@@ -73,7 +73,7 @@ class ImportInscripciones extends Command
                     $nomApe = trim($nomApe);
 
                     // Buscar el ciclista en la base de datos
-                    $ciclista = Ciclista::where('nom_ape', $nomApe)
+                    $ciclista = Ciclista::where('nom_abrev', $nomApe)
                         ->where('temporada', $temporada)
                         ->first();
 
@@ -91,7 +91,7 @@ class ImportInscripciones extends Command
                         Resultado::updateOrCreate(
                             [
                                 'temporada' => $temporada,
-                                'carrera_id' => $carreraId,
+                                'num_carrera' => $numCarrera,
                                 'etapa' => $etapa,
                                 'ciclista_id' => $ciclistaId,
                             ],
@@ -102,7 +102,7 @@ class ImportInscripciones extends Command
                         );
                     }
 
-                    $this->info("Inscripción registrada para: $nomApe en carrera ID: $carreraId");
+                    $this->info("Inscripción registrada para: $nomApe en carrera ID: $numCarrera");
                 }
 
                 fclose($file);

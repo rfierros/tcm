@@ -11,8 +11,8 @@ new class extends Component {
     public $equipo;
 
     public $columns = [ // Campo => Cabecera
-        'nom_ape' => 'Ciclista',
-        'pais' => 'pais',
+        'nom_abrev' => 'Ciclista',
+        'clave_id' => 'Id',
         'especialidad' => 'tipo',
         'edad' => 'edad',
         'lla' => 'lla',
@@ -215,7 +215,7 @@ new class extends Component {
                             <tr class="hover:bg-slate-100">
                                 <template x-for="(label, field) in {{ json_encode($columns) }}" :key="field">
                                     <td x:class="{ 'bg-red-200': colorMode }" class="px-2 py-1.5 text-xs">
-                                        <template x-if="['lla', 'mon', 'col', 'cri', 'pro', 'pav', 'spr', 'acc', 'des', 'com', 'ene', 'res', 'rec', 'media','inscripciones'].includes(field)">
+                                        <template x-if="['lla', 'mon', 'col', 'cri', 'pro', 'pav', 'spr', 'acc', 'des', 'com', 'ene', 'res', 'rec', 'media'].includes(field)">
                                             <span>
                                                 <span x-text="formatNumber(ciclista[field]).integerPart" class="text-xs"></span><span x-text="'.' + formatNumber(ciclista[field]).decimalPart" class="inline-block text-gray-400 text-xxs"></span>
                                             </span>
@@ -226,7 +226,7 @@ new class extends Component {
                                                 </span>
                                             
                                         </template>
-                                        <template x-if="!['especialidad', 'lla', 'mon', 'col', 'cri', 'pro', 'pav', 'spr', 'acc', 'des', 'com', 'ene', 'res', 'rec', 'media','inscripciones'].includes(field)">
+                                        <template x-if="!['especialidad', 'lla', 'mon', 'col', 'cri', 'pro', 'pav', 'spr', 'acc', 'des', 'com', 'ene', 'res', 'rec', 'media'].includes(field)">
                                             <span x-text="ciclista[field]"></span>
                                         </template>
                                     </td>

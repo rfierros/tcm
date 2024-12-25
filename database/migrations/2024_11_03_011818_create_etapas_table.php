@@ -12,18 +12,22 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('etapas', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('carrera_id')->constrained('carreras')->onDelete('cascade'); // Relación con 'carreras'
-            $table->foreignId('slug'); // Relación con 'carreras'
+            $table->id(); // Identificador único de la etapa
             $table->integer('temporada'); // Año o temporada
-            $table->integer('num_etapa'); // etapa
-            $table->string('nombre')->nullable(); // nombre 
-            $table->integer('km')->nullable(); // kms
-            $table->integer('dia'); // Día específico de la etapa
+            $table->integer('num_carrera'); // Número de carrera
+            $table->foreign(['temporada', 'num_carrera'])->references(['temporada', 'num_carrera'])->on('carreras')->onDelete('cascade');
+            $table->integer('num_etapa'); // Número de la etapa dentro de la carrera
+            $table->string('slug')->nullable(); // Slug opcional
+            $table->string('nombre')->nullable(); // Nombre de la etapa
+            $table->integer('km')->nullable(); // Kilometraje de la etapa
+            $table->integer('dia'); // Día específico de la etapa dentro de la temporada
             $table->enum('perfil', ['llano', 'montaña', 'media-montaña'])->nullable(); // Perfil de la etapa
-            $table->enum('tipo', ['normal', 'cre', 'cri'])->nullable(); // tipo de la etapa
-            $table->string('imagen')->nullable(); // Ruta o URL de la imagen de la etapa
+            $table->enum('tipo', ['normal', 'cre', 'cri'])->nullable(); // Tipo de etapa
+            $table->string('imagen')->nullable(); // Ruta o URL de la imagen
             $table->timestamps();
+
+            // Índices
+            $table->unique(['temporada', 'num_carrera', 'num_etapa']); // Cada etapa es única dentro de su carrera y temporada
         });
     }
 

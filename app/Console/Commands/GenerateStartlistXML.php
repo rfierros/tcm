@@ -13,14 +13,14 @@ class GenerateStartlistXML extends Command
      *
      * @var string
      */
-    protected $signature = 'generate:startlist {carrera_id}';
+    protected $signature = 'generate:startlist {num_carrera}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Genera un archivo XML de convocatoria desde la tabla Resultados para una carrera_id específica.';
+    protected $description = 'Genera un archivo XML de convocatoria desde la tabla Resultados para una carrera específica basada en num_carrera.';
 
     /**
      * Execute the console command.
@@ -28,12 +28,12 @@ class GenerateStartlistXML extends Command
     public function handle()
     {
         // Obtener parámetros
-        $carreraId = $this->argument('carrera_id');
+        $numCarrera = $this->argument('num_carrera');
 
         // Obtener la carrera para recuperar el campo nombre_xml
-        $carrera = Carrera::find($carreraId);
+        $carrera = Carrera::where('num_carrera', $numCarrera)->first();
         if (!$carrera) {
-            $this->error("No se encontró una carrera con ID: $carreraId");
+            $this->error("No se encontró una carrera con num_carrera: $numCarrera");
             return Command::FAILURE;
         }
 
@@ -41,28 +41,28 @@ class GenerateStartlistXML extends Command
         $nombreXml = $carrera->nombre_xml ?? 'default';
 
         // Directorio donde se guardará el archivo XML
-        $importDir = storage_path('app/imports');
+        $exportDir = storage_path('app/exports');
 
         // Nombre del archivo de salida
-        $outputFile = "$importDir/{$carreraId}.{$nombreXml}.xml";
+        $outputFile = "$exportDir/{$nombreXml}.xml";
 
         // Crear el directorio si no existe
-        if (!is_dir($importDir)) {
-            if (!mkdir($importDir, 0755, true) && !is_dir($importDir)) {
-                $this->error("No se pudo crear el directorio: $importDir");
+        if (!is_dir($exportDir)) {
+            if (!mkdir($exportDir, 0755, true) && !is_dir($exportDir)) {
+                $this->error("No se pudo crear el directorio: $exportDir");
                 return Command::FAILURE;
             }
         }
 
         // Obtener registros de resultados de la carrera_id para la etapa 1
-        $resultados = Resultado::where('carrera_id', $carreraId)
+        $resultados = Resultado::where('carrera_id', $carrera->id)
             ->where('etapa', 1)
             ->with(['ciclista', 'equipo']) // Relación con ciclistas y equipos
             ->orderBy('equipo_id')
             ->get();
 
         if ($resultados->isEmpty()) {
-            $this->error("No se encontraron resultados para carrera_id = $carreraId");
+            $this->error("No se encontraron resultados para carrera num_carrera = $numCarrera");
             return Command::FAILURE;
         }
 

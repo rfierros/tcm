@@ -25,6 +25,9 @@ return new class extends Migration
             $table->enum('tipo', ['Vuelta', 'Clásica', 'Monumento', 'Continental', 'GV']); // Valores permitidos para tipo
             $table->integer('dia_inicio');
             $table->timestamps();
+
+            // Índice compuesto para claves foráneas
+            $table->unique(['temporada', 'num_carrera']);
         });
     }
 

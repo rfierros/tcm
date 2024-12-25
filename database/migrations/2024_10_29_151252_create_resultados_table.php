@@ -12,23 +12,25 @@ return new class extends Migration
     public function up()
     {
         Schema::create('resultados', function (Blueprint $table) {
-            $table->id();
+            $table->id(); // ID autoincremental para relaciones internas
             $table->integer('temporada'); // Temporada a la que pertenece este resultado
-            $table->foreignId('carrera_id')->constrained()->onDelete('cascade');
-            $table->integer('etapa'); // Etapa específica
+            $table->integer('num_carrera'); // Relaciona con num_carrera en la tabla carreras
+            $table->foreign(['temporada', 'num_carrera'])->references(['temporada', 'num_carrera'])->on('carreras')->onDelete('cascade');
+            $table->integer('etapa'); // Número de etapa
+            $table->foreign(['temporada', 'num_carrera', 'etapa'])->references(['temporada', 'num_carrera', 'num_etapa'])->on('etapas')->onDelete('cascade');
             $table->foreignId('ciclista_id')->constrained()->onDelete('cascade');
             $table->foreignId('equipo_id')->constrained()->onDelete('cascade');
             $table->integer('posicion')->nullable(); // Posición del ciclista en esta etapa
             $table->integer('pos_gral')->nullable(); // Posición del ciclista en la general
-            $table->integer('gral_reg')->nullable(); // Posición del ciclista en la general de la regularidad
-            $table->integer('gral_mon')->nullable(); // Posición del ciclista en la general de la montaña
-            $table->integer('gral_jov')->nullable(); // Posición del ciclista en la general de los jovenes
+            $table->integer('gral_reg')->nullable(); // Posición en la clasificación por puntos
+            $table->integer('gral_mon')->nullable(); // Posición en la clasificación de montaña
+            $table->integer('gral_jov')->nullable(); // Posición en la clasificación de jóvenes
             $table->time('tiempo')->nullable(); // Tiempo en formato HH:MM:SS
             $table->timestamps();
 
-        // Índices para optimizar laa consultaa
-        $table->index(['ciclista_id', 'temporada']);
-        $table->index(['temporada', 'carrera_id', 'etapa']);            
+            // Índices
+            $table->index(['ciclista_id', 'temporada']);
+            $table->index(['temporada', 'num_carrera', 'etapa']);
         });
     }
     /**

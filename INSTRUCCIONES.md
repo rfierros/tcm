@@ -27,6 +27,11 @@ Así cargamos el archivo:
 ```php
 php artisan import:corredores
 ```
+y luego les corregimos los campos de los nombres y apellidos:
+```php
+p artisan update:cyclist-names
+```
+
 
 Así cargamos el seeder:
 ```php

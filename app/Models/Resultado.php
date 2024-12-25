@@ -10,12 +10,16 @@ class Resultado extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['carrera_id', 'ciclista_id', 'equipo_id', 'etapa', 'posicion', 'temporada', 'tiempo'];
+    protected $fillable = ['temporada', 'num_carrera', 'etapa', 'ciclista_id', 'equipo_id', 'posicion', 'pos_gral', 'gral_reg', 'gral_mon', 'gral_jov', 'tiempo'];
 
 
-    public function carrera(): BelongsTo
+    public function carrera()
     {
-        return $this->belongsTo(Carrera::class, 'carrera_id');
+        return $this->belongsTo(
+            Carrera::class,
+            ['temporada', 'num_carrera'],
+            ['temporada', 'num_carrera']
+        );
     }
 
     public function ciclista(): BelongsTo

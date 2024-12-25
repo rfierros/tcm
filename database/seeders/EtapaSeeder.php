@@ -19,10 +19,10 @@ class EtapaSeeder extends Seeder
         foreach ($carreras as $carrera) {
             for ($i = 1; $i <= $carrera->num_etapas; $i++) {
                 Etapa::create([
-                    'carrera_id' => $carrera->id,
-                    'slug' => $carrera->slug,
                     'temporada' => $carrera->temporada,
+                    'num_carrera' => $carrera->num_carrera,
                     'num_etapa' => $i, //Numero de etapa
+                    'slug' => $carrera->slug,
                     'nombre' => null,
                     'km' => null,
                     'dia' => $carrera->dia_inicio + $i - 1, // Día de la etapa
@@ -63,7 +63,7 @@ class EtapaSeeder extends Seeder
   
             foreach ($etapas as $etapa) {
                 // Buscar la etapa existente y actualizarla
-                Etapa::where('carrera_id', 35)
+                Etapa::where('num_carrera', 35)
                     ->where('num_etapa', $etapa['num_etapa'])
                     ->where('temporada', 4)
                     ->update([

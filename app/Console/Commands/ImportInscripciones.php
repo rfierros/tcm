@@ -91,7 +91,7 @@ class ImportInscripciones extends Command
                         Resultado::updateOrCreate(
                             [
                                 'temporada' => $temporada,
-                                'num_carrera' => $numCarrera,
+                                'num_carrera' => $numCarrera, // Asegúrate de incluir esta clave
                                 'etapa' => $etapa,
                                 'ciclista_id' => $ciclistaId,
                             ],

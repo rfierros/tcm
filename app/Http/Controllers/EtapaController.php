@@ -24,10 +24,9 @@ class EtapaController extends Controller
         // Obtener los parámetros directamente desde la URL
         $slugCarrera = $request->route('carrera');
         $etapa = $request->route('etapa');
-        // dd($slugCarrera);
         dd($request);
         // Validar que la etapa pertenezca a la carrera seleccionada
-        if ($etapa->carrera_id !== $carrera->id) {
+        if ($etapa->num_carrera !== $carrera->num_carrera) {
             abort(404); // Si la etapa no pertenece a la carrera, mostramos 404
         }
 

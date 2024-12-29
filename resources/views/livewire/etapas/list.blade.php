@@ -14,12 +14,14 @@ new class extends Component {
     public Collection $etapas;
     public string $slugCarrera;
     public Collection $ciclistas;
+    public Collection $allCiclistas;
  
     public function mount(): void
     {
         $this->getCarrera(); 
         $this->getEtapas(); 
         $this->getInscripciones();
+        $this->getAllInscripciones();
     }
  
     // Si se crea una Carrera, hay un listener para el evento de creación que actualizará la lista de Carreras
@@ -58,13 +60,36 @@ new class extends Component {
 
         $this->ciclistas = Ciclista::whereHas('resultados', function ($query) use ($equipo) {
             $query->where('etapa', 1)
-                ->where('carrera_id', $this->carrera->id)
+                ->where('num_carrera', $this->carrera->num_carrera)
+                ->where('temporada', $this->carrera->temporada)
                 ->where('equipo_id', $equipo->id); 
         })->get();
-        // dd( $this->ciclistas); //muestra aqui el valor 33.
-
     }
-}; 
+
+    public function getAllInscripciones(): void
+    {
+        $this->allCiclistas = Ciclista::whereHas('resultados', function ($query) {
+            $query->where('etapa', 1)
+                ->where('num_carrera', $this->carrera->num_carrera)
+                ->where('temporada', $this->carrera->temporada);
+        })
+        ->with(['equipo', 'resultados' => function ($query) {
+            $query->where('etapa', 1)
+                ->where('num_carrera', $this->carrera->num_carrera)
+                ->where('temporada', $this->carrera->temporada);
+        }])
+        ->orderBy('equipo_id')
+        ->get();
+
+        // Clasificar ciclistas según el tiempo en los resultados
+        $this->allCiclistas->each(function ($ciclista) {
+            $resultado = $ciclista->resultados->first();
+            $ciclista->hasTiempoD = $resultado && $resultado->tiempo === 'd';
+        });
+    }
+
+
+}
 ?>
 
 
@@ -136,7 +161,7 @@ new class extends Component {
                     <div class="flex items-center justify-between w-full p-2 space-x-3 text-left border border-gray-300 rounded-lg shadow-sm group hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                     <span class="flex items-center flex-1 min-w-0 space-x-3">
                         <span class="flex-1 block min-w-0">
-                            <span class="block text-sm font-medium text-gray-900 truncate">{{ $ciclista->nom_ape }}</span>
+                            <span class="block text-sm font-medium text-gray-900 truncate">{{ $ciclista->nom_abrev }}</span>
                             <span class="block text-sm font-medium text-gray-500 truncate"><span x-bind:class="getBadgeColor('{{ $ciclista->especialidad }}')" class="inline-flex items-center rounded-md px-1.5 py-0.5 text-xs font-medium">{{ $ciclista->especialidad }}</span> - {{ $ciclista->media }}</span>
                         </span>
                     </span>
@@ -147,4 +172,60 @@ new class extends Component {
         
         </div>
     </div>
+
+
+    <div class="p-10">
+        <div x-data="{            
+            formatNumber(value) {
+                const [integerPart, decimalPart] = value.toFixed(2).split('.');
+                return { integerPart, decimalPart };
+            },
+            getBadgeColor(especialidad) {
+                const colors = {
+                    'ardenas': 'bg-pink-600/30 text-pink-600',
+                    'flandes': 'bg-yellow-400/30 text-yellow-500',
+                    'sprinter': 'bg-green-500/30 text-green-600',
+                    'escalador': 'bg-yellow-800/30 text-yellow-800',
+                    'combatividad': 'bg-purple-800/30 text-purple-800',
+                    'croner': 'bg-cyan-400/30 text-cyan-600',
+                };
+                return colors[especialidad.toLowerCase()] || 'bg-gray-500 text-white';
+            }            
+        }">
+
+            <h3 class="mb-4 text-xl font-semibold leading-tight text-gray-800">Inscripciones</h3>
+            <ul role="list" class="grid grid-cols-1 gap-5 mt-3 sm:grid-cols-2 sm:gap-6 md:grid-cols-3 xl:grid-cols-4">
+
+        
+            @foreach ($allCiclistas->groupBy('equipo.nombre_equipo') as $equipoNombre => $ciclistas)
+                <div class="mt-8 team-group ">
+                    <h3 class="mb-4 font-semibold leading-tight text-gray-800">{{ $equipoNombre ?? 'Sin equipo' }}</h3>
+                    <ul>
+                        @foreach ($ciclistas as $ciclista)
+                            <li>
+                                @if ($ciclista->hasTiempoD)
+                                <div class="flex items-center justify-between w-full p-2 space-x-3 text-left bg-red-300 border border-gray-300 rounded-lg shadow-sm group hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                @else
+                                <div class="flex items-center justify-between w-full p-2 space-x-3 text-left border border-gray-300 rounded-lg shadow-sm group hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                @endif
+                                <span class="flex items-center flex-1 min-w-0 space-x-3">
+                                    <span class="flex-1 block min-w-0">
+                                        <span class="block text-sm font-medium text-gray-900 truncate">{{ $ciclista->nom_abrev }}</span>
+                                        <span class="block text-sm font-medium text-gray-500 truncate"><span x-bind:class="getBadgeColor('{{ $ciclista->especialidad }}')" class="inline-flex items-center rounded-md px-1.5 py-0.5 text-xs font-medium">{{ $ciclista->especialidad }}</span> - {{ $ciclista->media }}</span>
+                                    </span>
+                                </span>
+                                </div>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endforeach
+
+            </ul>
+        
+        </div>
+    </div>
+
+
+
 </div>

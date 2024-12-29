@@ -45,7 +45,7 @@ class CarreraSeeder extends Seeder
             ['bloque' => 8, 'num_carrera' => 27, 'nombre_xml' => 'c0_brabantseprijs',       'nombre' => 'Brabantse Pijl', 'dia_inicio' => 59, 'num_etapas' => 1, 'categoria' => 'Conti', 'tipo' => 'Clásica'],
             ['bloque' => 8, 'num_carrera' => 28, 'nombre_xml' => 't0_alps',                 'nombre' => 'Tour of the Alps', 'dia_inicio' => 59, 'num_etapas' => 5, 'categoria' => 'Conti', 'tipo' => 'Vuelta'],
             ['bloque' => 8, 'num_carrera' => 29, 'nombre_xml' => 'topclas_maastricht',      'nombre' => 'Amstel Gold Race', 'dia_inicio' => 60, 'num_etapas' => 1, 'categoria' => 'WT', 'tipo' => 'Clásica'],
-            ['bloque' => 8, 'num_carrera' => 30, 'nombre_xml' => 'topclas_fleche',          'nombre' => 'La Fleche Wallonne', 'dia_inicio' => 70, 'num_etapas' => 1, 'categoria' => 'WT', 'tipo' => 'Clásica'],
+            ['bloque' => 8, 'num_carrera' => 30, 'nombre_xml' => 'topclas_fleche',          'nombre' => 'La Fleche Wallonne', 'dia_inicio' => 63, 'num_etapas' => 1, 'categoria' => 'WT', 'tipo' => 'Clásica'],
             ['bloque' => 9, 'num_carrera' => 31, 'nombre_xml' => 'topclas_lbl',             'nombre' => 'Liege-Bastogne-Liege', 'dia_inicio' => 64, 'num_etapas' => 1, 'categoria' => 'WT', 'tipo' => 'Monumento'],
             ['bloque' => 9, 'num_carrera' => 32, 'nombre_xml' => 'top_romandie',            'nombre' => 'Tour de Romandía', 'dia_inicio' => 65, 'num_etapas' => 6, 'categoria' => 'WT', 'tipo' => 'Vuelta'],
             ['bloque' => 9, 'num_carrera' => 33, 'nombre_xml' => 't1_asturias',             'nombre' => 'Vuelta Asturias', 'dia_inicio' => 65, 'num_etapas' => 3, 'categoria' => 'Conti', 'tipo' => 'Vuelta'],

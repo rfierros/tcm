@@ -26,6 +26,7 @@ return new class extends Migration
             $table->integer('gral_mon')->nullable(); // Posición en la clasificación de montaña
             $table->integer('gral_jov')->nullable(); // Posición en la clasificación de jóvenes
             $table->time('tiempo')->nullable(); // Tiempo en formato HH:MM:SS
+            $table->decimal('pts', 8, 4)->nullable(); 
             $table->timestamps();
 
             // Índices

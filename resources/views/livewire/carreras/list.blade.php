@@ -83,7 +83,7 @@ new class extends Component {
                         </div>
                     
                         <span class="flex-1 block min-w-0">
-                        <span class="block text-sm font-medium text-gray-900 truncate">{{ $carrera->nombre }}</span>
+                        <span class="block text-sm font-medium text-gray-900 truncate">{{ $carrera->num_carrera }}. {{ $carrera->nombre }}</span>
                         <span class="block text-sm font-medium text-gray-500 truncate">{{ $carrera->tipo }} {{ $carrera->num_etapas > 1 ? '- ' . $carrera->num_etapas . ' etapas' : '' }}</span>
                         </span>
                     </span>

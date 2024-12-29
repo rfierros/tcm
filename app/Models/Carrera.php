@@ -56,7 +56,9 @@ class Carrera extends Model
 
     public function etapas()
     {
-        return $this->hasMany(Etapa::class);
+            return Etapa::query()
+                ->where('temporada', $this->temporada)
+                ->where('num_carrera', $this->num_carrera);
     }
 
     // Indica que el campo slug debe ser utilizado para la resolución automática del modelo

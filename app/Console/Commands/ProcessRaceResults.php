@@ -5,7 +5,8 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Models\Resultado;
 use App\Models\Ciclista;
-use App\Models\Equipo;
+use App\Models\Carrera;
+use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class ProcessRaceResults extends Command
@@ -64,23 +65,23 @@ class ProcessRaceResults extends Command
     }
 
 
-private function extractRaceAndStage(string $fileName): array
-{
-    // Mejor expresión regular para extraer carrera_id y etapa
-    //preg_match('/^(\d+).*(?:Etapa\s(\d+))?/i', $fileName, $matches);
-    preg_match('/^(\d+).*Etapa\s(\d+)/i', $fileName, $matches);
+    private function extractRaceAndStage(string $fileName): array
+    {
+        // Mejor expresión regular para extraer carrera_id y etapa
+        //preg_match('/^(\d+).*(?:Etapa\s(\d+))?/i', $fileName, $matches);
+        preg_match('/^(\d+).*Etapa\s(\d+)/i', $fileName, $matches);
 
-    // Debugging opcional para verificar los valores capturados
-    $this->warn("Var valor 0: " . ($matches[0] ?? 'No encontrado'));
-    $this->warn("Var valor 1: " . ($matches[1] ?? 'No encontrado'));
-    $this->warn("Var valor 2: " . ($matches[2] ?? 'No encontrado'));
+        // Debugging opcional para verificar los valores capturados
+        $this->warn("Var valor 0: " . ($matches[0] ?? 'No encontrado'));
+        $this->warn("Var valor 1: " . ($matches[1] ?? 'No encontrado'));
+        $this->warn("Var valor 2: " . ($matches[2] ?? 'No encontrado'));
 
-    // Capturar carrera_id y etapa
-    $numCarrera = $matches[1] ?? null;
-    $etapa = isset($matches[2]) ? (int)$matches[2] : 1; // Por defecto, etapa = 1 si no está especificada
+        // Capturar carrera_id y etapa
+        $numCarrera = $matches[1] ?? null;
+        $etapa = isset($matches[2]) ? (int)$matches[2] : 1; // Por defecto, etapa = 1 si no está especificada
 
-    return [(int)$numCarrera, $etapa];
-}
+        return [(int)$numCarrera, $etapa];
+    }
 
     private function processStageResults($spreadsheet, $numCarrera, $etapa)
     {
@@ -88,6 +89,16 @@ private function extractRaceAndStage(string $fileName): array
 
         if (!$sheet) {
             $this->warn("No se encontró la pestaña 'Stage results'.");
+            return;
+        }
+
+        // Recuperar información de la carrera para determinar categoría y tipo
+        $carrera = Carrera::where('num_carrera', $numCarrera)
+            ->where('temporada', config('tcm.temporada'))
+            ->first();
+
+        if (!$carrera) {
+            $this->error("No se encontró la carrera con num_carrera: $numCarrera");
             return;
         }
 
@@ -107,7 +118,21 @@ private function extractRaceAndStage(string $fileName): array
                 continue;
             }
 
-            Resultado::updateOrCreate(
+            // Obtener los puntos para la posición en esta etapa
+            $puntos = DB::table('puntos')
+                ->where('temporada', config('tcm.temporada'))
+                ->where('posicion', $rank)
+                ->where('categoria', $carrera->categoria)
+                ->where('tipo', $carrera->tipo)
+                ->where('clasificacion', 'etapa')
+                ->value('pts'); // Recupera directamente el valor de 'pts'
+
+            if (is_null($puntos)) {
+                $puntos = 0; // Si no hay puntos definidos para esta posición, se asignan 0
+            }
+
+            // Actualizar o crear el registro en la tabla resultados
+            $resultado = Resultado::updateOrCreate(
                 [
                     'temporada' => config('tcm.temporada'),
                     'num_carrera' => $numCarrera,
@@ -115,10 +140,34 @@ private function extractRaceAndStage(string $fileName): array
                     'ciclista_id' => $ciclista->id,
                 ],
                 [
-                    'posicion' => $rank
+                    'posicion' => $rank,
+                    'pts' => $puntos,
                 ]
             );
+
+            // Sumar los puntos al valor actual
+            $resultado->increment('pts', $puntos);
+
+            $this->info("Actualizados puntos para {$name} (Posición: {$rank}, Puntos: {$puntos})");
         }
+    }
+
+    private function loadPointConfiguration(string $clasificacion, string $categoria, string $tipo): ?array
+    {
+        $jsonFile = storage_path('app/config/puntos.json');
+        $puntosConfig = json_decode(file_get_contents($jsonFile), true);
+
+        foreach ($puntosConfig as $config) {
+            if (
+                $config['clasificacion'] === $clasificacion &&
+                $config['categoria'] === $categoria &&
+                $config['tipo'] === $tipo
+            ) {
+                return $config;
+            }
+        }
+
+        return null; // Si no se encuentra configuración
     }
 
     private function processGeneralResults($spreadsheet, $numCarrera, $etapa)

@@ -10,7 +10,7 @@ class Resultado extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['temporada', 'num_carrera', 'etapa', 'ciclista_id', 'equipo_id', 'posicion', 'pos_gral', 'gral_reg', 'gral_mon', 'gral_jov', 'tiempo'];
+    protected $fillable = ['temporada', 'num_carrera', 'etapa', 'ciclista_id', 'equipo_id', 'posicion', 'pos_gral', 'gral_reg', 'gral_mon', 'gral_jov', 'tiempo', 'pts'];
 
 
     public function carrera()

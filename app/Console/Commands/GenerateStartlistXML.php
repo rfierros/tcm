@@ -41,7 +41,7 @@ class GenerateStartlistXML extends Command
         $nombreXml = $carrera->nombre_xml ?? 'default';
 
         // Directorio donde se guardará el archivo XML
-        $exportDir = storage_path('app/exports');
+        $exportDir = storage_path('app/exports/startlists');
 
         // Nombre del archivo de salida
         $outputFile = "$exportDir/{$nombreXml}.xml";

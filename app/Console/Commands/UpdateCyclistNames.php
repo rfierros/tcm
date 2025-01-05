@@ -26,7 +26,7 @@ class UpdateCyclistNames extends Command
      */
     public function handle()
     {
-        $filePath = storage_path('app/imports/nombres_apellidos.csv');
+        $filePath = storage_path('app/imports/corredores/nombres_apellidos.csv');
 
         if (!file_exists($filePath)) {
             $this->error("El archivo CSV no se encontró en la ruta: $filePath");

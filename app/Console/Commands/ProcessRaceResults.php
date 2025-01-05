@@ -17,7 +17,7 @@ class ProcessRaceResults extends Command
     public function handle()
     {
         // Directorio donde se almacenan los archivos
-        $importDir = storage_path('app/imports');
+        $importDir = storage_path('app/imports/resultados');
 
         // Obtener el nombre del archivo desde el parámetro
         $fileName = $this->argument('file');
@@ -95,7 +95,7 @@ class ProcessRaceResults extends Command
         // Recuperar información de la carrera para determinar categoría y tipo
         $carrera = Carrera::where('num_carrera', $numCarrera)
             ->where('temporada', config('tcm.temporada'))
-            ->first();
+            ->first(['categoria', 'tipo', 'num_etapas']); // Incluir 'num_etapas'
 
         if (!$carrera) {
             $this->error("No se encontró la carrera con num_carrera: $numCarrera");

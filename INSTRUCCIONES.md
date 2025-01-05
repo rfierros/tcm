@@ -90,3 +90,20 @@ Así lanzamos el proceso (para la temporada 4):
 ```php
 php artisan import:inscripciones 4
 ```
+
+**Generar una Start List (SL) a partir de los datos de la BD**
+
+Previamente deberemos haber hecho las inscripciones. De esa forma se guardan en la BD. A partir de esos datos almacenados podemos generar el fichero con la start list que necesita el juego para el día de la restansmisión.
+Aquí vemos un ejemplo para generar la SL de la carrera 33:
+```php
+php artisan generate:startlist 33
+```
+
+**Actualizar la BD con las Excels de resultados**
+
+Los archivos se almacenarán en app/imports/resultados. Serán archivos .xlsx y la nomenclatura de los mismos deberá ser empezar por el num_carrera de esa competición, y acabar con "Etapa x" donde x es el número de la etapa. Todo el texto que tengamos en medio será meramente informativo y a nosotros no nos afecta.
+El proceso se lanzará con el nombre exacto del archivo que queremos procesar.
+Aquí vemos un ejemplo para la Etapa 3 de la carrera 9.:
+```php
+php artisan process:race-results "09 Tour des Alpes-Maritimes Etapa 3.xlsx"
+```

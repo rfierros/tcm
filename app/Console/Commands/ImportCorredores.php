@@ -28,7 +28,7 @@ class ImportCorredores extends Command
      */
     public function handle()
     {
-        $filePath = storage_path('app/imports/corredores.csv');
+        $filePath = storage_path('app/imports/corredores/corredores.csv');
         $temporada = 4;
 
         if (!file_exists($filePath)) {

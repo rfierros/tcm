@@ -10,7 +10,7 @@ class Resultado extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['temporada', 'num_carrera', 'etapa', 'ciclista_id', 'equipo_id', 'posicion', 'pos_gral', 'gral_reg', 'gral_mon', 'gral_jov', 'tiempo', 'pts'];
+    protected $fillable = ['temporada', 'num_carrera', 'etapa', 'cod_ciclista', 'cod_equipo', 'posicion', 'pos_gral', 'gral_reg', 'gral_mon', 'gral_jov', 'tiempo', 'pts'];
 
 
     public function carrera()
@@ -24,24 +24,24 @@ class Resultado extends Model
 
     public function ciclista(): BelongsTo
     {
-        return $this->belongsTo(Ciclista::class, 'ciclista_id');
+        return $this->belongsTo(Ciclista::class, 'cod_ciclista', 'cod_ciclista');
     }
 
-    public function equipo()
+    public function equipo(): BelongsTo
     {
-        return $this->belongsTo(Equipo::class, 'equipo_id');
+        return $this->belongsTo(Equipo::class, 'cod_equipo', 'cod_equipo');
     }
 
-    public static function crearResultadosParaInscripcion(int $carreraId, array $ciclistasIds, int $equipoId, int $temporada, int $numEtapas)
+    public static function crearResultadosParaInscripcion(int $carreraId, array $codsCiclistas, int $codEquipo, int $temporada, int $numEtapas)
     {
-        foreach ($ciclistasIds as $ciclistaId) {
+        foreach ($codsCiclistas as $codCiclista) {
             // Crear un registro en 'resultados' por cada etapa
             for ($etapa = 1; $etapa <= $numEtapas; $etapa++) {
                 self::create([
                     'carrera_id' => $carreraId,
                     'etapa' => $etapa,
-                    'ciclista_id' => $ciclistaId,
-                    'equipo_id' => $equipoId,
+                    'cod_ciclista' => $codCiclista,
+                    'cod_equipo' => $codEquipo,
                     'posicion' => 0, // Posición inicial de 0
                     'temporada' => $temporada,
                 ]);

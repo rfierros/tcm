@@ -12,7 +12,7 @@ new class extends Component {
 
     public $columns = [ // Campo => Cabecera
         'nom_abrev' => 'Ciclista',
-        'clave_id' => 'Id',
+        'cod_ciclista' => 'Id',
         'especialidad' => 'tipo',
         'edad' => 'edad',
         'lla' => 'lla',

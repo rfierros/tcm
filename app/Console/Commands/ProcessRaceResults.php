@@ -137,7 +137,7 @@ class ProcessRaceResults extends Command
                     'temporada' => config('tcm.temporada'),
                     'num_carrera' => $numCarrera,
                     'etapa' => $etapa,
-                    'ciclista_id' => $ciclista->id,
+                    'cod_ciclista' => $ciclista->cod_ciclista,
                 ],
                 [
                     'posicion' => $rank,
@@ -198,7 +198,7 @@ class ProcessRaceResults extends Command
                 'temporada' => config('tcm.temporada'),
                 'num_carrera' => $numCarrera,
                 'etapa' => $etapa,
-                'ciclista_id' => $ciclista->id,
+                'cod_ciclista' => $ciclista->cod_ciclista,
             ])->update(['pos_gral' => $rank]);
         }
     }
@@ -231,7 +231,7 @@ class ProcessRaceResults extends Command
                 'temporada' => config('tcm.temporada'),
                 'num_carrera' => $numCarrera,
                 'etapa' => $etapa,
-                'ciclista_id' => $ciclista->id,
+                'cod_ciclista' => $ciclista->cod_ciclista,
             ])->update(['gral_reg' => $rank]);
         }
     }
@@ -264,7 +264,7 @@ class ProcessRaceResults extends Command
                 'temporada' => config('tcm.temporada'),
                 'num_carrera' => $numCarrera,
                 'etapa' => $etapa,
-                'ciclista_id' => $ciclista->id,
+                'cod_ciclista' => $ciclista->cod_ciclista,
             ])->update(['gral_mon' => $rank]);
         }
     }
@@ -308,7 +308,7 @@ class ProcessRaceResults extends Command
                 'temporada' => config('tcm.temporada'),
                 'num_carrera' => $numCarrera,
                 'etapa' => $etapa,
-                'ciclista_id' => $ciclista->id,
+                'cod_ciclista' => $ciclista->cod_ciclista,
             ])->update(['gral_jov' => $rank]);
         }
     }

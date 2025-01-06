@@ -20,6 +20,14 @@ class Equipo extends Model
     // Relación con el modelo Ciclista
     public function ciclistas(): HasMany
     {
-        return $this->hasMany(Ciclista::class, 'id');
-    }      
+        return $this->hasMany(Ciclista::class, 'cod_equipo', 'cod_equipo');
+    }
+
+    /**
+     * Relación con inscripciones.
+     */
+    public function inscripciones(): HasMany
+    {
+        return $this->hasMany(Inscripcion::class, 'cod_equipo', 'cod_equipo');
+    }
 }

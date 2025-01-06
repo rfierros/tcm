@@ -42,8 +42,8 @@ class UpdateCyclistNames extends Command
             while ($row = fgetcsv($file)) {
                 $data = array_combine($header, $row);
 
-                // Buscar el ciclista por clave_id
-                $ciclista = Ciclista::where('clave_id', $data['id'])->first();
+                // Buscar el ciclista por cod_ciclista
+                $ciclista = Ciclista::where('cod_ciclista', $data['id'])->first();
 
                 if ($ciclista) {
                     // Actualizar los datos del ciclista
@@ -55,7 +55,7 @@ class UpdateCyclistNames extends Command
 
                     $updatedCount++;
                 } else {
-                    $this->warn("No se encontró un ciclista con clave_id: {$data['id']}");
+                    $this->warn("No se encontró un ciclista con cod_ciclista: {$data['id']}");
                 }
             }
 

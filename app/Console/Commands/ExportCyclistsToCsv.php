@@ -37,10 +37,10 @@ class ExportCyclistsToCsv extends Command
 
         // Escribir encabezados
         $headers = [
-            'id', 'temporada', 'clave_id', 'nombre', 'apellido', 'nom_ape', 'nom_abrev', 
+            'id', 'temporada', 'cod_ciclista', 'cod_equipo', 'nombre', 'apellido', 'nom_ape', 'nom_abrev', 
             'pais', 'especialidad', 'edad', 'lla', 'mon', 'col', 'cri', 'pro', 'pav',
-            'spr', 'acc', 'des', 'com', 'ene', 'res', 'rec', 'media', 'u24', 'conti',
-            'equipo_id'
+            'spr', 'acc', 'des', 'com', 'ene', 'res', 'rec', 'media', 'u24', 'conti'
+            
         ];
         fputcsv($file, $headers);
 

@@ -58,7 +58,7 @@ class GenerateStartlistXML extends Command
         $resultados = Resultado::where('num_carrera', $carrera->num_carrera)
             ->where('etapa', 1)
             ->with(['ciclista', 'equipo']) // Relación con ciclistas y equipos
-            ->orderBy('equipo_id')
+            ->orderBy('cod_equipo')
             ->get();
 
         if ($resultados->isEmpty()) {
@@ -76,21 +76,21 @@ class GenerateStartlistXML extends Command
             $ciclista = $resultado->ciclista;
             $equipo = $resultado->equipo;
 
-            if (!$ciclista || !$ciclista->clave_id || !$equipo || !$equipo->clave_id) {
+            if (!$ciclista || !$ciclista->cod_ciclista || !$equipo || !$equipo->cod_equipo) {
                 $this->warn("Datos incompletos: Ciclista o equipo no válidos para resultado ID: {$resultado->id}");
                 continue;
             }
 
-            // Si cambia el clave_id del equipo, cerramos el equipo anterior y creamos uno nuevo
-            if ($currentTeamClaveId !== $equipo->clave_id) {
-                $currentTeamClaveId = $equipo->clave_id;
+            // Si cambia el cod_equipo del equipo, cerramos el equipo anterior y creamos uno nuevo
+            if ($currentTeamClaveId !== $equipo->cod_equipo) {
+                $currentTeamClaveId = $equipo->cod_equipo;
                 $teamElement = $xml->addChild('team');
                 $teamElement->addAttribute('id', $currentTeamClaveId);
             }
 
             // Agregar ciclista al equipo actual
             $cyclistElement = $teamElement->addChild('cyclist');
-            $cyclistElement->addAttribute('id', $ciclista->clave_id);
+            $cyclistElement->addAttribute('id', $ciclista->cod_ciclista);
         }
 
         // Agregar última etiqueta fija

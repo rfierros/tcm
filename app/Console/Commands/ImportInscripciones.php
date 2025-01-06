@@ -43,7 +43,7 @@ class ImportInscripciones extends Command
 
         try {
             // Cargar todos los equipos de la temporada en un array
-            $equipos = Ciclista::where('temporada', $temporada)->pluck('equipo_id', 'nom_abrev')->toArray();
+            $equipos = Ciclista::where('temporada', $temporada)->pluck('cod_equipo', 'nom_abrev')->toArray();
 
             foreach ($files as $filePath) {
                 // Extraer el num_carrera del nombre del archivo (ej: "35.giro-italia.ins" -> num_carrera = 35)
@@ -83,8 +83,8 @@ class ImportInscripciones extends Command
                     }
 
                     // Obtener los datos del ciclista
-                    $ciclistaId = $ciclista->id;
-                    $equipoId = $ciclista->equipo_id;
+                    $codCiclista = $ciclista->cod_ciclista;
+                    $codEquipo = $ciclista->cod_equipo;
 
                     // Insertar un registro en la tabla resultados para cada etapa
                     for ($etapa = 1; $etapa <= $numEtapas; $etapa++) {
@@ -93,16 +93,16 @@ class ImportInscripciones extends Command
                                 'temporada' => $temporada,
                                 'num_carrera' => $numCarrera, // Asegúrate de incluir esta clave
                                 'etapa' => $etapa,
-                                'ciclista_id' => $ciclistaId,
+                                'cod_ciclista' => $codCiclista,
                             ],
                             [
-                                'equipo_id' => $equipoId,
+                                'cod_equipo' => $codEquipo,
                                 'posicion' => 0,
                             ]
                         );
                     }
 
-                    $this->info("Inscripción registrada para: $nomApe en carrera ID: $numCarrera");
+                    $this->info("Inscripción registrada para: $nomApe en num_carrera: $numCarrera");
                 }
 
                 fclose($file);

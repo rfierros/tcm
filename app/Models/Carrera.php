@@ -5,21 +5,25 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Support\Facades\DB;  
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
 class Carrera extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['bloque', 'num_carrera', 'nombre', 'num_etapas', 'categoria', 'tipo', 'temporada', 'dia_inicio'];
+    protected $fillable = [
+        'bloque', 'num_carrera', 'nombre', 'num_etapas', 'categoria', 'tipo', 'temporada', 'dia_inicio',
+    ];
 
     // Valores permitidos para 'categoria' y 'tipo'
     const CATEGORIAS = ['U24', 'WT', 'Conti'];
     const TIPOS = ['Vuelta', 'Clásica', 'Monumento', 'Continental', 'GV'];
 
-    // Accessor para validar el valor de 'categoria'
+    /**
+     * Validación del atributo `categoria`.
+     */
     public function setCategoriaAttribute($value)
     {
         if (!in_array($value, self::CATEGORIAS)) {
@@ -28,7 +32,9 @@ class Carrera extends Model
         $this->attributes['categoria'] = $value;
     }
 
-    // Accessor para validar el valor de 'tipo'
+    /**
+     * Validación del atributo `tipo`.
+     */
     public function setTipoAttribute($value)
     {
         if (!in_array($value, self::TIPOS)) {
@@ -37,57 +43,74 @@ class Carrera extends Model
         $this->attributes['tipo'] = $value;
     }
 
-    public function calendario(): HasMany
+    /**
+     * Relación con el modelo `Inscripcion`.
+     */
+    public function inscripciones(): HasMany
     {
-        return $this->hasMany(Calendario::class, 'carrera_id');
+        return $this->hasMany(Inscripcion::class, 'num_carrera', 'num_carrera')
+            ->where('temporada', $this->temporada);
     }
 
-    public function ciclistas(): BelongsToMany
+    /**
+     * Relación con el modelo `Ciclista` a través de `Inscripcion`.
+     */
+    public function ciclistas(): HasManyThrough
     {
-        return $this->belongsToMany(Ciclista::class, 'carrera_ciclista')
-                    ->withPivot(['inscrito_at'])
-                    ->withTimestamps();
+        return $this->hasManyThrough(
+            Ciclista::class,
+            Inscripcion::class,
+            'num_carrera', // Foreign key en Inscripciones
+            'cod_ciclista', // Foreign key en Ciclistas
+            'num_carrera', // Local key en Carrera
+            'cod_ciclista' // Local key en Inscripciones
+        )->where('inscripciones.temporada', $this->temporada);
     }
 
-    public function resultados(): HasMany
+    /**
+     * Relación con el modelo `Etapa`.
+     */
+    public function etapas(): HasMany
     {
-        return $this->hasMany(Resultado::class, 'carrera_id');
+        return $this->hasMany(Etapa::class, 'num_carrera', 'num_carrera')
+            ->where('temporada', $this->temporada);
     }
 
-    public function etapas()
-    {
-            return Etapa::query()
-                ->where('temporada', $this->temporada)
-                ->where('num_carrera', $this->num_carrera);
-    }
-
-    // Indica que el campo slug debe ser utilizado para la resolución automática del modelo
+    /**
+     * Cambia la clave para buscar rutas.
+     */
     public function getRouteKeyName()
     {
         return 'slug';
-    }    
+    }
 
-    // Función para inscribir un ciclista en la carrera, validando conflictos de fechas
+    /**
+     * Inscribir un ciclista en la carrera validando conflictos de calendario.
+     */
     public function inscribirCiclista(Ciclista $ciclista)
     {
         $diasCarrera = range($this->dia_inicio, $this->dia_inicio + $this->num_etapas - 1);
 
         // Verificar conflictos con otras carreras en la misma temporada
-        $conflictos = DB::table('calendarios')
-            ->join('carrera_ciclista', 'calendarios.carrera_id', '=', 'carrera_ciclista.carrera_id')
-            ->where('carrera_ciclista.ciclista_id', $ciclista->id)
-            ->where('calendarios.temporada', $this->temporada)
-            ->whereIn('calendarios.dia', $diasCarrera)
-            ->exists();
+        $conflictos = $this->existeConflictoDeCalendario($ciclista->cod_ciclista);
 
         if ($conflictos) {
             return "El ciclista no puede inscribirse debido a un conflicto de fechas en esta temporada.";
         }
 
-        // Si no hay conflictos, inscribir el ciclista
-        $this->ciclistas()->attach($ciclista->id, ['inscrito_at' => now()]);
+        // Crear la inscripción si no hay conflictos
+        Inscripcion::create([
+            'temporada' => $this->temporada,
+            'num_carrera' => $this->num_carrera,
+            'cod_ciclista' => $ciclista->cod_ciclista,
+            'cod_equipo' => $ciclista->cod_equipo,
+            'inscrito_at' => now(),
+        ]);
     }
 
+    /**
+     * Determinar el número máximo de corredores permitidos en esta carrera.
+     */
     public function maxCorredoresPermitidos()
     {
         if ($this->tipo === 'GV') {
@@ -98,28 +121,39 @@ class Carrera extends Model
         return 7;
     }
 
-    // Validar inscripción de los corredores y conflictos
-    public function validarInscripcion(array $ciclistasIds)
+    /**
+     * Validar las inscripciones de un conjunto de corredores.
+     */
+    public function validarInscripcion(array $ciclistasCodigos)
     {
         $maxPermitido = $this->maxCorredoresPermitidos();
-        if (count($ciclistasIds) > $maxPermitido) {
+        if (count($ciclistasCodigos) > $maxPermitido) {
             throw new \Exception("No puedes inscribir más de $maxPermitido corredores en esta carrera.");
         }
 
-        foreach ($ciclistasIds as $ciclistaId) {
-            if ($this->existeConflictoDeCalendario($ciclistaId)) {
-                throw new \Exception("El ciclista con ID $ciclistaId ya está inscrito en una carrera que se solapa.");
+        foreach ($ciclistasCodigos as $codCiclista) {
+            if ($this->existeConflictoDeCalendario($codCiclista)) {
+                throw new \Exception("El ciclista con cod_ciclista $codCiclista ya está inscrito en una carrera que se solapa.");
             }
         }
 
         return true;
     }
 
-    public function corredoresInscritos(int $equipoId)
+    /**
+     * Verificar si un ciclista tiene conflictos de calendario con esta carrera.
+     */
+    private function existeConflictoDeCalendario($codCiclista)
     {
-        return Resultado::where('carrera_id', $this->id)
-                        ->where('equipo_id', $equipoId)
-                        ->get();
+        $diasCarrera = range($this->dia_inicio, $this->dia_inicio + $this->num_etapas - 1);
+
+        return DB::table('inscripciones')
+            ->join('carreras', function ($join) {
+                $join->on('inscripciones.num_carrera', '=', 'carreras.num_carrera')
+                    ->where('inscripciones.temporada', $this->temporada);
+            })
+            ->where('inscripciones.cod_ciclista', $codCiclista)
+            ->whereIn('carreras.dia_inicio', $diasCarrera)
+            ->exists();
     }
 }
-

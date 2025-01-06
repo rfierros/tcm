@@ -58,13 +58,13 @@ class ImportCyclistsFromCsv extends Command
             // Crear un array asociativo con los encabezados como claves
             $data = array_combine($header, $row);
 
-            // Manejar valores vacíos en equipo_id
-            $data['equipo_id'] = $data['equipo_id'] === '' ? null : $data['equipo_id'];
+            // Manejar valores vacíos en cod_equipo
+            $data['cod_equipo'] = $data['cod_equipo'] === '' ? null : $data['cod_equipo'];
 
             try {
                 // Procesar registro
                 Ciclista::updateOrCreate(
-                    ['clave_id' => $data['clave_id']], // Condición para identificar el registro
+                    ['cod_ciclista' => $data['cod_ciclista']], // Condición para identificar el registro
                     [
                         'temporada' => $data['temporada'],
                         'nombre' => $data['nombre'],
@@ -90,13 +90,13 @@ class ImportCyclistsFromCsv extends Command
                         'media' => $data['media'],
                         'u24' => $data['u24'],
                         'conti' => $data['conti'],
-                        'equipo_id' => $data['equipo_id'], // Dejar null si está vacío
+                        'cod_equipo' => $data['cod_equipo'], // Dejar null si está vacío
                     ]
                 );
 
                 $importedCount++; // Incrementar contador
             } catch (\Exception $e) {
-                $this->warn("Error al procesar ciclista con clave_id {$data['clave_id']}: " . $e->getMessage());
+                $this->warn("Error al procesar ciclista con cod_ciclista {$data['cod_ciclista']}: " . $e->getMessage());
                 continue; // Continuar con el siguiente registro
             }
         }

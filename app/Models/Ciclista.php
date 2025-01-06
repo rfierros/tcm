@@ -14,20 +14,20 @@ class Ciclista extends Model
 
     // Definir los campos que pueden ser asignados masivamente
     protected $fillable = [
-        'clave_id', 'temporada', 'nombre', 'apellido', 'nom_ape', 'nom_abrev', 'pais', 'pos_ini', 'pos_fin', 'pts', 'especialidad', 'edad', 
+        'cod_ciclista', 'temporada', 'cod_equipo', 'nombre', 'apellido', 'nom_ape', 'nom_abrev', 'pais', 'pos_ini', 'pos_fin', 'pts', 'especialidad', 'edad', 
         'lla', 'mon', 'col', 'cri', 'pro', 'pav', 'spr', 'acc', 'des', 'com',
-        'ene', 'res', 'rec', 'media', 'equipo_id', 'conti', 'u24'
+        'ene', 'res', 'rec', 'media', 'conti', 'u24'
     ];
 
     // Relación de pertenencia a un equipo
     public function equipo()
     {
-        return $this->belongsTo(Equipo::class, 'equipo_id');
+        return $this->belongsTo(Equipo::class, 'cod_equipo', 'cod_equipo');
     }
 
     public function resultados()
     {
-        return $this->hasMany(Resultado::class, 'ciclista_id');
+        return $this->hasMany(Resultado::class, 'cod_ciclista', 'cod_ciclista');
     }
 
     public function calcularSwitches(): void

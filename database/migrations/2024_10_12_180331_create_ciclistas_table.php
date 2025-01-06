@@ -13,47 +13,49 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('ciclistas', function (Blueprint $table) {
-            $table->id();
+            $table->id(); // ID autoincremental para el ciclista
+            $table->integer('cod_ciclista')->unique(); // Identificador único del ciclista (de la Excel)
+            $table->integer('temporada'); // Temporada del ciclista
 
-            $table->integer('temporada'); // Temporada del equipo
-            $table->integer('clave_id')->unique(); // Define `clave_id` como un campo único. Es el id de las excel
-            $table->string('apellido');                      // Nombre del ciclista
-            $table->string('nombre');                    // Apellido del ciclista
-            $table->string('nom_ape');                    // Nombre que aparece en las excel de resultados que genera el juego
-            $table->string('nom_abrev');                  // combinacion a mostrar
-            $table->string('pais');                        // País del ciclista
-            $table->integer('pos_ini')->nullable();         // Posición inicial (entero hasta 3 posiciones)
-            $table->integer('pos_fin')->nullable();         // Posición final (entero hasta 3 posiciones)
-            $table->integer('victorias')->nullable();      // Victorias (entero hasta 3 posiciones)
-            $table->decimal('pts', 14, 8)->nullable();      // Puntos (decimal con 8 decimales)
-            $table->enum('especialidad', ['escalador', 'combatividad', 'sprinter', 'flandes', 'ardenas', 'croner']); // Enum para limitar valores
-            $table->integer('edad')->nullable();           // Edad del ciclista (entero de 2 posiciones)
-            $table->decimal('lla', 5, 3)->nullable();      // Valoración LLA (decimal con 3 decimales)
-            $table->decimal('mon', 5, 3)->nullable();      // Valoración MON (decimal con 3 decimales)
-            $table->decimal('col', 5, 3)->nullable();      // Valoración COL (decimal con 3 decimales)
-            $table->decimal('cri', 5, 3)->nullable();      // Valoración CRI (decimal con 3 decimales)
-            $table->decimal('pro', 5, 3)->nullable();      // Valoración PRO (decimal con 3 decimales)
-            $table->decimal('pav', 5, 3)->nullable();      // Valoración PAV (decimal con 3 decimales)
-            $table->decimal('spr', 5, 3)->nullable();      // Valoración SPR (decimal con 3 decimales)
-            $table->decimal('acc', 5, 3)->nullable();      // Valoración ACC (decimal con 3 decimales)
-            $table->decimal('des', 5, 3)->nullable();      // Valoración DES (decimal con 3 decimales)
-            $table->decimal('com', 5, 3)->nullable();      // Valoración COM (decimal con 3 decimales)
-            $table->decimal('ene', 5, 3)->nullable();      // Valoración ENE (decimal con 3 decimales)
-            $table->decimal('res', 5, 3)->nullable();      // Valoración RES (decimal con 3 decimales)
-            $table->decimal('rec', 5, 3)->nullable();      // Valoración REC (decimal con 3 decimales)
-            $table->decimal('media', 10, 8)->nullable();    // Media general del ciclista
-            // switches para filtrar facilmente los ciclistas
+            // Clave foránea hacia equipos, usando el campo `cod_equipo`
+            $table->integer('cod_equipo')->nullable(); // Relaciona con `cod_equipo` en la tabla `equipos`
+            $table->foreign('cod_equipo')->references('cod_equipo')->on('equipos')->onDelete('set null');
+
+            $table->string('apellido'); // Apellido del ciclista
+            $table->string('nombre'); // Nombre del ciclista
+            $table->string('nom_ape'); // Nombre completo que aparece en los resultados
+            $table->string('nom_abrev'); // Nombre abreviado
+
+            $table->string('pais'); // País del ciclista
+            $table->integer('pos_ini')->nullable(); // Posición inicial
+            $table->integer('pos_fin')->nullable(); // Posición final
+            $table->integer('victorias')->nullable(); // Victorias
+            $table->decimal('pts', 14, 8)->nullable(); // Puntos
+
+            $table->enum('especialidad', ['escalador', 'combatividad', 'sprinter', 'flandes', 'ardenas', 'croner']); // Especialidad
+            $table->integer('edad')->nullable(); // Edad
+            $table->decimal('lla', 5, 3)->nullable(); // Valoración LLA
+            $table->decimal('mon', 5, 3)->nullable(); // Valoración MON
+            $table->decimal('col', 5, 3)->nullable(); // Valoración COL
+            $table->decimal('cri', 5, 3)->nullable(); // Valoración CRI
+            $table->decimal('pro', 5, 3)->nullable(); // Valoración PRO
+            $table->decimal('pav', 5, 3)->nullable(); // Valoración PAV
+            $table->decimal('spr', 5, 3)->nullable(); // Valoración SPR
+            $table->decimal('acc', 5, 3)->nullable(); // Valoración ACC
+            $table->decimal('des', 5, 3)->nullable(); // Valoración DES
+            $table->decimal('com', 5, 3)->nullable(); // Valoración COM
+            $table->decimal('ene', 5, 3)->nullable(); // Valoración ENE
+            $table->decimal('res', 5, 3)->nullable(); // Valoración RES
+            $table->decimal('rec', 5, 3)->nullable(); // Valoración REC
+            $table->decimal('media', 10, 8)->nullable(); // Media general del ciclista
+
+            // Filtros
             $table->boolean('conti')->default(false); // Campo conti
-            $table->boolean('u24')->default(false);    // Campo u24
-            // Clave foránea a la tabla de equipos, usando la opción 'set null'
-            $table->unsignedBigInteger('equipo_id')->nullable(); // ID del equipo al que pertenece
-            $table->foreign('equipo_id')->references('id')->on('equipos')->onDelete('set null');
+            $table->boolean('u24')->default(false); // Campo u24
 
-
-            $table->timestamps();                         // Marcas de tiempo para created_at y updated_at
-
-
+            $table->timestamps(); // Campos created_at y updated_at
         });
+
     }
 
     /**

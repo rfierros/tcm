@@ -62,7 +62,7 @@ new class extends Component {
             $query->where('etapa', 1)
                 ->where('num_carrera', $this->carrera->num_carrera)
                 ->where('temporada', $this->carrera->temporada)
-                ->where('equipo_id', $equipo->id); 
+                ->where('cod_equipo', $equipo->cod_equipo); 
         })->get();
     }
 
@@ -78,7 +78,7 @@ new class extends Component {
                 ->where('num_carrera', $this->carrera->num_carrera)
                 ->where('temporada', $this->carrera->temporada);
         }])
-        ->orderBy('equipo_id')
+        ->orderBy('cod_equipo')
         ->get();
 
         // Clasificar ciclistas según el tiempo en los resultados

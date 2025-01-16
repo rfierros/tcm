@@ -18,7 +18,7 @@ class EtapaSeeder extends Seeder
         // Array de carreras con sus etapas
         $carreras = [
             [
-                'carrera_id' => 35, // Giro de Italia
+                'num_carrera' => 35, // Giro de Italia
                 'etapas' => [
                     ['num_etapa' => 1, 'nombre' => 'Herning', 'km' => 8, 'perfil' => 'llano',        'tipo' => 'cri'],
                     ['num_etapa' => 2, 'nombre' => 'Herning - Herning', 'km' => 195, 'perfil' => 'llano',        'tipo' => 'normal'],
@@ -44,7 +44,7 @@ class EtapaSeeder extends Seeder
                 ],
             ],
             [
-                'carrera_id' => 43, // Tour de Francia
+                'num_carrera' => 43, // Tour de Francia
                 'etapas' => [
                     ['num_etapa' =>  1, 'km' => 199, 'perfil' => 'llano', 'tipo' => 'normal', 'nombre' => 'Passage du Gois - Mont des Alouettes'],
                     ['num_etapa' =>  2, 'km' =>  23, 'perfil' => 'llano', 'tipo' => 'cre', 'nombre' => 'Les Essarts - Les Essarts'],
@@ -71,7 +71,7 @@ class EtapaSeeder extends Seeder
                 ],
             ],
             [
-                'carrera_id' => 54, // Vuelta a España
+                'num_carrera' => 54, // Vuelta a España
                 'etapas' => [
                     ['num_etapa' =>  1, 'km' => 8.4, 'perfil' => 'media-montaña', 'tipo' => 'cri',    'nombre' => 'Málaga - Málaga'],
                     ['num_etapa' =>  2, 'km' => 165, 'perfil' => 'media-montaña', 'tipo' => 'normal', 'nombre' => 'Marbella - Caminito del Rey'],
@@ -98,116 +98,116 @@ class EtapaSeeder extends Seeder
             ],
             //Monumentos
             [
-                'carrera_id' => 17, 
+                'num_carrera' => 17, 
                 'etapas' => [
                     ['num_etapa' =>  1, 'km' => 299, 'perfil' => 'media-montaña', 'tipo' => 'normal',    'nombre' => 'Milano - San Remo'],
                 ],
             ],
             [
-                'carrera_id' => 24, 
+                'num_carrera' => 24, 
                 'etapas' => [
                     ['num_etapa' =>  1, 'km' => 232, 'perfil' => 'llano', 'tipo' => 'normal',    'nombre' => 'Ronde van Vlaanderen'],
                 ],
             ],
             [
-                'carrera_id' => 26, 
+                'num_carrera' => 26, 
                 'etapas' => [
                     ['num_etapa' =>  1, 'km' => 261, 'perfil' => 'llano', 'tipo' => 'normal',    'nombre' => 'Paris - Roubaix'],
                 ],
             ],
             [
-                'carrera_id' => 31, 
+                'num_carrera' => 31, 
                 'etapas' => [
                     ['num_etapa' =>  1, 'km' => 254, 'perfil' => 'media-montaña', 'tipo' => 'normal',    'nombre' => 'Liege - Bastogne - Liege'],
                 ],
             ],
             [
-                'carrera_id' => 64, 
+                'num_carrera' => 64, 
                 'etapas' => [
                     ['num_etapa' =>  1, 'km' => 233, 'perfil' => 'montaña', 'tipo' => 'normal',    'nombre' => 'Il Lombardia'],
                 ],
             ],
             // Clásicas WT
             [
-                'carrera_id' => 3, 
+                'num_carrera' => 3, 
                 'etapas' => [
                     ['num_etapa' =>  1, 'km' => 172, 'perfil' => 'llano', 'tipo' => 'normal', 'nombre' => 'Cadel Evans'],
                 ],
             ],
             [
-                'carrera_id' => 10, 
+                'num_carrera' => 10, 
                 'etapas' => [
                     ['num_etapa' =>  1, 'km' => 201, 'perfil' => 'llano', 'tipo' => 'normal', 'nombre' => 'Omloop'],
                 ],
             ],
             [
-                'carrera_id' => 11, 
+                'num_carrera' => 11, 
                 'etapas' => [
                     ['num_etapa' =>  1, 'km' => 213, 'perfil' => 'media-montaña', 'tipo' => 'normal', 'nombre' => 'Strade Bianche'],
                 ],
             ],
             [
-                'carrera_id' => 19, 
+                'num_carrera' => 19, 
                 'etapas' => [
                     ['num_etapa' =>  1, 'km' => 213, 'perfil' => 'llano', 'tipo' => 'normal', 'nombre' => 'De Panne'],
                 ],
             ],
             [
-                'carrera_id' => 20, 
+                'num_carrera' => 20, 
                 'etapas' => [
                     ['num_etapa' =>  1, 'km' => 202, 'perfil' => 'llano', 'tipo' => 'normal', 'nombre' => 'E3'],
                 ],
             ],
             [
-                'carrera_id' => 22, 
+                'num_carrera' => 22, 
                 'etapas' => [
                     ['num_etapa' =>  1, 'km' => 174, 'perfil' => 'llano', 'tipo' => 'normal', 'nombre' => 'Gent-Wevelgem'],
                 ],
             ],
             [
-                'carrera_id' => 29, 
+                'num_carrera' => 29, 
                 'etapas' => [
                     ['num_etapa' =>  1, 'km' => 256, 'perfil' => 'media-montaña', 'tipo' => 'normal', 'nombre' => 'Dwars'],
                 ],
             ],
             [
-                'carrera_id' => 30, 
+                'num_carrera' => 30, 
                 'etapas' => [
                     ['num_etapa' =>  1, 'km' => 199, 'perfil' => 'media-montaña', 'tipo' => 'normal', 'nombre' => 'Amstel'],
                 ],
             ],
             [
-                'carrera_id' => 34, 
+                'num_carrera' => 34, 
                 'etapas' => [
                     ['num_etapa' =>  1, 'km' => 214, 'perfil' => 'llano', 'tipo' => 'normal', 'nombre' => 'Flecha'],
                 ],
             ],
             [
-                'carrera_id' => 51, 
+                'num_carrera' => 51, 
                 'etapas' => [
                     ['num_etapa' =>  1, 'km' => 215, 'perfil' => 'media-montaña', 'tipo' => 'normal', 'nombre' => 'Frankfurt'],
                 ],
             ],
             [
-                'carrera_id' => 56, 
+                'num_carrera' => 56, 
                 'etapas' => [
                     ['num_etapa' =>  1, 'km' => 260, 'perfil' => 'llano', 'tipo' => 'normal', 'nombre' => 'San Sebastián'],
                 ],
             ],
             [
-                'carrera_id' => 58 , 
+                'num_carrera' => 58 , 
                 'etapas' => [
                     ['num_etapa' =>  1, 'km' => 219, 'perfil' => 'llano', 'tipo' => 'normal', 'nombre' => 'Bremer'],
                 ],
             ],
             [
-                'carrera_id' => 59, 
+                'num_carrera' => 59, 
                 'etapas' => [
                     ['num_etapa' =>  1, 'km' => 204, 'perfil' => 'media-montaña', 'tipo' => 'normal', 'nombre' => 'Québec'],
                 ],
             ],
             [
-                'carrera_id' => 61, 
+                'num_carrera' => 61, 
                 'etapas' => [
                     ['num_etapa' =>  1, 'km' => 199, 'perfil' => 'media-montaña', 'tipo' => 'normal', 'nombre' => 'Montreal'],
                 ],
@@ -216,11 +216,11 @@ class EtapaSeeder extends Seeder
         ];
 
         foreach ($carreras as $carreraData) {
-            $carreraId = $carreraData['carrera_id'];
-            $carrera = Carrera::find($carreraId);
+            $numCarrera = $carreraData['num_carrera'];
+            $carrera = Carrera::find($numCarrera);
 
             if (!$carrera) {
-                $this->command->warn("Carrera no encontrada con ID: $carreraId");
+                $this->command->warn("Carrera no encontrada con ID: $numCarrera");
                 continue;
             }
 
@@ -230,7 +230,7 @@ class EtapaSeeder extends Seeder
                 // Actualizar o insertar las etapas existentes para la carrera especificada
                 Etapa::updateOrInsert(
                     [
-                        'carrera_id' => $carreraId,
+                        'num_carrera' => $numCarrera,
                         'num_etapa' => $etapa['num_etapa'],
                         'temporada' => $temporada,
                     ],

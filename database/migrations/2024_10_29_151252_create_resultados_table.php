@@ -42,6 +42,9 @@ return new class extends Migration
             // Índices
             $table->index(['cod_ciclista', 'temporada'], 'idx_ciclista_temporada');
             $table->index(['temporada', 'num_carrera', 'etapa'], 'idx_carrera_etapa');
+            // Clave única para soporte de ON CONFLICT
+            $table->unique(['temporada', 'num_carrera', 'etapa', 'cod_ciclista'], 'unique_resultado');
+
         });
 
     }

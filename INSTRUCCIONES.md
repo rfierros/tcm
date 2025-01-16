@@ -84,7 +84,7 @@ php artisan populate:puntos-from-json
 
 **Lanzar inscripciones a carreras, en caso de que las haya**
 
-Los archivos de cada carrera se llamarán {carrera_id}.ins
+Los archivos de cada carrera se llamarán {num_carrera}.ins
 El proceso se lanzará con el número de temporada como parámetro e irá procesando todos los archivos uno a uno, inscribiendo a todos los corredores en la tabla Resultados con la posicion = 0.
 Así lanzamos el proceso (para la temporada 4):
 ```php

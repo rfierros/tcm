@@ -11,308 +11,198 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class ProcessRaceResults extends Command
 {
-    protected $signature = 'process:race-results {file}';
-    protected $description = 'Procesa un archivo .xlsx de resultados y actualiza la tabla resultados.';
+    protected $signature = 'process:race-results {folder} {file?}';
+    protected $description = 'Procesa archivos .xlsx de resultados de una carpeta o un archivo específico.';
 
     public function handle()
     {
-        // Directorio donde se almacenan los archivos
-        $importDir = storage_path('app/imports/resultados');
+        // Obtener los parámetros
+        $folder = $this->argument('folder');
+        $file = $this->argument('file');
 
-        // Obtener el nombre del archivo desde el parámetro
-        $fileName = $this->argument('file');
+        // Directorio base para los archivos
+        $importDir = storage_path("app/imports/resultados/$folder");
 
-        // Construir la ruta completa del archivo
-        $filePath = $importDir . DIRECTORY_SEPARATOR . $fileName;
-
-        // Verificar si el archivo existe
-        if (!file_exists($filePath)) {
-            $this->error("El archivo $filePath no existe.");
+        // Verificar si la carpeta existe
+        if (!is_dir($importDir)) {
+            $this->error("El directorio $importDir no existe.");
             return Command::FAILURE;
         }
 
-        $this->info("Procesando archivo: $filePath");
+        // Obtener los archivos a procesar
+        $files = $file ? [$importDir . DIRECTORY_SEPARATOR . $file] : glob($importDir . DIRECTORY_SEPARATOR . '*.xlsx');
 
-        try {
-            // Abrir el archivo
-            $spreadsheet = IOFactory::load($filePath);
+        if (empty($files)) {
+            $this->warn("No se encontraron archivos .xlsx en el directorio: $importDir");
+            return Command::FAILURE;
+        }
 
-            // Determinar carrera y etapa
-            $fileNameWithoutExt = pathinfo($fileName, PATHINFO_FILENAME);
-            [$numCarrera, $etapa] = $this->extractRaceAndStage($fileNameWithoutExt);
+        foreach ($files as $filePath) {
+            $this->info("Procesando archivo: $filePath");
 
-            if (!$numCarrera || !$etapa) {
-                $this->error("No se pudo determinar carrera_id y etapa del archivo: $fileName");
-                return Command::FAILURE;
+            if (!file_exists($filePath)) {
+                $this->warn("El archivo $filePath no existe. Se omite.");
+                continue;
             }
 
-            $this->info("Carrera ID: $numCarrera, Etapa: $etapa");
+            try {
+                $spreadsheet = IOFactory::load($filePath);
+                $fileNameWithoutExt = pathinfo($filePath, PATHINFO_FILENAME);
+                [$numCarrera, $etapa] = $this->extractRaceAndStage($fileNameWithoutExt);
 
-            // Procesar las pestañas del archivo
-            $this->processStageResults($spreadsheet, $numCarrera, $etapa);
-            $this->processGeneralResults($spreadsheet, $numCarrera, $etapa);
-            $this->processPointsResults($spreadsheet, $numCarrera, $etapa);
-            $this->processMountainResults($spreadsheet, $numCarrera, $etapa);
-            $this->processYoungResults($spreadsheet, $numCarrera, $etapa);
-            // $this->processTeamResults($spreadsheet, $numCarrera, $etapa);
+                if (!$numCarrera || !$etapa) {
+                    $this->error("No se pudo determinar num_carrera y etapa del archivo: $filePath");
+                    continue;
+                }
 
-            $this->info("Archivo procesado exitosamente.");
-            return Command::SUCCESS;
-        } catch (\Exception $e) {
-            $this->error("Error al procesar el archivo: " . $e->getMessage());
-            return Command::FAILURE;
+                $this->info("Carrera ID: $numCarrera, Etapa: $etapa");
+
+                $this->processRaceFile($spreadsheet, $numCarrera, $etapa);
+
+                $this->info("Archivo procesado exitosamente: $filePath");
+            } catch (\Exception $e) {
+                $this->error("Error al procesar el archivo $filePath: " . $e->getMessage());
+            }
         }
-    }
 
+        return Command::SUCCESS;
+    }
 
     private function extractRaceAndStage(string $fileName): array
     {
-        // Mejor expresión regular para extraer carrera_id y etapa
-        //preg_match('/^(\d+).*(?:Etapa\s(\d+))?/i', $fileName, $matches);
         preg_match('/^(\d+).*Etapa\s(\d+)/i', $fileName, $matches);
-
-        // Debugging opcional para verificar los valores capturados
-        $this->warn("Var valor 0: " . ($matches[0] ?? 'No encontrado'));
-        $this->warn("Var valor 1: " . ($matches[1] ?? 'No encontrado'));
-        $this->warn("Var valor 2: " . ($matches[2] ?? 'No encontrado'));
-
-        // Capturar carrera_id y etapa
-        $numCarrera = $matches[1] ?? null;
-        $etapa = isset($matches[2]) ? (int)$matches[2] : 1; // Por defecto, etapa = 1 si no está especificada
-
-        return [(int)$numCarrera, $etapa];
+        return [(int)($matches[1] ?? null), (int)($matches[2] ?? 1)];
     }
 
-    private function processStageResults($spreadsheet, $numCarrera, $etapa)
+    private function processRaceFile($spreadsheet, $numCarrera, $etapa)
     {
-        $sheet = $spreadsheet->getSheetByName('Stage results');
-
-        if (!$sheet) {
-            $this->warn("No se encontró la pestaña 'Stage results'.");
-            return;
-        }
-
-        // Recuperar información de la carrera para determinar categoría y tipo
         $carrera = Carrera::where('num_carrera', $numCarrera)
             ->where('temporada', config('tcm.temporada'))
-            ->first(['categoria', 'tipo', 'num_etapas']); // Incluir 'num_etapas'
+            ->first(['categoria', 'tipo', 'num_etapas']); // Obtener categoría y tipo de la carrera
 
         if (!$carrera) {
             $this->error("No se encontró la carrera con num_carrera: $numCarrera");
             return;
         }
 
-        foreach ($sheet->getRowIterator(2) as $row) { // Asume encabezados en la fila 1.
-            $rank = $sheet->getCell("A{$row->getRowIndex()}")->getValue();
-            $name = $sheet->getCell("B{$row->getRowIndex()}")->getValue();
-            $time = $sheet->getCell("D{$row->getRowIndex()}")->getValue();
+        // Determinar si es la última etapa
+        $isLastStage = $etapa == $carrera->num_etapas;
+        $isSingleStage = $carrera->num_etapas == 1;
 
-            if (!$rank || !$name) {
-                continue; // Salta filas incompletas.
-            }
+        // Configuración de puntos: Clasificaciones a procesar
+        $classificationsToProcess = $isLastStage 
+            ? ($isSingleStage ? ['etapa'] : ['etapa', 'gene-reg', 'gene-mon', 'gene-jov', 'gene-equi']) 
+            : ['etapa', 'provi-gene', 'provi-reg', 'provi-mon', 'provi-jov'];
 
-            $ciclista = Ciclista::where('nom_ape', $name)->first();
+        // Configuración de puntos por posición y clasificación
+        $pointsConfig = DB::table('puntos')
+            ->where('temporada', config('tcm.temporada'))
+            ->where('categoria', $carrera->categoria) // Filtrar por categoría (U24, WT, Conti...)
+            ->where('tipo', $carrera->tipo) // Filtrar por tipo (GV, Vuelta, Clasica...)
+            ->whereIn('clasificacion', $classificationsToProcess)
+            ->get()
+            ->groupBy(fn($item) => "{$item->clasificacion}_{$item->posicion}");
 
-            if (!$ciclista) {
-                $this->warn("Ciclista no encontrado: $name");
+        // Categorías a procesar (para campos en la tabla resultados)
+        $categories = [
+            'Stage results' => 'posicion',
+            'Points' => 'gral_reg',
+            'Mountain' => 'gral_mon',
+            'Young results' => 'gral_jov',
+        ];
+
+        $results = [];
+
+        
+        foreach ($categories as $category => $dbField) {
+            $sheet = $spreadsheet->getSheetByName($category);
+
+            if (!$sheet) {
+                $this->warn("No se encontró la pestaña '$category'.");
                 continue;
             }
 
-            // Obtener los puntos para la posición en esta etapa
-            $puntos = DB::table('puntos')
-                ->where('temporada', config('tcm.temporada'))
-                ->where('posicion', $rank)
-                ->where('categoria', $carrera->categoria)
-                ->where('tipo', $carrera->tipo)
-                ->where('clasificacion', 'etapa')
-                ->value('pts'); // Recupera directamente el valor de 'pts'
+            foreach ($sheet->getRowIterator(2) as $row) {
+                $rank = $sheet->getCell("A{$row->getRowIndex()}")->getValue();
+                $name = $sheet->getCell("B{$row->getRowIndex()}")->getValue();
 
-            if (is_null($puntos)) {
-                $puntos = 0; // Si no hay puntos definidos para esta posición, se asignan 0
+                if (!$rank || !$name) {
+                    continue; // Saltar filas incompletas
+                }
+
+                $ciclista = Ciclista::where('nom_ape', $name)->first();
+
+                if (!$ciclista) {
+                    $this->warn("Ciclista no encontrado: $name");
+                    continue;
+                }
+
+                // Usar la nueva función
+                $key = $this->mapCategoryToClasificacion($category, $isLastStage, $isSingleStage) . "_{$rank}";
+                $points = isset($pointsConfig[$key]) ? $pointsConfig[$key]->first()->pts : 0;
+                if ($ciclista->cod_ciclista == 7051){
+                            $this->info("$name-- $key: $points");
+                }
+
+                if (!isset($results[$ciclista->cod_ciclista])) {
+                    $results[$ciclista->cod_ciclista] = [
+                        'positions' => [
+                            'posicion' => null,
+                            'gral_reg' => null,
+                            'gral_mon' => null,
+                            'gral_jov' => null,
+                        ],
+                        'points' => 0,
+                    ];
+                }
+
+                $results[$ciclista->cod_ciclista]['positions'][$dbField] = $rank;
+                $results[$ciclista->cod_ciclista]['points'] += $points;
             }
+        }
 
-            // Actualizar o crear el registro en la tabla resultados
-            $resultado = Resultado::updateOrCreate(
+
+        $toUpdate = [];
+        foreach ($results as $codCiclista => $data) {
+            $toUpdate[] = array_merge(
                 [
                     'temporada' => config('tcm.temporada'),
                     'num_carrera' => $numCarrera,
                     'etapa' => $etapa,
-                    'cod_ciclista' => $ciclista->cod_ciclista,
+                    'cod_ciclista' => $codCiclista,
+                    'pts' => $data['points'],
                 ],
-                [
-                    'posicion' => $rank,
-                    'pts' => $puntos,
-                ]
+                $data['positions']
             );
-
-            // Sumar los puntos al valor actual
-            $resultado->increment('pts', $puntos);
-
-            $this->info("Actualizados puntos para {$name} (Posición: {$rank}, Puntos: {$puntos})");
         }
+
+        // Realizar el upsert acumulando los puntos después de cada etapa
+        DB::table('resultados')->upsert(
+            $toUpdate,
+            ['temporada', 'num_carrera', 'etapa', 'cod_ciclista'],
+            [
+                'pts' => DB::raw('COALESCE(resultados.pts, 0) + excluded.pts'),
+                'posicion',
+                'gral_reg',
+                'gral_mon',
+                'gral_jov',
+                'updated_at',
+            ]
+        );
+
+        $this->info("Resultados procesados y almacenados para Carrera: $numCarrera, Etapa: $etapa.");
     }
 
-    private function loadPointConfiguration(string $clasificacion, string $categoria, string $tipo): ?array
+
+    private function mapCategoryToClasificacion($category, $isLastStage, $isSingleStage)
     {
-        $jsonFile = storage_path('app/config/puntos.json');
-        $puntosConfig = json_decode(file_get_contents($jsonFile), true);
-
-        foreach ($puntosConfig as $config) {
-            if (
-                $config['clasificacion'] === $clasificacion &&
-                $config['categoria'] === $categoria &&
-                $config['tipo'] === $tipo
-            ) {
-                return $config;
-            }
-        }
-
-        return null; // Si no se encuentra configuración
+        return match ($category) {
+            'Stage results' => 'etapa', // Siempre es 'etapa'
+            'Points' => $isLastStage ? 'gene-reg' : 'provi-reg',
+            'Mountain' => $isLastStage ? 'gene-mon' : 'provi-mon',
+            'Young results' => $isLastStage ? 'gene-jov' : 'provi-jov',
+            default => null,
+        };
     }
 
-    private function processGeneralResults($spreadsheet, $numCarrera, $etapa)
-    {
-        $sheet = $spreadsheet->getSheetByName('General results');
-
-        if (!$sheet) {
-            $this->warn("No se encontró la pestaña 'General results'.");
-            return;
-        }
-
-        foreach ($sheet->getRowIterator(2) as $row) {
-            $rank = $sheet->getCell("A{$row->getRowIndex()}")->getValue();
-            $name = $sheet->getCell("B{$row->getRowIndex()}")->getValue();
-
-            if (!$rank || !$name) {
-                continue; // Salta filas incompletas.
-            }
-
-            $ciclista = Ciclista::where('nom_ape', $name)->first();
-
-            if (!$ciclista) {
-                $this->warn("Ciclista no encontrado: $name");
-                continue;
-            }
-
-            Resultado::where([
-                'temporada' => config('tcm.temporada'),
-                'num_carrera' => $numCarrera,
-                'etapa' => $etapa,
-                'cod_ciclista' => $ciclista->cod_ciclista,
-            ])->update(['pos_gral' => $rank]);
-        }
-    }
-
-    private function processPointsResults($spreadsheet, $numCarrera, $etapa)
-    {
-        $sheet = $spreadsheet->getSheetByName('Points');
-
-        if (!$sheet) {
-            $this->warn("No se encontró la pestaña 'General results'.");
-            return;
-        }
-
-        foreach ($sheet->getRowIterator(2) as $row) {
-            $rank = $sheet->getCell("A{$row->getRowIndex()}")->getValue();
-            $name = $sheet->getCell("B{$row->getRowIndex()}")->getValue();
-
-            if (!$rank || !$name) {
-                continue; // Salta filas incompletas.
-            }
-
-            $ciclista = Ciclista::where('nom_ape', $name)->first();
-
-            if (!$ciclista) {
-                $this->warn("Ciclista no encontrado: $name");
-                continue;
-            }
-
-            Resultado::where([
-                'temporada' => config('tcm.temporada'),
-                'num_carrera' => $numCarrera,
-                'etapa' => $etapa,
-                'cod_ciclista' => $ciclista->cod_ciclista,
-            ])->update(['gral_reg' => $rank]);
-        }
-    }
-
-    private function processMountainResults($spreadsheet, $numCarrera, $etapa)
-    {
-        $sheet = $spreadsheet->getSheetByName('Mountain');
-
-        if (!$sheet) {
-            $this->warn("No se encontró la pestaña 'General results'.");
-            return;
-        }
-
-        foreach ($sheet->getRowIterator(2) as $row) {
-            $rank = $sheet->getCell("A{$row->getRowIndex()}")->getValue();
-            $name = $sheet->getCell("B{$row->getRowIndex()}")->getValue();
-
-            if (!$rank || !$name) {
-                continue; // Salta filas incompletas.
-            }
-
-            $ciclista = Ciclista::where('nom_ape', $name)->first();
-
-            if (!$ciclista) {
-                $this->warn("Ciclista no encontrado: $name");
-                continue;
-            }
-
-            Resultado::where([
-                'temporada' => config('tcm.temporada'),
-                'num_carrera' => $numCarrera,
-                'etapa' => $etapa,
-                'cod_ciclista' => $ciclista->cod_ciclista,
-            ])->update(['gral_mon' => $rank]);
-        }
-    }
-
-    private function processYoungResults($spreadsheet, $numCarrera, $etapa)
-    {
-        $sheet = $spreadsheet->getSheetByName('Young results');
-
-        if (!$sheet) {
-            $this->warn("No se encontró la pestaña 'Young results'.");
-            return;
-        }
-
-        foreach ($sheet->getRowIterator(2) as $row) {
-            $rank = null; // Inicializar la variable para evitar errores
-            $name = $sheet->getCell("B{$row->getRowIndex()}")->getValue();
-            $posRealRaw = $sheet->getCell("E{$row->getRowIndex()}")->getValue();
-
-            if (!$name || !$posRealRaw) {
-                continue; // Salta filas incompletas.
-            }
-
-            // Extraer el número dentro de paréntesis usando expresión regular
-            if (preg_match('/\((\d+)\)/', $posRealRaw, $matches)) {
-                $rank = (int)$matches[1]; // Extraer y convertir a entero
-            }
-
-            if (!$rank) {
-                $this->warn("No se pudo extraer la posición de: $posRealRaw");
-                continue; // Salta filas donde no se pudo extraer el número
-            }
-
-            $ciclista = Ciclista::where('nom_ape', $name)->first();
-
-            if (!$ciclista) {
-                $this->warn("Ciclista no encontrado: $name");
-                continue;
-            }
-
-            Resultado::where([
-                'temporada' => config('tcm.temporada'),
-                'num_carrera' => $numCarrera,
-                'etapa' => $etapa,
-                'cod_ciclista' => $ciclista->cod_ciclista,
-            ])->update(['gral_jov' => $rank]);
-        }
-    }
-
-
-    // Métodos similares para Points, Mountain, Young, y Team Results...
 }

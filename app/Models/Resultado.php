@@ -32,13 +32,13 @@ class Resultado extends Model
         return $this->belongsTo(Equipo::class, 'cod_equipo', 'cod_equipo');
     }
 
-    public static function crearResultadosParaInscripcion(int $carreraId, array $codsCiclistas, int $codEquipo, int $temporada, int $numEtapas)
+    public static function crearResultadosParaInscripcion(int $numCarrera, array $codsCiclistas, int $codEquipo, int $temporada, int $numEtapas)
     {
         foreach ($codsCiclistas as $codCiclista) {
             // Crear un registro en 'resultados' por cada etapa
             for ($etapa = 1; $etapa <= $numEtapas; $etapa++) {
                 self::create([
-                    'carrera_id' => $carreraId,
+                    'num_carrera' => $numCarrera,
                     'etapa' => $etapa,
                     'cod_ciclista' => $codCiclista,
                     'cod_equipo' => $codEquipo,

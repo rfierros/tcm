@@ -70,15 +70,25 @@ class ProcessRaceResults extends Command
 
     private function extractRaceAndStage(string $fileName): array
     {
-        preg_match('/^(\d+).*Etapa\s(\d+)/i', $fileName, $matches);
-        return [(int)($matches[1] ?? null), (int)($matches[2] ?? 1)];
+        // Intentar extraer num_carrera y etapa si está presente
+        if (preg_match('/^(\d+).*Etapa\s(\d+)/i', $fileName, $matches)) {
+            return [(int)$matches[1], (int)$matches[2]];
+        }
+
+        // Si no se encuentra "Etapa", es una clásica: solo extraer num_carrera
+        if (preg_match('/^(\d+)\s/i', $fileName, $matches)) {
+            return [(int)$matches[1], 1]; // Asumir etapa = 1
+        }
+
+        // Si no se puede extraer, retornar valores nulos
+        return [null, null];
     }
 
     private function processRaceFile($spreadsheet, $numCarrera, $etapa)
     {
         $carrera = Carrera::where('num_carrera', $numCarrera)
             ->where('temporada', config('tcm.temporada'))
-            ->first(['categoria', 'tipo', 'num_etapas']); // Obtener categoría y tipo de la carrera
+            ->first(['categoria', 'tipo', 'num_etapas']);
 
         if (!$carrera) {
             $this->error("No se encontró la carrera con num_carrera: $numCarrera");
@@ -87,25 +97,25 @@ class ProcessRaceResults extends Command
 
         // Determinar si es la última etapa
         $isLastStage = $etapa == $carrera->num_etapas;
-        $isSingleStage = $carrera->num_etapas == 1;
 
-        // Configuración de puntos: Clasificaciones a procesar
-        $classificationsToProcess = $isLastStage 
-            ? ($isSingleStage ? ['etapa'] : ['etapa', 'gene-reg', 'gene-mon', 'gene-jov', 'gene-equi']) 
+        // Clasificaciones a procesar según la etapa
+        $classificationsToProcess = $isLastStage
+            ? ['etapa', 'general', 'gene-reg', 'gene-mon', 'gene-jov']
             : ['etapa', 'provi-gene', 'provi-reg', 'provi-mon', 'provi-jov'];
 
-        // Configuración de puntos por posición y clasificación
+        // Configuración de puntos
         $pointsConfig = DB::table('puntos')
             ->where('temporada', config('tcm.temporada'))
-            ->where('categoria', $carrera->categoria) // Filtrar por categoría (U24, WT, Conti...)
-            ->where('tipo', $carrera->tipo) // Filtrar por tipo (GV, Vuelta, Clasica...)
+            ->where('categoria', $carrera->categoria)
+            ->where('tipo', $carrera->tipo)
             ->whereIn('clasificacion', $classificationsToProcess)
             ->get()
             ->groupBy(fn($item) => "{$item->clasificacion}_{$item->posicion}");
 
-        // Categorías a procesar (para campos en la tabla resultados)
+        // Categorías en el Excel y sus campos en la BD
         $categories = [
             'Stage results' => 'posicion',
+            'General results' => 'pos_gral',
             'Points' => 'gral_reg',
             'Mountain' => 'gral_mon',
             'Young results' => 'gral_jov',
@@ -113,12 +123,19 @@ class ProcessRaceResults extends Command
 
         $results = [];
 
-        
         foreach ($categories as $category => $dbField) {
             $sheet = $spreadsheet->getSheetByName($category);
 
             if (!$sheet) {
-                $this->warn("No se encontró la pestaña '$category'.");
+                $this->warn("No se encontró la pestaña '$category'. Se omite.");
+                continue;
+            }
+
+            $highestRow = $sheet->getHighestRow();
+
+            // Validar si la pestaña tiene datos (más de una fila)
+            if ($highestRow <= 1) {
+                $this->warn("La pestaña '$category' no tiene datos. Se omite.");
                 continue;
             }
 
@@ -127,7 +144,7 @@ class ProcessRaceResults extends Command
                 $name = $sheet->getCell("B{$row->getRowIndex()}")->getValue();
 
                 if (!$rank || !$name) {
-                    continue; // Saltar filas incompletas
+                    continue;
                 }
 
                 $ciclista = Ciclista::where('nom_ape', $name)->first();
@@ -137,17 +154,11 @@ class ProcessRaceResults extends Command
                     continue;
                 }
 
-                // Usar la nueva función
-                $key = $this->mapCategoryToClasificacion($category, $isLastStage, $isSingleStage) . "_{$rank}";
-                $points = isset($pointsConfig[$key]) ? $pointsConfig[$key]->first()->pts : 0;
-                if ($ciclista->cod_ciclista == 7051){
-                            $this->info("$name-- $key: $points");
-                }
-
                 if (!isset($results[$ciclista->cod_ciclista])) {
                     $results[$ciclista->cod_ciclista] = [
                         'positions' => [
                             'posicion' => null,
+                            'pos_gral' => null,
                             'gral_reg' => null,
                             'gral_mon' => null,
                             'gral_jov' => null,
@@ -157,10 +168,16 @@ class ProcessRaceResults extends Command
                 }
 
                 $results[$ciclista->cod_ciclista]['positions'][$dbField] = $rank;
-                $results[$ciclista->cod_ciclista]['points'] += $points;
+
+                // Determinar clasificación y puntos a sumar
+                $classification = $this->getClassification($category, $isLastStage);
+                if ($classification) {
+                    $key = "{$classification}_{$rank}";
+                    $points = isset($pointsConfig[$key]) ? $pointsConfig[$key]->first()->pts : 0;
+                    $results[$ciclista->cod_ciclista]['points'] += $points;
+                }
             }
         }
-
 
         $toUpdate = [];
         foreach ($results as $codCiclista => $data) {
@@ -176,13 +193,14 @@ class ProcessRaceResults extends Command
             );
         }
 
-        // Realizar el upsert acumulando los puntos después de cada etapa
+        // Actualizar resultados en la BD
         DB::table('resultados')->upsert(
             $toUpdate,
             ['temporada', 'num_carrera', 'etapa', 'cod_ciclista'],
             [
                 'pts' => DB::raw('COALESCE(resultados.pts, 0) + excluded.pts'),
                 'posicion',
+                'pos_gral',
                 'gral_reg',
                 'gral_mon',
                 'gral_jov',
@@ -194,15 +212,17 @@ class ProcessRaceResults extends Command
     }
 
 
-    private function mapCategoryToClasificacion($category, $isLastStage, $isSingleStage)
+    private function getClassification($category, $isLastStage)
     {
         return match ($category) {
-            'Stage results' => 'etapa', // Siempre es 'etapa'
+            'Stage results' => 'etapa',
+            'General results' => $isLastStage ? 'general' : 'provi-gene',
             'Points' => $isLastStage ? 'gene-reg' : 'provi-reg',
             'Mountain' => $isLastStage ? 'gene-mon' : 'provi-mon',
             'Young results' => $isLastStage ? 'gene-jov' : 'provi-jov',
             default => null,
         };
     }
+
 
 }

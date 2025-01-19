@@ -123,6 +123,52 @@ private function processRaceFile($spreadsheet, $numCarrera, $etapa)
 
     $results = [];
 
+    // Procesar la pestaña "Team results" en la última etapa y encontrar el equipo ganador.
+if ($etapa > 1 && $isLastStage) {
+    $teamSheet = $spreadsheet->getSheetByName('Team results');
+    if ($teamSheet) {
+        $highestRow = $teamSheet->getHighestRow();
+
+        // Validar si la pestaña tiene datos
+        if ($highestRow > 1) {
+            $teamName = null;
+
+            // Iterar sobre las filas de la pestaña
+            foreach ($teamSheet->getRowIterator(2) as $row) {
+                $positionRaw = $teamSheet->getCell("D{$row->getRowIndex()}")->getValue();
+
+                // Extraer el valor entre paréntesis
+                if ($positionRaw && preg_match('/\((\d+)\)/', $positionRaw, $matches)) {
+                    $position = (int)$matches[1];
+                    if ($position === 1) {
+                        $teamName = $teamSheet->getCell("B{$row->getRowIndex()}")->getValue();
+                        break; // Salir del bucle después de encontrar el equipo ganador
+                    }
+                }
+            }
+
+            if ($teamName) {
+                // Obtener el cod_equipo desde la tabla equipos
+                $winnerTeam = DB::table('equipos')->where('nombre_en_bd', $teamName)->first();
+                $this->info("Equipo ganador: $teamName cod_equpo: $winnerTeam->cod_equipo");
+                if ($winnerTeam) {
+                    // Buscar puntos para gene-equi en la primera posición
+                    $key = "gene-equi_1";
+                    $winnerTeamPoints = isset($pointsConfig[$key]) ? $pointsConfig[$key]->first()->pts : 0;
+                } else {
+                    $this->warn("Equipo no encontrado en la BD: $teamName");
+                }
+            } else {
+                $this->warn("No se encontró ningún equipo con posición 1 en la columna 'D'.");
+            }
+        } else {
+            $this->warn("La pestaña 'Team results' no tiene datos.");
+        }
+    } else {
+        $this->warn("No se encontró la pestaña 'Team results'.");
+    }
+}
+
     foreach ($categories as $category => $dbField) {
         $sheet = $spreadsheet->getSheetByName($category);
 
@@ -168,6 +214,7 @@ private function processRaceFile($spreadsheet, $numCarrera, $etapa)
             if (!isset($results[$ciclista->cod_ciclista])) {
                 $results[$ciclista->cod_ciclista] = [
                     'positions' => [
+                        'cod_equipo' => $ciclista->cod_equipo,
                         'posicion' => null,
                         'pos_gral' => null,
                         'gral_reg' => null,
@@ -180,76 +227,22 @@ private function processRaceFile($spreadsheet, $numCarrera, $etapa)
 
             $results[$ciclista->cod_ciclista]['positions'][$dbField] = $rank;
 
+            if (isset($winnerTeam) && $category === 'General results' && $ciclista->cod_equipo == $winnerTeam->cod_equipo && $etapa > 1 && $isLastStage) {
+                $results[$ciclista->cod_ciclista]['points'] += $winnerTeamPoints;
+            }
+
+
             // Determinar clasificación y puntos a sumar
             $classification = $this->getClassification($category, $isLastStage);
             if ($classification) {
                 $key = "{$classification}_{$rank}";
                 $points = isset($pointsConfig[$key]) ? $pointsConfig[$key]->first()->pts : 0;
                 $results[$ciclista->cod_ciclista]['points'] += $points;
-
-                if($ciclista->cod_ciclista==12449 ||$ciclista->cod_ciclista==7091 || $ciclista->cod_ciclista==7300){
-                    $this->warn("$ciclista->nom_ape: $key: $points");
-                }
             }
         }
     }
 
-// Procesar la pestaña "Team results" en la última etapa
-if ($etapa > 1 && $isLastStage) {
-    $teamSheet = $spreadsheet->getSheetByName('Team results');
-    if ($teamSheet) {
-        $highestRow = $teamSheet->getHighestRow();
 
-        // Validar si la pestaña tiene datos
-        if ($highestRow > 1) {
-            $teamName = null;
-
-            // Iterar sobre las filas de la pestaña
-            foreach ($teamSheet->getRowIterator(2) as $row) {
-                $positionRaw = $teamSheet->getCell("D{$row->getRowIndex()}")->getValue();
-
-                // Extraer el valor entre paréntesis
-                if ($positionRaw && preg_match('/\((\d+)\)/', $positionRaw, $matches)) {
-                    $position = (int)$matches[1];
-                    if ($position === 1) {
-                        $teamName = $teamSheet->getCell("B{$row->getRowIndex()}")->getValue();
-                        break; // Salir del bucle después de encontrar el equipo ganador
-                    }
-                }
-            }
-
-            if ($teamName) {
-                // Obtener el cod_equipo desde la tabla equipos
-                $team = DB::table('equipos')->where('nombre_equipo', $teamName)->first();
-                $this->warn("Equipo ganador: $teamName");
-                if ($team) {
-                    $teamCod = $team->cod_equipo;
-
-                    // Buscar puntos para gene-equi en la primera posición
-                    $key = "gene-equi_1";
-                    $teamPoints = isset($pointsConfig[$key]) ? $pointsConfig[$key]->first()->pts : 0;
-
-                    if ($teamPoints > 0) {
-                        // Actualizar los puntos de los corredores del equipo ganador en la etapa actual
-                        Resultado::where('temporada', config('tcm.temporada'))
-                            ->where('num_carrera', $numCarrera)
-                            ->where('etapa', $etapa)
-                            ->where('cod_equipo', $teamCod)
-                            ->increment('pts', $teamPoints);
-                    }
-                } else {
-                    $this->warn("Equipo no encontrado en la BD: $teamName");
-                }
-            } else {
-                $this->warn("No se encontró ningún equipo con posición 1 en la columna 'D'.");
-            }
-        } else {
-            $this->warn("La pestaña 'Team results' no tiene datos.");
-        }
-    } else {
-        $this->warn("No se encontró la pestaña 'Team results'.");
-    }
-}
 
 
     $toUpdate = [];
@@ -271,7 +264,8 @@ if ($etapa > 1 && $isLastStage) {
         $toUpdate,
         ['temporada', 'num_carrera', 'etapa', 'cod_ciclista'],
         [
-            'pts', // Reemplazar el valor de 'pts' en lugar de acumular
+            'pts',
+            'cod_equipo',
             'posicion',
             'pos_gral',
             'gral_reg',

@@ -84,132 +84,207 @@ class ProcessRaceResults extends Command
         return [null, null];
     }
 
-    private function processRaceFile($spreadsheet, $numCarrera, $etapa)
-    {
-        $carrera = Carrera::where('num_carrera', $numCarrera)
-            ->where('temporada', config('tcm.temporada'))
-            ->first(['categoria', 'tipo', 'num_etapas']);
+private function processRaceFile($spreadsheet, $numCarrera, $etapa)
+{
+    $carrera = Carrera::where('num_carrera', $numCarrera)
+        ->where('temporada', config('tcm.temporada'))
+        ->first(['categoria', 'tipo', 'num_etapas']);
 
-        if (!$carrera) {
-            $this->error("No se encontró la carrera con num_carrera: $numCarrera");
-            return;
-        }
-
-        // Determinar si es la última etapa
-        $isLastStage = $etapa == $carrera->num_etapas;
-
-        // Clasificaciones a procesar según la etapa
-        $classificationsToProcess = $isLastStage
-            ? ['etapa', 'general', 'gene-reg', 'gene-mon', 'gene-jov']
-            : ['etapa', 'provi-gene', 'provi-reg', 'provi-mon', 'provi-jov'];
-
-        // Configuración de puntos
-        $pointsConfig = DB::table('puntos')
-            ->where('temporada', config('tcm.temporada'))
-            ->where('categoria', $carrera->categoria)
-            ->where('tipo', $carrera->tipo)
-            ->whereIn('clasificacion', $classificationsToProcess)
-            ->get()
-            ->groupBy(fn($item) => "{$item->clasificacion}_{$item->posicion}");
-
-        // Categorías en el Excel y sus campos en la BD
-        $categories = [
-            'Stage results' => 'posicion',
-            'General results' => 'pos_gral',
-            'Points' => 'gral_reg',
-            'Mountain' => 'gral_mon',
-            'Young results' => 'gral_jov',
-        ];
-
-        $results = [];
-
-        foreach ($categories as $category => $dbField) {
-            $sheet = $spreadsheet->getSheetByName($category);
-
-            if (!$sheet) {
-                $this->warn("No se encontró la pestaña '$category'. Se omite.");
-                continue;
-            }
-
-            $highestRow = $sheet->getHighestRow();
-
-            // Validar si la pestaña tiene datos (más de una fila)
-            if ($highestRow <= 1) {
-                $this->warn("La pestaña '$category' no tiene datos. Se omite.");
-                continue;
-            }
-
-            foreach ($sheet->getRowIterator(2) as $row) {
-                $rank = $sheet->getCell("A{$row->getRowIndex()}")->getValue();
-                $name = $sheet->getCell("B{$row->getRowIndex()}")->getValue();
-
-                if (!$rank || !$name) {
-                    continue;
-                }
-
-                $ciclista = Ciclista::where('nom_ape', $name)->first();
-
-                if (!$ciclista) {
-                    $this->warn("Ciclista no encontrado: $name");
-                    continue;
-                }
-
-                if (!isset($results[$ciclista->cod_ciclista])) {
-                    $results[$ciclista->cod_ciclista] = [
-                        'positions' => [
-                            'posicion' => null,
-                            'pos_gral' => null,
-                            'gral_reg' => null,
-                            'gral_mon' => null,
-                            'gral_jov' => null,
-                        ],
-                        'points' => 0,
-                    ];
-                }
-
-                $results[$ciclista->cod_ciclista]['positions'][$dbField] = $rank;
-
-                // Determinar clasificación y puntos a sumar
-                $classification = $this->getClassification($category, $isLastStage);
-                if ($classification) {
-                    $key = "{$classification}_{$rank}";
-                    $points = isset($pointsConfig[$key]) ? $pointsConfig[$key]->first()->pts : 0;
-                    $results[$ciclista->cod_ciclista]['points'] += $points;
-                }
-            }
-        }
-
-        $toUpdate = [];
-        foreach ($results as $codCiclista => $data) {
-            $toUpdate[] = array_merge(
-                [
-                    'temporada' => config('tcm.temporada'),
-                    'num_carrera' => $numCarrera,
-                    'etapa' => $etapa,
-                    'cod_ciclista' => $codCiclista,
-                    'pts' => $data['points'],
-                ],
-                $data['positions']
-            );
-        }
-
-        // Actualizar resultados en la BD
-        DB::table('resultados')->upsert(
-            $toUpdate,
-            ['temporada', 'num_carrera', 'etapa', 'cod_ciclista'],
-            [
-                'pts' => DB::raw('COALESCE(resultados.pts, 0) + excluded.pts'),
-                'posicion',
-                'pos_gral',
-                'gral_reg',
-                'gral_mon',
-                'gral_jov',
-                'updated_at',
-            ]
-        );
-
-        $this->info("Resultados procesados y almacenados para Carrera: $numCarrera, Etapa: $etapa.");
+    if (!$carrera) {
+        $this->error("No se encontró la carrera con num_carrera: $numCarrera");
+        return;
     }
+
+    // Determinar si es la última etapa
+    $isLastStage = $etapa == $carrera->num_etapas;
+
+    // Clasificaciones a procesar según la etapa
+    $classificationsToProcess = $isLastStage
+        ? ['etapa', 'general', 'gene-reg', 'gene-mon', 'gene-jov', 'gene-equi']
+        : ['etapa', 'provi-gene', 'provi-reg', 'provi-mon', 'provi-jov'];
+
+    // Configuración de puntos
+    $pointsConfig = DB::table('puntos')
+        ->where('temporada', config('tcm.temporada'))
+        ->where('categoria', $carrera->categoria)
+        ->where('tipo', $carrera->tipo)
+        ->whereIn('clasificacion', $classificationsToProcess)
+        ->get()
+        ->groupBy(fn($item) => "{$item->clasificacion}_{$item->posicion}");
+
+    // Categorías en el Excel y sus campos en la BD
+    $categories = [
+        'Stage results' => 'posicion',
+        'General results' => 'pos_gral',
+        'Points' => 'gral_reg',
+        'Mountain' => 'gral_mon',
+        'Young results' => 'gral_jov',
+    ];
+
+    $results = [];
+
+    foreach ($categories as $category => $dbField) {
+        $sheet = $spreadsheet->getSheetByName($category);
+
+        if (!$sheet) {
+            $this->warn("No se encontró la pestaña '$category'. Se omite.");
+            continue;
+        }
+
+        $highestRow = $sheet->getHighestRow();
+
+        // Validar si la pestaña tiene datos (más de una fila)
+        if ($highestRow <= 1) {
+            $this->warn("La pestaña '$category' no tiene datos. Se omite.");
+            continue;
+        }
+
+        foreach ($sheet->getRowIterator(2) as $row) {
+            $rank = null; // Inicializar la variable
+            $name = $sheet->getCell("B{$row->getRowIndex()}")->getValue();
+
+            if ($category === 'Young results') {
+                // Extraer el valor dentro de paréntesis de la columna `E`
+                $posRealRaw = $sheet->getCell("E{$row->getRowIndex()}")->getValue();
+                if ($posRealRaw && preg_match('/\((\d+)\)/', $posRealRaw, $matches)) {
+                    $rank = (int)$matches[1];
+                }
+            } else {
+                // Para las demás categorías, extraer el rango de la columna `A`
+                $rank = $sheet->getCell("A{$row->getRowIndex()}")->getValue();
+            }
+
+            if (!$rank || !$name) {
+                continue;
+            }
+
+            $ciclista = Ciclista::where('nom_ape', $name)->first();
+
+            if (!$ciclista) {
+                $this->warn("Ciclista no encontrado: $name");
+                continue;
+            }
+
+            if (!isset($results[$ciclista->cod_ciclista])) {
+                $results[$ciclista->cod_ciclista] = [
+                    'positions' => [
+                        'posicion' => null,
+                        'pos_gral' => null,
+                        'gral_reg' => null,
+                        'gral_mon' => null,
+                        'gral_jov' => null,
+                    ],
+                    'points' => 0,
+                ];
+            }
+
+            $results[$ciclista->cod_ciclista]['positions'][$dbField] = $rank;
+
+            // Determinar clasificación y puntos a sumar
+            $classification = $this->getClassification($category, $isLastStage);
+            if ($classification) {
+                $key = "{$classification}_{$rank}";
+                $points = isset($pointsConfig[$key]) ? $pointsConfig[$key]->first()->pts : 0;
+                $results[$ciclista->cod_ciclista]['points'] += $points;
+
+                if($ciclista->cod_ciclista==12449 ||$ciclista->cod_ciclista==7091 || $ciclista->cod_ciclista==7300){
+                    $this->warn("$ciclista->nom_ape: $key: $points");
+                }
+            }
+        }
+    }
+
+// Procesar la pestaña "Team results" en la última etapa
+if ($etapa > 1 && $isLastStage) {
+    $teamSheet = $spreadsheet->getSheetByName('Team results');
+    if ($teamSheet) {
+        $highestRow = $teamSheet->getHighestRow();
+
+        // Validar si la pestaña tiene datos
+        if ($highestRow > 1) {
+            $teamName = null;
+
+            // Iterar sobre las filas de la pestaña
+            foreach ($teamSheet->getRowIterator(2) as $row) {
+                $positionRaw = $teamSheet->getCell("D{$row->getRowIndex()}")->getValue();
+
+                // Extraer el valor entre paréntesis
+                if ($positionRaw && preg_match('/\((\d+)\)/', $positionRaw, $matches)) {
+                    $position = (int)$matches[1];
+                    if ($position === 1) {
+                        $teamName = $teamSheet->getCell("B{$row->getRowIndex()}")->getValue();
+                        break; // Salir del bucle después de encontrar el equipo ganador
+                    }
+                }
+            }
+
+            if ($teamName) {
+                // Obtener el cod_equipo desde la tabla equipos
+                $team = DB::table('equipos')->where('nombre_equipo', $teamName)->first();
+                $this->warn("Equipo ganador: $teamName");
+                if ($team) {
+                    $teamCod = $team->cod_equipo;
+
+                    // Buscar puntos para gene-equi en la primera posición
+                    $key = "gene-equi_1";
+                    $teamPoints = isset($pointsConfig[$key]) ? $pointsConfig[$key]->first()->pts : 0;
+
+                    if ($teamPoints > 0) {
+                        // Actualizar los puntos de los corredores del equipo ganador en la etapa actual
+                        Resultado::where('temporada', config('tcm.temporada'))
+                            ->where('num_carrera', $numCarrera)
+                            ->where('etapa', $etapa)
+                            ->where('cod_equipo', $teamCod)
+                            ->increment('pts', $teamPoints);
+                    }
+                } else {
+                    $this->warn("Equipo no encontrado en la BD: $teamName");
+                }
+            } else {
+                $this->warn("No se encontró ningún equipo con posición 1 en la columna 'D'.");
+            }
+        } else {
+            $this->warn("La pestaña 'Team results' no tiene datos.");
+        }
+    } else {
+        $this->warn("No se encontró la pestaña 'Team results'.");
+    }
+}
+
+
+    $toUpdate = [];
+    foreach ($results as $codCiclista => $data) {
+        $toUpdate[] = array_merge(
+            [
+                'temporada' => config('tcm.temporada'),
+                'num_carrera' => $numCarrera,
+                'etapa' => $etapa,
+                'cod_ciclista' => $codCiclista,
+                'pts' => $data['points'],
+            ],
+            $data['positions']
+        );
+    }
+
+    // Actualizar resultados en la BD
+    DB::table('resultados')->upsert(
+        $toUpdate,
+        ['temporada', 'num_carrera', 'etapa', 'cod_ciclista'],
+        [
+            'pts', // Reemplazar el valor de 'pts' en lugar de acumular
+            'posicion',
+            'pos_gral',
+            'gral_reg',
+            'gral_mon',
+            'gral_jov',
+            'updated_at',
+        ]
+    );
+
+    $this->info("Resultados procesados y almacenados para Carrera: $numCarrera, Etapa: $etapa.");
+}
+
+
 
 
     private function getClassification($category, $isLastStage)

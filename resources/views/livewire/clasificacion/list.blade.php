@@ -2,70 +2,73 @@
 
 use Livewire\Volt\Component;
 use Livewire\Attributes\On; 
+use App\Models\Resultado;
 use App\Models\Ciclista;
 use App\Models\Equipo;
 use Illuminate\Database\Eloquent\Collection; 
 
 new class extends Component {
+    public Collection $equipos;
     public Collection $ciclistas;
     public $equipo;
 
     public $columns = [ // Campo => Cabecera
-        'nom_abrev' => 'Ciclista',
-        'cod_ciclista' => 'Id',
-        'especialidad' => 'tipo',
-        'edad' => 'edad',
-        'lla' => 'lla',
-        'mon' => 'mon',
-        'col' => 'col',
-        'cri' => 'cri',
-        'pro' => 'pro',
-        'pav' => 'pav',
-        'spr' => 'spr',
-        'acc' => 'acc',
-        'des' => 'des',
-        'com' => 'com',
-        'ene' => 'ene',
-        'res' => 'res',
-        'rec' => 'rec',
-        'media' => 'media',
-        'total_puntos' => 'pts',
-        'inscripciones' => 'Insc.',
+        'categoria' => 'Categoria',
+        'nombre_equipo' => 'Equipo',
+        'total_pts' => 'Puntos',
+        'num_victorias' => 'Victorias',
+        'etapas_disputadas' => 'Etapas Disputadas'
     ];
 
     public $botones = [ // Campo => Cabecera
         'WT' => 'WT',
         'Conti' => 'Conti .1',
-        'U24' => 'U24',
     ];
  
     public function mount(): void
     {
-        $this->getMyCiclistas(); 
-        $this->equipo = Equipo::where('user_id', Auth::id())->first();
+        $this->cargarClasificacion(); 
     }
- 
-    // Si se crea un Ciclista hay un listener para el evento de creacion que actualizará la lista de Ciclistas
-    #[On('ciclista-created')]
-    public function getMyCiclistas(): void
+
+    #[On('equipo-created')]
+    public function cargarClasificacion(): void
     {
-        $temporada = config('tcm.temporada');
+        $this->equipos = Equipo::hydrate(
+            DB::table('resultados as r')
+                ->join('equipos as e', 'r.cod_equipo', '=', 'e.cod_equipo')
+                ->selectRaw('
+                    e.nombre_equipo,
+                    e.categoria,
+                    r.cod_equipo,
+                    SUM(r.pts) AS total_pts,
+                    COUNT(CASE WHEN r.posicion = 1 THEN 1 ELSE NULL END) AS num_victorias,
+                    COUNT(DISTINCT r.num_carrera || "-" || r.etapa) AS etapas_disputadas
+                ')
+                ->where('r.num_carrera', '>', 0)
+                ->groupBy('r.cod_equipo', 'e.nombre_equipo')
+                ->orderByDesc('total_pts')
+                ->get()->toArray() // Convertir a array para evitar stdClass
+        );
+//$this->equipos = Equipo::withCount([
+//        'resultados as total_pts' => function ($query) {
+//            $query->select(DB::raw('SUM(pts)'));
+//        },
+//        'resultados as num_victorias' => function ($query) {
+//            $query->where('posicion', 1);
+//        },
+//        'resultados as etapas_disputadas' => function ($query) {
+//            $query->select(DB::raw('COUNT(DISTINCT num_carrera || "-" || etapa)'));
+//        }
+//    ])
+//    ->whereHas('resultados', function ($query) {
+//        $query->where('num_carrera', '>', 0);
+//    })
+//    ->orderByDesc('total_pts')
+//    ->get();
 
-        $this->ciclistas = Ciclista::whereHas('equipo', function ($query) {
-                $query->where('user_id', Auth::id());
-            })
-            ->where('temporada', $temporada)
-            ->with('equipo.user') // Carga los equipos y usuarios asociados
-            ->withCount(['resultados as inscripciones' => function ($query) use ($temporada) {
-                $query->where('temporada', $temporada);
-            }]) // Contar inscripciones
-            ->withSum(['resultados as total_puntos' => function ($query) use ($temporada) {
-                $query->where('temporada', $temporada);
-            }], 'pts') // Sumar puntos acumulados
-            ->orderBy('media', 'desc')
-            ->get();
-
-    }
+        //dd($this->equipos);
+    } 
+ 
 }; ?>
 
 <div class="mt-6 bg-white divide-y rounded-lg shadow-sm"> 
@@ -75,6 +78,7 @@ new class extends Component {
 <div class="p-10">
     <div class="flex flex-col">
         <div x-data="{
+            equipos: {{ json_encode($equipos) }},
             column: '',
             order: 'asc',
             selectedFilter: 'WT',  // Valor inicial para mostrar todos los registros
@@ -82,14 +86,12 @@ new class extends Component {
                 this.column = column;
                 this.order = order;
             },
-            sortedCiclistas() {
-                let filteredData = [...{{ $ciclistas }}];
+            sortedEquipos() {
+                let filteredData = [...this.equipos];
 
                 // Aplicar filtros en base al valor de selectedFilter
-                if (this.selectedFilter === 'U24') {
-                    filteredData = filteredData.filter(ciclista => ciclista.u24);
-                } else if (this.selectedFilter === 'Conti') {
-                    filteredData = filteredData.filter(ciclista => ciclista.conti);
+                if (this.selectedFilter === 'Conti') {
+                    filteredData = filteredData.filter(equipo => equipo.conti);
                 }
 
                 return filteredData.sort((a, b) => {
@@ -117,7 +119,7 @@ new class extends Component {
         }">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="mb-4 text-xl font-semibold leading-tight text-gray-800">
-                    {{ $equipo->nombre_equipo }}
+                    Clasificación
                 </h3> 
                 <div class="flex space-x-4">
                     <fieldset aria-label="Choose a filter option">
@@ -215,26 +217,23 @@ new class extends Component {
                         </tr>
                     </thead>
                     <tbody>
-                        <template x-for="ciclista in sortedCiclistas()" :key="ciclista.id">
-                            <tr class="hover:bg-slate-100">
-                                <template x-for="(label, field) in {{ json_encode($columns) }}" :key="field">
-                                    <td x:class="{ 'bg-red-200': colorMode }" class="px-2 py-1.5 text-xs text-right">
-                                        <template x-if="['lla', 'mon', 'col', 'cri', 'pro', 'pav', 'spr', 'acc', 'des', 'com', 'ene', 'res', 'rec', 'media', 'total_puntos'].includes(field)">
-                                            <span>
-                                                <span x-text="formatNumber(ciclista[field]).integerPart" class="text-xs"></span><span x-text="'.' + formatNumber(ciclista[field]).decimalPart" class="inline-block text-gray-400 text-xxs"></span>
-                                            </span>
-                                        </template>
-                                        <template x-if="['especialidad'].includes(field)">
-                                                <span :class="getBadgeColor(ciclista.especialidad)" class="px-1 py-0.5 rounded text-xxs">
-                                                    <span x-text="ciclista.especialidad.slice(0, 3).toUpperCase()"></span>
-                                                </span>
-                                            
-                                        </template>
-                                        <template x-if="!['especialidad', 'lla', 'mon', 'col', 'cri', 'pro', 'pav', 'spr', 'acc', 'des', 'com', 'ene', 'res', 'rec', 'media', 'total_puntos'].includes(field)">
-                                            <span x-text="ciclista[field]"></span>
-                                        </template>
-                                    </td>
-                                </template>
+<template x-for="equipo in sortedEquipos()" :key="equipo.cod_equipo">
+    <tr class="hover:bg-slate-100">
+        <template x-for="(label, field) in {{ json_encode($columns) }}" :key="field">
+            <td class="px-2 py-1.5 text-xs">
+                <template x-if="['total_pts'].includes(field)">
+                    <span>
+                        <span x-text="formatNumber(equipo[field]).integerPart"></span>
+                        <span x-text="'.' + formatNumber(equipo[field]).decimalPart"></span>
+                    </span>
+                </template>
+                <template x-if="!['total_pts'].includes(field)">
+                    <span x-text="equipo[field]"></span>
+                </template>
+            </td>
+        </template>
+    </tr>
+</template>
                             </tr>
                         </template>
                     </tbody>

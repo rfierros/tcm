@@ -40,10 +40,10 @@ return new class extends Migration
             $table->timestamps();
 
             // Índices
-            $table->index(['cod_ciclista', 'temporada'], 'idx_ciclista_temporada');
-            $table->index(['temporada', 'num_carrera', 'etapa'], 'idx_carrera_etapa');
+            $table->index(['cod_ciclista', 'temporada'], 'idx_res_ciclista_temporada');
+            $table->index(['temporada', 'num_carrera', 'etapa'], 'idx_res_carrera_etapa');
             // Clave única para soporte de ON CONFLICT
-            $table->unique(['temporada', 'num_carrera', 'etapa', 'cod_ciclista'], 'unique_resultado');
+            $table->unique(['temporada', 'num_carrera', 'etapa', 'cod_ciclista'], 'unique_res_resultado');
 
         });
 

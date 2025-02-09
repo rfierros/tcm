@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Ciclista;
 use App\Models\Resultado;
+use App\Models\Inscripcion;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -98,6 +99,22 @@ class ImportInscripciones extends Command
                             [
                                 'cod_equipo' => $codEquipo,
                                 'posicion' => 0,
+                            ]
+                        );
+                    }
+
+                    $this->info("Inscripción (resultado) registrada para: $nomApe en num_carrera: $numCarrera");
+
+                    // Insertar un registro en la tabla incripciones para cada etapa
+                    for ($etapa = 1; $etapa <= $numEtapas; $etapa++) {
+                        Inscripcion::updateOrCreate(
+                            [
+                                'temporada' => $temporada,
+                                'num_carrera' => $numCarrera, // Asegúrate de incluir esta clave
+                                'cod_ciclista' => $codCiclista,
+                            ],
+                            [
+                                'cod_equipo' => $codEquipo,
                             ]
                         );
                     }

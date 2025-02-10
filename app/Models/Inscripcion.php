@@ -9,7 +9,7 @@ class Inscripcion extends Model
 {
     protected $table = 'inscripciones';
 
-    protected $fillable = ['temporada', 'num_carrera', 'cod_ciclista', 'cod_equipo'];
+    protected $fillable = ['temporada', 'num_carrera', 'cod_ciclista', 'cod_equipo', 'sancion', 'forma'];
 
     public function carrera()
     {

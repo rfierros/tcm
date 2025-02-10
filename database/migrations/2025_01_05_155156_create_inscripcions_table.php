@@ -21,8 +21,8 @@ return new class extends Migration
             $table->foreign('cod_ciclista')->references('cod_ciclista')->on('ciclistas')->onDelete('cascade');
             $table->integer('cod_equipo'); 
             $table->foreign('cod_equipo')->references('cod_equipo')->on('equipos')->onDelete('cascade');
-            $table->enum('sancion', ['d', 's'])->nullable(); // 'null' no es necesario explícitamente en enum
-            $table->integer('pts')->default(0);
+            $table->enum('sancion', ['d', 's'])->nullable(); // u -> sancion u24, c -> sancion conti, d -> sancion repetir dias
+            $table->decimal('forma', 11, 8)->nullable();
             $table->timestamps();
 
             // Índices

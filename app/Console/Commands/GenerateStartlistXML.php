@@ -137,7 +137,7 @@ class GenerateStartlistXML extends Command
             ->whereHas('carrera', function ($query) {
                 $query->where('categoria', 'U24');
             })
-            ->update(['sancion' => 's']);
+            ->update(['sancion' => 'u']);
 
         // 2. Continentales con estadísticas >= 78
         Inscripcion::where('num_carrera', $numCarrera)
@@ -161,10 +161,10 @@ class GenerateStartlistXML extends Command
             ->whereHas('carrera', function ($query) {
                 $query->where('categoria', 'Conti');
             })
-            ->update(['sancion' => 'd']);
+            ->update(['sancion' => 'c']);
 
         // 3. Inscripciones en Fechas Coincidentes
-        $ciclistasCoincidentes = Inscripcion::whereHas('carrera.etapas', function ($query) {
+        $ciclistasCoincidentes = Inscripcion::whereHas('carrera.etapas', function ($query) { 
                 $query->whereIn('dia', function ($subquery) {
                     $subquery->select('dia')
                         ->from('etapas')

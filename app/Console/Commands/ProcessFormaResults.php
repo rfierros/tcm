@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Models\Ciclista;
+use App\Models\Inscripcion;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -11,7 +12,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 class ProcessFormaResults extends Command
 {
     protected $signature = 'process:forma-results {folder}';
-    protected $description = 'Procesa un archivo de forma de múltiples semanas y genera múltiples pestañas de salida.';
+    protected $description = 'Procesa un archivo de forma de múltiples semanas y actualiza la BD.';
 
     public function handle()
     {
@@ -44,10 +45,19 @@ class ProcessFormaResults extends Command
             return Command::FAILURE;
         }
 
+        $temporada = config('tcm.temporada'); // Obtenemos la temporada actual
+        $actualizaciones = []; // Para almacenar formas antes de actualizar la BD
+
         for ($i = 0; $i < $sheetCount; $i += 2) {
             $firstSheet = $spreadsheet->getSheet($i);
             $secondSheet = $spreadsheet->getSheet($i + 1);
             $sheetName = $firstSheet->getTitle();
+            $numCarrera = $this->extractNumCarrera($sheetName); // Extraer número de carrera del nombre de la pestaña
+
+            if (!$numCarrera) {
+                $this->warn("No se pudo determinar el num_carrera de la pestaña: $sheetName. Se omite.");
+                continue;
+            }
 
             $ciclistasBuscados = [];
             $lastRow = $secondSheet->getHighestRow();
@@ -55,7 +65,10 @@ class ProcessFormaResults extends Command
             for ($row = 2; $row <= $lastRow; $row++) {
                 $codCiclista = $secondSheet->getCell("C$row")->getValue();
                 $rol = $secondSheet->getCell("E$row")->getValue();
-                $ciclistasBuscados[$codCiclista] = ['rol' => $rol];
+                $ciclistasBuscados[$codCiclista] = [
+                    'rol' => $rol,
+                    'num_carrera' => $numCarrera
+                ];
             }
 
             $lastRow = $firstSheet->getHighestRow();
@@ -64,6 +77,16 @@ class ProcessFormaResults extends Command
                 if (isset($ciclistasBuscados[$codCiclista])) {
                     $forma = $firstSheet->getCell("L$row")->getValue();
                     $ciclistasBuscados[$codCiclista]['forma'] = $forma;
+                    
+
+                    if (!empty($forma)) {
+                        $actualizaciones[] = [
+                            'cod_ciclista' => $codCiclista,
+                            'num_carrera' => $numCarrera,
+                            'forma' => $forma,
+                            'rol' => $ciclistasBuscados[$codCiclista]['rol'] ?? null
+                        ];
+                    }
                 }
             }
 
@@ -104,12 +127,38 @@ class ProcessFormaResults extends Command
         if ($newSpreadsheet->getSheetCount() > 1) {
             $newSpreadsheet->removeSheetByIndex(0);
         }
-        
+
         $writer = new Xlsx($newSpreadsheet);
         $writer->save($outputFile);
 
         $this->info("Archivo generado: $outputFile");
+
+        // **Actualizar la BD con los valores de forma**
+        $this->actualizarFormas($actualizaciones, $temporada);
+
         return Command::SUCCESS;
+    }
+
+    private function actualizarFormas(array $actualizaciones, int $temporada)
+    {
+        if (empty($actualizaciones)) {
+            $this->info("No hay formas para actualizar en la BD.");
+            return;
+        }
+
+        $this->info("Actualizando formas en la base de datos...");
+
+        foreach ($actualizaciones as $data) {
+            Inscripcion::where('cod_ciclista', $data['cod_ciclista'])
+                ->where('num_carrera', $data['num_carrera'])
+                ->where('temporada', $temporada)
+                ->update([
+                    'rol' => $data['rol'],
+                    'forma' => $data['forma'],
+                    ]);
+        }
+
+        $this->info("Actualización de formas completada.");
     }
 
     private function translateRole($role)
@@ -121,5 +170,14 @@ class ProcessFormaResults extends Command
             4 => 'Sprinter',
             default => 'Desconocido',
         };
+    }
+
+    private function extractNumCarrera(string $sheetName): ?int
+    {
+        // Extraer número de carrera del título de la pestaña
+        if (preg_match('/^(\d+)/', $sheetName, $matches)) {
+            return (int)$matches[1];
+        }
+        return null;
     }
 }

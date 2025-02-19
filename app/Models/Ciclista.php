@@ -30,6 +30,11 @@ class Ciclista extends Model
         return $this->hasMany(Resultado::class, 'cod_ciclista', 'cod_ciclista');
     }
 
+    public function inscripciones()
+    {
+        return $this->hasMany(Inscripcion::class, 'cod_ciclista', 'cod_ciclista');
+    }
+
     public function calcularSwitches(): void
     {
         // Regla para el campo `u24`

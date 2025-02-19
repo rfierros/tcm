@@ -2,6 +2,7 @@
 
 use Livewire\Volt\Component;
 use Livewire\Attributes\On; 
+use App\Models\Inscripcion;
 use App\Models\Ciclista;
 use App\Models\Equipo;
 use Illuminate\Database\Eloquent\Collection; 
@@ -55,17 +56,21 @@ new class extends Component {
                 $query->where('user_id', Auth::id());
             })
             ->where('temporada', $temporada)
-            ->with('equipo.user') // Carga los equipos y usuarios asociados
-            ->withCount(['resultados as inscripciones' => function ($query) use ($temporada) {
-                $query->where('temporada', $temporada);
-            }]) // Contar inscripciones
+            ->with('equipo.user') // Cargar equipos y usuarios asociados
+            ->withSum(['inscripciones as inscripciones' => function ($query) use ($temporada) {
+                $query->where('inscripciones.temporada', $temporada)
+                    ->join('carreras', function ($join) {
+                        $join->on('inscripciones.num_carrera', '=', 'carreras.num_carrera')
+                            ->on('inscripciones.temporada', '=', 'carreras.temporada');
+                    });
+            }], 'carreras.num_etapas') // 🔹 Sumar etapas de cada carrera desde la tabla `carreras`
             ->withSum(['resultados as total_puntos' => function ($query) use ($temporada) {
-                $query->where('temporada', $temporada);
-            }], 'pts') // Sumar puntos acumulados
+                $query->where('resultados.temporada', $temporada);
+            }], 'pts') // 🔹 Sumar puntos desde la tabla `resultados`
             ->orderBy('media', 'desc')
             ->get();
-
     }
+
 }; ?>
 
 <div class="mt-6 bg-white divide-y rounded-lg shadow-sm"> 

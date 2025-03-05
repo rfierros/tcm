@@ -13,7 +13,6 @@ new class extends Component {
     public $equipo;
 
     public $columns = [ // Campo => Cabecera
-        'categoria' => 'Categoria',
         'nombre_equipo' => 'Equipo',
         'total_pts' => 'Puntos',
         'num_victorias' => 'Victorias',
@@ -73,8 +72,6 @@ new class extends Component {
 
 <div class="mt-6 bg-white divide-y rounded-lg shadow-sm"> 
 
-
-
 <div class="p-10">
     <div class="flex flex-col">
         <div x-data="{
@@ -105,102 +102,26 @@ new class extends Component {
                 const [integerPart, decimalPart] = value.toFixed(2).split('.');
                 return { integerPart, decimalPart };
             },
-            getBadgeColor(especialidad) {
+            getCategoryColor(cat) {
                 const colors = {
-                    'ardenas': 'bg-pink-600/30 text-pink-600',
-                    'flandes': 'bg-yellow-400/30 text-yellow-500',
-                    'sprinter': 'bg-green-500/30 text-green-600',
-                    'escalador': 'bg-yellow-800/30 text-yellow-800',
-                    'combatividad': 'bg-purple-800/30 text-purple-800',
-                    'croner': 'bg-cyan-400/30 text-cyan-600',
+                    'wt': 'bg-orange-500/70 font-bold',
+                    'conti': 'bg-green-400/70 font-bold',
                 };
-                return colors[especialidad.toLowerCase()] || 'bg-gray-500 text-white';
+                return colors[cat.toLowerCase()] || 'bg-white';
             }
         }">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="mb-4 text-xl font-semibold leading-tight text-gray-800">
                     Clasificación
                 </h3> 
-                <div class="flex space-x-4">
-                    <fieldset aria-label="Choose a filter option">
-                        <div class="grid grid-cols-3 gap-3 mt-2 mb-1 sm:grid-cols-6">
-                            @foreach($botones as $boton => $label)
-                                <label :class="{
-                                    'bg-indigo-600 text-white hover:bg-indigo-500 ring-0': selectedFilter === '{{ $boton }}',
-                                    'ring-1 ring-gray-300 bg-white text-gray-900 hover:bg-gray-50': selectedFilter !== '{{ $boton }}'
-                                }" class="flex items-center justify-center px-3 py-3 text-sm font-semibold uppercase rounded-md cursor-pointer focus:outline-none sm:flex-1">
-                                    <input type="radio" name="filter-option" value="{{ $boton }}" class="sr-only" @click="selectedFilter = '{{ $boton }}'">
-                                    <span>{{ $label }}</span>
-                                </label>
-                            @endforeach
-                            <label :class="{
-                                'bg-indigo-600 text-white hover:bg-indigo-500 ring-0': selectedFilter === 'U24',
-                                'ring-1 ring-gray-300 bg-white text-gray-900 hover:bg-gray-50': selectedFilter !== 'U24'
-                            }" class="flex items-center justify-center px-3 py-3 text-sm font-semibold text-gray-900 uppercase bg-white rounded-md cursor-pointer focus:outline-none sm:flex-1 ring-1 ring-gray-300 hover:bg-gray-50">
-                                <input type="radio" name="filter-option" value="colores" class="sr-only" @click="selectedFilter = 'U24'">
-                                <span>Colores</span>
-                            </label>
-                                <div>
-                                        <label :class="{
-                                                'bg-pink-600 text-white hover:bg-pink-500 ring-0': selectedFilter === 'Option',
-                                                'ring-1 ring-gray-300 bg-white text-xxs text-gray-900 hover:bg-gray-50': selectedFilter !== 'Option'
-                                            }"
-                                            class="flex items-center justify-center flex-1 w-1/2 px-1 py-0.5 text-xs font-semibold text-gray-900 uppercase bg-white rounded-md cursor-pointer h-1/3 focus:outline-none ring-1 ring-gray-300 hover:bg-gray-50">
-                                            <input type="radio" :value="'ard'" name="filter-option" class="sr-only" @click="selectedFilter = 'ard'">
-                                            <span x-text="'ard'"></span>
-                                        </label>
-                                        <label :class="{
-                                                'bg-pink-600 text-white hover:bg-pink-500 ring-0': selectedFilter === 'Option',
-                                                'ring-1 ring-gray-300 bg-white text-xxs text-gray-900 hover:bg-gray-50': selectedFilter !== 'Option'
-                                            }"
-                                            class="flex items-center justify-center flex-1 w-1/2 px-1 py-0.5 text-xs font-semibold text-gray-900 uppercase bg-white rounded-md cursor-pointer h-1/3 focus:outline-none ring-1 ring-gray-300 hover:bg-gray-50">
-                                            <input type="radio" :value="'cro'" name="filter-option" class="sr-only" @click="selectedFilter = 'cro'">
-                                            <span x-text="'cro'"></span>
-                                        </label>
-                                        <label :class="{
-                                                'bg-pink-600 text-white hover:bg-pink-500 ring-0': selectedFilter === 'Option',
-                                                'ring-1 ring-gray-300 bg-white text-xxs text-gray-900 hover:bg-gray-50': selectedFilter !== 'Option'
-                                            }"
-                                            class="flex items-center justify-center flex-1 w-1/2 px-1 py-0.5 text-xs font-semibold text-gray-900 uppercase bg-white rounded-md cursor-pointer h-1/3 focus:outline-none ring-1 ring-gray-300 hover:bg-gray-50">
-                                            <input type="radio" :value="'esc'" name="filter-option" class="sr-only" @click="selectedFilter = 'esc'">
-                                            <span x-text="'esc'"></span>
-                                        </label>
-                                </div>
-                                <div>
-                                        <label :class="{
-                                                'bg-pink-600 text-white hover:bg-pink-500 ring-0': selectedFilter === 'Option',
-                                                'ring-1 ring-gray-300 bg-white text-xxs text-gray-900 hover:bg-gray-50': selectedFilter !== 'Option'
-                                            }"
-                                            class="flex items-center justify-center flex-1 w-1/2 px-1 py-0.5 text-xs font-semibold text-gray-900 uppercase bg-white rounded-md cursor-pointer h-1/3 focus:outline-none ring-1 ring-gray-300 hover:bg-gray-50">
-                                            <input type="radio" :value="'spr'" name="filter-option" class="sr-only" @click="selectedFilter = 'spr'">
-                                            <span x-text="'spr'"></span>
-                                        </label>
-                                        <label :class="{
-                                                'bg-pink-600 text-white hover:bg-pink-500 ring-0': selectedFilter === 'Option',
-                                                'ring-1 ring-gray-300 bg-white text-xxs text-gray-900 hover:bg-gray-50': selectedFilter !== 'Option'
-                                            }"
-                                            class="flex items-center justify-center flex-1 w-1/2 px-1 py-0.5 text-xs font-semibold text-gray-900 uppercase bg-white rounded-md cursor-pointer h-1/3 focus:outline-none ring-1 ring-gray-300 hover:bg-gray-50">
-                                            <input type="radio" :value="'com'" name="filter-option" class="sr-only" @click="selectedFilter = 'com'">
-                                            <span x-text="'com'"></span>
-                                        </label>
-                                        <label :class="{
-                                                'bg-pink-600 text-white hover:bg-pink-500 ring-0': selectedFilter === 'Option',
-                                                'ring-1 ring-gray-300 bg-white text-xxs text-gray-900 hover:bg-gray-50': selectedFilter !== 'Option'
-                                            }"
-                                            class="flex items-center justify-center flex-1 w-1/2 px-1 py-0.5 text-xs font-semibold text-gray-900 uppercase bg-white rounded-md cursor-pointer h-1/3 focus:outline-none ring-1 ring-gray-300 hover:bg-gray-50">
-                                            <input type="radio" :value="'fla'" name="filter-option" class="sr-only" @click="selectedFilter = 'fla'">
-                                            <span x-text="'fla'"></span>
-                                        </label>
-                                </div>
-                        </div>
-                    </fieldset>
-                </div>
+
             </div>
 
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-neutral-200">
                     <thead>
                         <tr>
+                            <th class="px-2 py-1.5 text-xxs leading-none text-left">Pos.</th>
                             @foreach($columns as $column => $label)
                                 <th class="px-2 py-1.5 text-xxs leading-none uppercase">
                                     <div class="flex items-center space-x-2">
@@ -217,23 +138,23 @@ new class extends Component {
                         </tr>
                     </thead>
                     <tbody>
-<template x-for="equipo in sortedEquipos()" :key="equipo.cod_equipo">
-    <tr class="hover:bg-slate-100">
-        <template x-for="(label, field) in {{ json_encode($columns) }}" :key="field">
-            <td class="px-2 py-1.5 text-xs">
-                <template x-if="['total_pts'].includes(field)">
-                    <span>
-                        <span x-text="formatNumber(equipo[field]).integerPart"></span>
-                        <span x-text="'.' + formatNumber(equipo[field]).decimalPart"></span>
-                    </span>
-                </template>
-                <template x-if="!['total_pts'].includes(field)">
-                    <span x-text="equipo[field]"></span>
-                </template>
-            </td>
-        </template>
-    </tr>
-</template>
+                        <template x-for="(equipo, index) in sortedEquipos()" :key="equipo.cod_equipo">
+                            
+                            <tr :class="getCategoryColor(equipo.categoria)"  class="hover:bg-slate-100">
+                                <td class="px-2 py-1.5 text-xs" x-text="index + 1"></td>
+                                <template x-for="(label, field) in {{ json_encode($columns) }}" :key="field">
+                                    <td class="px-2 py-1.5 text-xs">
+                                        <template x-if="['total_pts'].includes(field)">
+                                            <span>
+                                                <span x-text="formatNumber(equipo[field]).integerPart"></span>
+                                                <span x-text="'.' + formatNumber(equipo[field]).decimalPart"></span>
+                                            </span>
+                                        </template>
+                                        <template x-if="!['total_pts'].includes(field)">
+                                            <span x-text="equipo[field]"></span>
+                                        </template>
+                                    </td>
+                                </template>
                             </tr>
                         </template>
                     </tbody>

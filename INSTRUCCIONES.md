@@ -107,3 +107,11 @@ Aquí vemos un ejemplo para la Etapa 3 de la carrera 9.:
 ```php
 php artisan process:race-results "09 Tour des Alpes-Maritimes Etapa 3.xlsx"
 ```
+
+**Procesar los archivos de Formas**
+
+Los archivos de entrada se almacenarán en app/imports/resultados/semana-XX. Serán archivos importa Semama Forma XX.xlsx.
+Aquí vemos un ejemplo para procesar uno de ellos:
+```php
+php artisan process:forma-results 19 
+```

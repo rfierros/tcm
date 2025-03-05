@@ -32,7 +32,7 @@ new class extends Component {
                     COUNT(CASE WHEN r.posicion = 1 THEN 1 ELSE NULL END) AS num_victorias,
                     COUNT(DISTINCT r.num_carrera || "-" || r.etapa) AS etapas_disputadas
                 ')
-                ->where('r.num_carrera', '>', 0)
+                ->whereBetween('r.num_carrera', [48, 56])
                 ->groupBy('r.cod_equipo', 'e.nombre_equipo')
                 ->orderByDesc('total_pts')
                 ->get()->toArray() // Convertir a array para evitar stdClass

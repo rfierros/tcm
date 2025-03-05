@@ -2,6 +2,7 @@
 
 use Livewire\Volt\Component;
 use Livewire\Attributes\On; 
+use App\Models\Inscripcion;
 use App\Models\Ciclista;
 use App\Models\Equipo;
 use Illuminate\Database\Eloquent\Collection; 
@@ -11,8 +12,8 @@ new class extends Component {
     public $equipo;
 
     public $columns = [ // Campo => Cabecera
-        'apellido' => 'Ciclista',
-        'pais' => 'pais',
+        'nom_abrev' => 'Ciclista',
+        'cod_equipo' => 'Eq',
         'especialidad' => 'tipo',
         'edad' => 'edad',
         'lla' => 'lla',
@@ -29,7 +30,8 @@ new class extends Component {
         'res' => 'res',
         'rec' => 'rec',
         'media' => 'media',
-        'pts' => 'pts',
+        'total_puntos' => 'pts',
+        'inscripciones' => 'Insc.',
     ];
 
     public $botones = [ // Campo => Cabecera
@@ -40,20 +42,33 @@ new class extends Component {
  
     public function mount(): void
     {
-        // $this->ciclistas = Ciclista::with('user') 
-        //     ->latest()
-        //     ->get(); 
-        $this->getAllCiclistas(); 
+        $this->getMyCiclistas(); 
+        $this->equipo = Equipo::where('user_id', Auth::id())->first();
     }
  
     // Si se crea un Ciclista hay un listener para el evento de creacion que actualizará la lista de Ciclistas
     #[On('ciclista-created')]
-    public function getAllCiclistas(): void
+    public function getMyCiclistas(): void
     {
-        $this->ciclistas = Ciclista::with('equipo.user')
-            ->latest()
+        $temporada = config('tcm.temporada');
+
+        $this->ciclistas = Ciclista::where('temporada', $temporada)
+            ->with('equipo.user') // Cargar equipos y usuarios asociados
+            ->withSum(['inscripciones as inscripciones' => function ($query) use ($temporada) {
+                $query->where('inscripciones.temporada', $temporada)
+                    ->join('carreras', function ($join) {
+                        $join->on('inscripciones.num_carrera', '=', 'carreras.num_carrera')
+                            ->on('inscripciones.temporada', '=', 'carreras.temporada');
+                    });
+            }], 'carreras.num_etapas') // 🔹 Sumar etapas de cada carrera desde la tabla `carreras`
+            ->withSum(['resultados as total_puntos' => function ($query) use ($temporada) {
+                $query->where('resultados.temporada', $temporada);
+            }], 'pts') // 🔹 Sumar puntos desde la tabla `resultados`
+            ->addSelect(['cod_equipo']) // 🔹 Incluir `cod_equipo` en la selección
+            ->orderBy('media', 'desc')
             ->get();
-    } 
+    }
+
 }; ?>
 
 <div class="mt-6 bg-white divide-y rounded-lg shadow-sm"> 
@@ -105,7 +120,7 @@ new class extends Component {
         }">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="mb-4 text-xl font-semibold leading-tight text-gray-800">
-                   Ciclistas
+                    {{ $equipo->nombre_equipo }}
                 </h3> 
                 <div class="flex space-x-4">
                     <fieldset aria-label="Choose a filter option">
@@ -206,8 +221,8 @@ new class extends Component {
                         <template x-for="ciclista in sortedCiclistas()" :key="ciclista.id">
                             <tr class="hover:bg-slate-100">
                                 <template x-for="(label, field) in {{ json_encode($columns) }}" :key="field">
-                                    <td x:class="{ 'bg-red-200': colorMode }" class="px-2 py-1.5 text-xs">
-                                        <template x-if="['lla', 'mon', 'col', 'cri', 'pro', 'pav', 'spr', 'acc', 'des', 'com', 'ene', 'res', 'rec', 'media'].includes(field)">
+                                    <td x:class="{ 'bg-red-200': colorMode }" class="px-2 py-1.5 text-xs text-right">
+                                        <template x-if="['lla', 'mon', 'col', 'cri', 'pro', 'pav', 'spr', 'acc', 'des', 'com', 'ene', 'res', 'rec', 'media', 'total_puntos'].includes(field)">
                                             <span>
                                                 <span x-text="formatNumber(ciclista[field]).integerPart" class="text-xs"></span><span x-text="'.' + formatNumber(ciclista[field]).decimalPart" class="inline-block text-gray-400 text-xxs"></span>
                                             </span>
@@ -218,7 +233,7 @@ new class extends Component {
                                                 </span>
                                             
                                         </template>
-                                        <template x-if="!['especialidad', 'lla', 'mon', 'col', 'cri', 'pro', 'pav', 'spr', 'acc', 'des', 'com', 'ene', 'res', 'rec', 'media'].includes(field)">
+                                        <template x-if="!['especialidad', 'lla', 'mon', 'col', 'cri', 'pro', 'pav', 'spr', 'acc', 'des', 'com', 'ene', 'res', 'rec', 'media', 'total_puntos'].includes(field)">
                                             <span x-text="ciclista[field]"></span>
                                         </template>
                                     </td>

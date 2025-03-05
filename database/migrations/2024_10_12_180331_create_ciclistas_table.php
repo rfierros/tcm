@@ -49,6 +49,8 @@ return new class extends Migration
             $table->decimal('rec', 5, 3)->nullable(); // Valoración REC
             $table->decimal('media', 10, 8)->nullable(); // Media general del ciclista
 
+            $table->enum('draft', ['libre', 'u24'])->nullable(); // Tipo de draft del que viene
+            $table->integer('pos_draft')->nullable(); // Posición en su draft
             // Filtros
             $table->boolean('conti')->default(false); // Campo conti
             $table->boolean('u24')->default(false); // Campo u24

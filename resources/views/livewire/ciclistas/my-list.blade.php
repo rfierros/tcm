@@ -61,6 +61,7 @@ new class extends Component {
                 $query->where('inscripciones.temporada', $temporada)
                     ->join('carreras', function ($join) {
                         $join->on('inscripciones.num_carrera', '=', 'carreras.num_carrera')
+            //                ->on('inscripciones.num_carrera', '<', 54)
                             ->on('inscripciones.temporada', '=', 'carreras.temporada');
                     });
             }], 'carreras.num_etapas') // 🔹 Sumar etapas de cada carrera desde la tabla `carreras`

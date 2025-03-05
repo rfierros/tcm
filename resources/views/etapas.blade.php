@@ -10,6 +10,8 @@
             <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     <livewire:etapas.list :carrera="$carrera" :slug-carrera="$slugCarrera"/>  
+                    <livewire:tabla-ciclistas :num-carrera="$carrera->num_carrera" />
+                            <livewire:alineacion :num-carrera="12" />
                 </div>
             </div>
         </div>

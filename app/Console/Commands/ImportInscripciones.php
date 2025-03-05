@@ -88,20 +88,20 @@ class ImportInscripciones extends Command
                     $codEquipo = $ciclista->cod_equipo;
 
                     // Insertar un registro en la tabla resultados para cada etapa
-                    for ($etapa = 1; $etapa <= $numEtapas; $etapa++) {
-                        Resultado::updateOrCreate(
-                            [
-                                'temporada' => $temporada,
-                                'num_carrera' => $numCarrera, // Asegúrate de incluir esta clave
-                                'etapa' => $etapa,
-                                'cod_ciclista' => $codCiclista,
-                            ],
-                            [
-                                'cod_equipo' => $codEquipo,
-                                'posicion' => 0,
-                            ]
-                        );
-                    }
+                    // for ($etapa = 1; $etapa <= $numEtapas; $etapa++) {
+                    //     Resultado::updateOrCreate(
+                    //         [
+                    //             'temporada' => $temporada,
+                    //             'num_carrera' => $numCarrera, // Asegúrate de incluir esta clave
+                    //             'etapa' => $etapa,
+                    //             'cod_ciclista' => $codCiclista,
+                    //         ],
+                    //         [
+                    //             'cod_equipo' => $codEquipo,
+                    //             'posicion' => 0,
+                    //         ]
+                    //     );
+                    // }
 
                     $this->info("Inscripción (resultado) registrada para: $nomApe en num_carrera: $numCarrera");
 

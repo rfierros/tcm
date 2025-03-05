@@ -16,7 +16,8 @@ new class extends Component {
         'nombre_equipo' => 'Equipo',
         'total_pts' => 'Puntos',
         'num_victorias' => 'Victorias',
-        'etapas_disputadas' => 'Etapas Disputadas'
+        'victorias_vueltas' => 'Vueltas',
+//        'etapas_disputadas' => 'Etapas Disputadas',
     ];
 
     public $botones = [ // Campo => Cabecera
@@ -35,38 +36,33 @@ new class extends Component {
         $this->equipos = Equipo::hydrate(
             DB::table('resultados as r')
                 ->join('equipos as e', 'r.cod_equipo', '=', 'e.cod_equipo')
+                ->leftJoin('carreras as c', function ($join) {
+                    $join->on('r.num_carrera', '=', 'c.num_carrera')
+                         ->on('r.temporada', '=', 'c.temporada')
+                         ->where('c.num_etapas', '>', 1); // 🔹 Solo vueltas
+                })
                 ->selectRaw('
                     e.nombre_equipo,
                     e.categoria,
                     r.cod_equipo,
                     SUM(r.pts) AS total_pts,
                     COUNT(CASE WHEN r.posicion = 1 THEN 1 ELSE NULL END) AS num_victorias,
-                    COUNT(DISTINCT r.num_carrera || "-" || r.etapa) AS etapas_disputadas
+                    COUNT(DISTINCT r.num_carrera || "-" || r.etapa) AS etapas_disputadas,
+                    COUNT(DISTINCT CASE 
+                        WHEN c.num_etapas IS NOT NULL 
+                        AND r.etapa = c.num_etapas 
+                        AND r.pos_gral = 1 
+                        THEN r.num_carrera 
+                        ELSE NULL 
+                    END) AS victorias_vueltas
                 ')
                 ->where('r.num_carrera', '>', 0)
                 ->groupBy('r.cod_equipo', 'e.nombre_equipo')
                 ->orderByDesc('total_pts')
                 ->get()->toArray() // Convertir a array para evitar stdClass
         );
-//$this->equipos = Equipo::withCount([
-//        'resultados as total_pts' => function ($query) {
-//            $query->select(DB::raw('SUM(pts)'));
-//        },
-//        'resultados as num_victorias' => function ($query) {
-//            $query->where('posicion', 1);
-//        },
-//        'resultados as etapas_disputadas' => function ($query) {
-//            $query->select(DB::raw('COUNT(DISTINCT num_carrera || "-" || etapa)'));
-//        }
-//    ])
-//    ->whereHas('resultados', function ($query) {
-//        $query->where('num_carrera', '>', 0);
-//    })
-//    ->orderByDesc('total_pts')
-//    ->get();
-
-        //dd($this->equipos);
-    } 
+    }
+    
  
 }; ?>
 
@@ -104,7 +100,7 @@ new class extends Component {
             },
             getCategoryColor(cat) {
                 const colors = {
-                    'wt': 'bg-orange-500/70 font-bold',
+                    'wt': 'bg-sky-600 font-bold text-white',
                     'conti': 'bg-green-400/70 font-bold',
                 };
                 return colors[cat.toLowerCase()] || 'bg-white';
@@ -112,7 +108,7 @@ new class extends Component {
         }">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="mb-4 text-xl font-semibold leading-tight text-gray-800">
-                    Clasificación
+                    Clasificación General
                 </h3> 
 
             </div>
@@ -121,9 +117,9 @@ new class extends Component {
                 <table class="min-w-full divide-y divide-neutral-200">
                     <thead>
                         <tr>
-                            <th class="px-2 py-1.5 text-xxs leading-none text-left">Pos.</th>
+                            <th class="px-2 py-1.5 text-xs leading-none text-left">Pos.</th>
                             @foreach($columns as $column => $label)
-                                <th class="px-2 py-1.5 text-xxs leading-none uppercase">
+                                <th class="px-2 py-1.5 text-xs leading-none uppercase">
                                     <div class="flex items-center space-x-2">
                                         <span @click="sort('{{ $column }}', order === 'asc' ? 'desc' : 'asc')" class="cursor-pointer">
                                             {{ $label }}
@@ -140,10 +136,10 @@ new class extends Component {
                     <tbody>
                         <template x-for="(equipo, index) in sortedEquipos()" :key="equipo.cod_equipo">
                             
-                            <tr :class="getCategoryColor(equipo.categoria)"  class="hover:bg-slate-100">
-                                <td class="px-2 py-1.5 text-xs" x-text="index + 1"></td>
+                            <tr :class="getCategoryColor(equipo.categoria)"  class="hover:bg-slate-100 hover:text-gray-800">
+                                <td class="px-2 py-1.5 text-md" x-text="index + 1"></td>
                                 <template x-for="(label, field) in {{ json_encode($columns) }}" :key="field">
-                                    <td class="px-2 py-1.5 text-xs">
+                                    <td class="px-2 py-1.5 text-md">
                                         <template x-if="['total_pts'].includes(field)">
                                             <span>
                                                 <span x-text="formatNumber(equipo[field]).integerPart"></span>

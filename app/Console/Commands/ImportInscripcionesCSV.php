@@ -3,47 +3,37 @@
 namespace App\Console\Commands;
 
 use App\Models\Ciclista;
-use App\Models\Resultado;
+use App\Models\Inscripcion;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
 class ImportInscripcionesCSV extends Command
 {
-    protected $signature = 'import:inscripciones {temporada} {archivo}';
-    protected $description = 'Importar inscripciones de corredores desde un archivo CSV';
+    protected $signature = 'import:inscripciones {temporada} {num_carrera}';
+    protected $description = 'Importar inscripciones de corredores desde un archivo CSV en el directorio de imports.';
 
     public function handle()
     {
         $temporada = $this->argument('temporada');
-        $archivo = $this->argument('archivo'); // Nombre del archivo CSV
-        $rutaArchivo = storage_path("app/imports/inscripciones/$archivo");
+        $numCarrera = $this->argument('num_carrera'); // NÃºmero de carrera
 
-        if (!file_exists($rutaArchivo)) {
-            $this->error("El archivo no existe: $rutaArchivo");
+        // ðŸ“Œ Buscar archivo que comience con "{num_carrera}."
+        $importDir = storage_path("app/imports/inscripcionescsv");
+        $files = glob("$importDir/{$numCarrera}.*.csv");
+
+        if (empty($files)) {
+            $this->error("No se encontrÃ³ un archivo CSV que empiece con: {$numCarrera}. en $importDir");
             return;
         }
 
-        // Extraer num_carrera del nombre del archivo (ej: "35_giro-italia.csv" -> num_carrera = 35)
-        preg_match('/^(\d+)_/', pathinfo($archivo, PATHINFO_FILENAME), $matches);
-        $numCarrera = isset($matches[1]) ? (int) $matches[1] : null;
-
-        if (!$numCarrera) {
-            $this->error("No se pudo determinar el num_carrera del archivo: $archivo");
+        if (count($files) > 1) {
+            $this->error("Se encontraron mÃºltiples archivos para num_carrera: {$numCarrera}. Especifique el correcto manualmente.");
             return;
         }
 
-        $this->info("Procesando inscripciones para la carrera num: $numCarrera");
+        $rutaArchivo = $files[0]; // Tomamos el Ãºnico archivo encontrado
 
-        // Obtener el número de etapas de la carrera
-        $numEtapas = DB::table('carreras')
-            ->where('num_carrera', $numCarrera)
-            ->where('temporada', $temporada)
-            ->value('num_etapas');
-
-        if (!$numEtapas) {
-            $this->warn("No se encontraron etapas para la carrera num: $numCarrera");
-            return;
-        }
+        $this->info("Procesando inscripciones desde: " . basename($rutaArchivo));
 
         DB::beginTransaction();
 
@@ -54,7 +44,7 @@ class ImportInscripcionesCSV extends Command
                 foreach ($row as $nombre) {
                     $nombre = trim($nombre);
 
-                    // Ignorar valores vacíos o "#N/A"
+                    // Ignorar valores vacÃ­os o "#N/A"
                     if (empty($nombre) || $nombre === '#N/A') {
                         continue;
                     }
@@ -72,32 +62,28 @@ class ImportInscripcionesCSV extends Command
                     $codCiclista = $ciclista->cod_ciclista;
                     $codEquipo = $ciclista->cod_equipo;
 
-                    // Insertar inscripciones en la tabla resultados
-                    for ($etapa = 1; $etapa <= $numEtapas; $etapa++) {
-                        Resultado::updateOrCreate(
-                            [
-                                'temporada' => $temporada,
-                                'num_carrera' => $numCarrera,
-                                'etapa' => $etapa,
-                                'cod_ciclista' => $codCiclista,
-                            ],
-                            [
-                                'cod_equipo' => $codEquipo,
-                                'posicion' => 0,
-                            ]
-                        );
-                    }
+                    // ðŸ”¹ Insertar inscripciÃ³n (solo 1 por ciclista y carrera)
+                    Inscripcion::updateOrCreate(
+                        [
+                            'temporada' => $temporada,
+                            'num_carrera' => $numCarrera,
+                            'cod_ciclista' => $codCiclista,
+                        ],
+                        [
+                            'cod_equipo' => $codEquipo,
+                        ]
+                    );
 
-                    $this->info("Inscripción registrada para: $nombre en num_carrera: $numCarrera");
+                    $this->info("InscripciÃ³n registrada para: $nombre en num_carrera: $numCarrera");
                 }
             }
 
             fclose($file);
             DB::commit();
-            $this->info("Todas las inscripciones se han importado correctamente.");
+            $this->info("âœ… Todas las inscripciones se han importado correctamente.");
         } catch (\Exception $e) {
             DB::rollback();
-            $this->error("Error al importar inscripciones: " . $e->getMessage());
+            $this->error("âŒ Error al importar inscripciones: " . $e->getMessage());
         }
     }
 }

@@ -8,54 +8,76 @@ use App\Models\Inscripcion;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Illuminate\Support\Facades\File;
 
 class ProcessFormaResults extends Command
 {
-    protected $signature = 'process:forma-results {folder}';
-    protected $description = 'Procesa un archivo de forma de múltiples semanas y actualiza la BD.';
+    protected $signature = 'process:forma-results {semana?}';
+    protected $description = 'Procesa archivos de forma y actualiza la BD. Si no se especifica semana, procesa todos.';
 
     public function handle()
     {
-        $folder = $this->argument('folder');
-        $importDir = storage_path("app/imports/resultados/semana-$folder");
-        $exportDir = storage_path('app/exports/formas');
+        $semana = $this->argument('semana');
+        $importDir = storage_path("app/imports/resultados/formas/");
+        $exportDir = storage_path('app/exports/formas/');
 
-        $inputFile = "$importDir/import Forma Semana $folder.xlsx";
-        $outputFile = "$exportDir/Forma Semana $folder.xlsx";
+        // **Buscar archivos según el parámetro**
+        if ($semana) {
+            $files = [ "{$importDir}import Forma Semana $semana.xlsx" ];
+        } else {
+            $files = File::glob("{$importDir}import Forma*.xlsx");
+        }
 
-        if (!file_exists($inputFile)) {
-            $this->error("El archivo $inputFile no existe.");
+        if (empty($files)) {
+            $this->error("No se encontraron archivos para procesar.");
             return Command::FAILURE;
         }
 
-        try {
-            $spreadsheet = IOFactory::load($inputFile);
-        } catch (\Exception $e) {
-            $this->error("Error al abrir el archivo: " . $e->getMessage());
-            return Command::FAILURE;
+        $this->info("Procesando archivos de forma...");
+        $temporada = config('tcm.temporada'); 
+        $actualizaciones = [];
+
+        foreach ($files as $inputFile) {
+            if (!file_exists($inputFile)) {
+                $this->warn("Archivo no encontrado: $inputFile. Omitido.");
+                continue;
+            }
+
+            try {
+                $spreadsheet = IOFactory::load($inputFile);
+            } catch (\Exception $e) {
+                $this->error("Error al abrir el archivo $inputFile: " . $e->getMessage());
+                continue;
+            }
+
+            $this->procesarArchivo($spreadsheet, $actualizaciones);
+            $outputFile = $exportDir . basename($inputFile);
+
+            // Guardar el archivo procesado
+            $this->guardarArchivo($spreadsheet, $outputFile);
         }
 
-        $this->info("Procesando archivo: $inputFile");
+        // **Actualizar BD con las formas**
+        $this->actualizarFormas($actualizaciones, $temporada);
+        return Command::SUCCESS;
+    }
 
-        $newSpreadsheet = new Spreadsheet();
+    private function procesarArchivo($spreadsheet, &$actualizaciones)
+    {
         $sheetCount = $spreadsheet->getSheetCount();
-
         if ($sheetCount % 2 !== 0) {
-            $this->error("El archivo tiene un número impar de pestañas, debe ser par.");
-            return Command::FAILURE;
+            $this->warn("El archivo tiene un número impar de pestañas, debe ser par.");
+            return;
         }
-
-        $temporada = config('tcm.temporada'); // Obtenemos la temporada actual
-        $actualizaciones = []; // Para almacenar formas antes de actualizar la BD
 
         for ($i = 0; $i < $sheetCount; $i += 2) {
             $firstSheet = $spreadsheet->getSheet($i);
             $secondSheet = $spreadsheet->getSheet($i + 1);
             $sheetName = $firstSheet->getTitle();
-            $numCarrera = $this->extractNumCarrera($sheetName); // Extraer número de carrera del nombre de la pestaña
+            $numCarrera = $this->extractNumCarrera($sheetName);
 
             if (!$numCarrera) {
-                $this->warn("No se pudo determinar el num_carrera de la pestaña: $sheetName. Se omite.");
+                $this->warn("No se pudo determinar el num_carrera de la pestaña: $sheetName. Omitida.");
                 continue;
             }
 
@@ -77,7 +99,6 @@ class ProcessFormaResults extends Command
                 if (isset($ciclistasBuscados[$codCiclista])) {
                     $forma = $firstSheet->getCell("L$row")->getValue();
                     $ciclistasBuscados[$codCiclista]['forma'] = $forma;
-                    
 
                     if (!empty($forma)) {
                         $actualizaciones[] = [
@@ -89,54 +110,17 @@ class ProcessFormaResults extends Command
                     }
                 }
             }
-
-            $ciclistasData = Ciclista::whereIn('cod_ciclista', array_keys($ciclistasBuscados))
-                ->with('equipo')
-                ->get()
-                ->keyBy('cod_ciclista');
-
-            $newSheet = $newSpreadsheet->createSheet();
-            $newSheet->setTitle($sheetName);
-
-            $newSheet->setCellValue("A1", "cod_ciclista");
-            $newSheet->setCellValue("B1", "nom_abrev");
-            $newSheet->setCellValue("C1", "equipo");
-            $newSheet->setCellValue("D1", "rol");
-            $newSheet->setCellValue("E1", "forma");
-
-            $rowNum = 2;
-            foreach ($ciclistasBuscados as $codCiclista => $data) {
-                $ciclista = $ciclistasData[$codCiclista] ?? null;
-                if (!$ciclista) continue;
-
-                $newSheet->setCellValue("A$rowNum", $codCiclista);
-                $newSheet->setCellValue("B$rowNum", $ciclista->nom_abrev ?? 'N/A');
-                $newSheet->setCellValue("C$rowNum", $ciclista->equipo->nombre_equipo ?? 'N/A');
-                $newSheet->setCellValue("D$rowNum", $this->translateRole($data['rol']));
-                $newSheet->setCellValue("E$rowNum", $data['forma'] ?? 'N/A');
-
-                $rowNum++;
-            }
         }
+    }
 
-        if (!file_exists($exportDir)) {
-            mkdir($exportDir, 0777, true);
+    private function guardarArchivo($spreadsheet, $outputFile)
+    {
+        $writer = new Xlsx($spreadsheet);
+        if (!file_exists(dirname($outputFile))) {
+            mkdir(dirname($outputFile), 0777, true);
         }
-
-        // Eliminar la primera hoja vacía que se crea por defecto
-        if ($newSpreadsheet->getSheetCount() > 1) {
-            $newSpreadsheet->removeSheetByIndex(0);
-        }
-
-        $writer = new Xlsx($newSpreadsheet);
         $writer->save($outputFile);
-
         $this->info("Archivo generado: $outputFile");
-
-        // **Actualizar la BD con los valores de forma**
-        $this->actualizarFormas($actualizaciones, $temporada);
-
-        return Command::SUCCESS;
     }
 
     private function actualizarFormas(array $actualizaciones, int $temporada)
@@ -155,26 +139,14 @@ class ProcessFormaResults extends Command
                 ->update([
                     'rol' => $data['rol'],
                     'forma' => $data['forma'],
-                    ]);
+                ]);
         }
 
         $this->info("Actualización de formas completada.");
     }
 
-    private function translateRole($role)
-    {
-        return match ((int) $role) {
-            1 => 'Gregario',
-            2 => 'Libre',
-            3 => 'Líder',
-            4 => 'Sprinter',
-            default => 'Desconocido',
-        };
-    }
-
     private function extractNumCarrera(string $sheetName): ?int
     {
-        // Extraer número de carrera del título de la pestaña
         if (preg_match('/^(\d+)/', $sheetName, $matches)) {
             return (int)$matches[1];
         }

@@ -53,6 +53,8 @@ return new class extends Migration
             ['temporada' => 4, 'cod_equipo' => 100 , 'categoria' => 'Conti', 'nombre_en_bd' => "Nike"                     , 'nombre_equipo' => 'Nike', 'user_id' => 18],
             ['temporada' => 4, 'cod_equipo' => 207 , 'categoria' => 'WT',    'nombre_en_bd' => "DSM"                      , 'nombre_equipo' => 'DSM', 'user_id' => 6],
             ['temporada' => 4, 'cod_equipo' => 229 , 'categoria' => 'WT',    'nombre_en_bd' => "Sky"                      , 'nombre_equipo' => 'Sky', 'user_id' => null],
+            ['temporada' => 5, 'cod_equipo' => 2424, 'categoria' => 'WT',    'nombre_en_bd' => "U24"                      , 'nombre_equipo' => 'Draft T5 U24', 'user_id' => null],
+            ['temporada' => 5, 'cod_equipo' => 9999, 'categoria' => 'WT',    'nombre_en_bd' => "Libre"                    , 'nombre_equipo' => 'Draft T5 Libre', 'user_id' => null],
         ]);
     }
 

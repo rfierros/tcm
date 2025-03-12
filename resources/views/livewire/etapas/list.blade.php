@@ -68,24 +68,51 @@ new class extends Component {
 
     public function getAllInscripciones(): void
     {
-        $this->allCiclistas = Ciclista::whereHas('resultados', function ($query) {
-            $query->where('etapa', 1)
-                ->where('num_carrera', $this->carrera->num_carrera)
-                ->where('temporada', $this->carrera->temporada);
-        })
-        ->with(['equipo', 'resultados' => function ($query) {
-            $query->where('etapa', 1)
-                ->where('num_carrera', $this->carrera->num_carrera)
-                ->where('temporada', $this->carrera->temporada);
-        }])
-        ->orderBy('cod_equipo')
-        ->get();
+        $equipo = Equipo::where('user_id', Auth::id())->first();
+        
+        if (!$equipo) {
+            $this->ciclistas = collect(); // Si no hay equipo, devolvemos una colección vacía
+            return;
+        }
+        
+        // $this->allCiclistas = Ciclista::whereHas('resultados', function ($query) {
+        //     $query->where('etapa', 1)
+        //         ->where('num_carrera', $this->carrera->num_carrera)
+        //         ->where('temporada', $this->carrera->temporada);
+        // })
+        // ->with(['equipo', 'resultados' => function ($query) {
+        //     $query->where('etapa', 1)
+        //         ->where('num_carrera', $this->carrera->num_carrera)
+        //         ->where('temporada', $this->carrera->temporada);
+        // }])
+        // ->orderBy('cod_equipo')
+        // ->get();
+
+        $this->allCiclistas = Ciclista::whereHas('inscripciones', function ($query) use ($equipo) {
+            $query->where('num_carrera', $this->carrera->num_carrera)
+                  ->where('temporada', $this->carrera->temporada)
+                    ->where(function ($q) {
+                        $q->where('sancion', '!=', 'd')
+                            ->orWhereNull('sancion'); // 🔹 Incluir valores NULL
+                    });
+            })
+            ->with([
+                'equipo',
+                'inscripciones' => function ($query) {
+                    $query->where('num_carrera', $this->carrera->num_carrera)
+                        ->where('temporada', $this->carrera->temporada)
+                        ->select('cod_ciclista', 'forma', 'sancion');
+                }
+            ])
+            ->orderBy('cod_equipo')
+            ->get();
+
 
         // Clasificar ciclistas según el tiempo en los resultados
-        $this->allCiclistas->each(function ($ciclista) {
-            $resultado = $ciclista->resultados->first();
-            $ciclista->hasTiempoD = $resultado && $resultado->tiempo === 'd';
-        });
+        // $this->allCiclistas->each(function ($ciclista) {
+        //     $resultado = $ciclista->resultados->first();
+        //     $ciclista->hasTiempoD = $resultado && $resultado->tiempo === 'd';
+        // });
     }
 
 
@@ -162,7 +189,7 @@ new class extends Component {
                     <span class="flex items-center flex-1 min-w-0 space-x-3">
                         <span class="flex-1 block min-w-0">
                             <span class="block text-sm font-medium text-gray-900 truncate">{{ $ciclista->nom_abrev }}</span>
-                            <span class="block text-sm font-medium text-gray-500 truncate"><span x-bind:class="getBadgeColor('{{ $ciclista->especialidad }}')" class="inline-flex items-center rounded-md px-1.5 py-0.5 text-xs font-medium">{{ $ciclista->especialidad }}</span> - {{ $ciclista->media }}</span>
+                            <span class="block text-sm font-medium text-gray-500 truncate"><span x-bind:class="getBadgeColor('{{ $ciclista->especialidad }}')" class="inline-flex items-center rounded-md px-1.5 py-0.5 text-xs font-medium">{{ $ciclista->especialidad }}</span> - <span class="text-xxs">{{ $ciclista->media }}</span></span>
                         </span>
                     </span>
                     </div>
@@ -204,14 +231,14 @@ new class extends Component {
                         @foreach ($ciclistas as $ciclista)
                             <li>
                                 @if ($ciclista->hasTiempoD)
-                                <div class="flex items-center justify-between w-full p-2 space-x-3 text-left bg-red-300 border border-gray-300 rounded-lg shadow-sm group hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                <div class="flex items-center justify-between w-full p-0.5 space-x-3 text-left bg-red-300 border border-gray-300 rounded-lg shadow-sm group hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                                 @else
-                                <div class="flex items-center justify-between w-full p-2 space-x-3 text-left border border-gray-300 rounded-lg shadow-sm group hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                <div class="flex items-center justify-between w-full p-0.5 space-x-3 text-left border border-gray-300 rounded-lg shadow-sm group hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                                 @endif
                                 <span class="flex items-center flex-1 min-w-0 space-x-3">
                                     <span class="flex-1 block min-w-0">
                                         <span class="block text-sm font-medium text-gray-900 truncate">{{ $ciclista->nom_abrev }}</span>
-                                        <span class="block text-sm font-medium text-gray-500 truncate"><span x-bind:class="getBadgeColor('{{ $ciclista->especialidad }}')" class="inline-flex items-center rounded-md px-1.5 py-0.5 text-xs font-medium">{{ $ciclista->especialidad }}</span> - {{ $ciclista->media }}</span>
+                                        <span class="block text-sm font-medium text-gray-500 truncate"><span x-bind:class="getBadgeColor('{{ $ciclista->especialidad }}')" class="inline-flex items-center rounded-md px-1.5 py-0.5 text-xs font-medium">{{ $ciclista->especialidad }}</span> - <span class="text-xxs">{{ number_format($ciclista->media, 2) }}</span> - <span class="text-xxs">{{ number_format(optional($ciclista->inscripciones->first())->forma ?? 0, 2) }}</span></span>
                                     </span>
                                 </span>
                                 </div>

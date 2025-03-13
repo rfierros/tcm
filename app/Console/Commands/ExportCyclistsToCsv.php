@@ -39,7 +39,7 @@ class ExportCyclistsToCsv extends Command
         $headers = [
             'id', 'temporada', 'cod_ciclista', 'cod_equipo', 'nombre', 'apellido', 'nom_ape', 'nom_abrev', 
             'pais', 'especialidad', 'edad', 'lla', 'mon', 'col', 'cri', 'pro', 'pav',
-            'spr', 'acc', 'des', 'com', 'ene', 'res', 'rec', 'media', 'u24', 'conti'
+            'spr', 'acc', 'des', 'com', 'ene', 'res', 'rec', 'media', 'u24', 'conti', 'conti_pro'
             
         ];
         fputcsv($file, $headers);

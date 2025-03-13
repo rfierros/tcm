@@ -43,7 +43,7 @@ class UpdateCyclistNames extends Command
                 $data = array_combine($header, $row);
 
                 // Buscar el ciclista por cod_ciclista
-                $ciclista = Ciclista::where('cod_ciclista', $data['id'])->first();
+                $ciclista = Ciclista::where('cod_ciclista', $data['id']);
 
                 if ($ciclista) {
                     // Actualizar los datos del ciclista

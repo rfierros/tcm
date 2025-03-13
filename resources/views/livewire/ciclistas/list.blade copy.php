@@ -35,6 +35,7 @@ new class extends Component {
     public $botones = [ // Campo => Cabecera
         'WT' => 'WT',
         'Conti' => 'Conti .1',
+        'Pro' => 'Pro .1',
         'U24' => 'U24',
     ];
  
@@ -75,9 +76,9 @@ new class extends Component {
 
                 // Aplicar filtros en base al valor de selectedFilter
                 if (this.selectedFilter === 'U24') {
-                    filteredData = filteredData.filter(ciclista => ciclista.u24);
+                    filteredData = filteredData.filter(ciclista => ciclista.es_u24);
                 } else if (this.selectedFilter === 'Conti') {
-                    filteredData = filteredData.filter(ciclista => ciclista.conti);
+                    filteredData = filteredData.filter(ciclista => ciclista.es_conti);
                 }
 
                 return filteredData.sort((a, b) => {

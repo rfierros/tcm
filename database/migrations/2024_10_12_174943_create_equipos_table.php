@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('equipos', function (Blueprint $table) {
             $table->id(); // ID autoincremental para el equipo
-            $table->integer('cod_equipo')->unique(); // Identificador único del equipo (de la Excel)
+            $table->integer('cod_equipo'); // Identificador único del equipo (de la Excel)
             $table->integer('temporada'); // Temporada del equipo
             $table->string('nombre_equipo'); // Nombre del equipo
             $table->string('nombre_en_bd'); // Nombre del equipo
@@ -25,6 +25,9 @@ return new class extends Migration
 
             // Relación con la tabla `users`
             $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
+
+            // Clave única combinada para evitar duplicados de `cod_equipo` en distintas temporadas
+            $table->unique(['cod_equipo', 'temporada'], 'unique_equipo_temporada');            
         });
 
         // Insertar equipos iniciales con `user_id` correspondiente
@@ -46,6 +49,7 @@ return new class extends Migration
             ['temporada' => 4, 'cod_equipo' =>  20 , 'categoria' => 'WT',    'nombre_en_bd' => "UAE Team Emirates"        , 'nombre_equipo' => 'UAE', 'user_id' => 10],
             ['temporada' => 4, 'cod_equipo' =>  24 , 'categoria' => 'Conti', 'nombre_en_bd' => "Roma Cycling Project"     , 'nombre_equipo' => 'Roma Cycling Project', 'user_id' => 23],
             ['temporada' => 4, 'cod_equipo' =>  33 , 'categoria' => 'WT',    'nombre_en_bd' => "F1 Paddock"               , 'nombre_equipo' => 'F1 Paddock', 'user_id' => 1], // user_id 1 corresponde a 'Pawa' para pruebas
+['temporada' => 5, 'cod_equipo' =>  33 , 'categoria' => 'WT',    'nombre_en_bd' => "F1 Paddock"               , 'nombre_equipo' => 'F1 Paddock', 'user_id' => 1], // user_id 1 corresponde a 'Pawa' para pruebas
             ['temporada' => 4, 'cod_equipo' =>  34 , 'categoria' => 'WT',    'nombre_en_bd' => "Phonak"                   , 'nombre_equipo' => 'Phonak', 'user_id' => 2], // user_id 2 corresponde a 'Jonathan9'
             ['temporada' => 4, 'cod_equipo' =>  35 , 'categoria' => 'Conti', 'nombre_en_bd' => "Caja Rural - Seguros RGA" , 'nombre_equipo' => 'Caja Rural', 'user_id' => 19],
             ['temporada' => 4, 'cod_equipo' =>  42 , 'categoria' => 'WT',    'nombre_en_bd' => "Hummel"                   , 'nombre_equipo' => 'Hummel-Carlsberg', 'user_id' => 5],

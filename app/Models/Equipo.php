@@ -11,16 +11,18 @@ class Equipo extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['cod_equipo', 'temporada', 'nombre_equipo', 'nombre_en_bd', 'user_id', 'categoria'];
+
     // Relación con el modelo User
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    // Relación con el modelo Ciclista
     public function ciclistas(): HasMany
     {
-        return $this->hasMany(Ciclista::class, 'cod_equipo', 'cod_equipo');
+        return $this->hasMany(Ciclista::class, 'cod_equipo')
+                    ->whereColumn('ciclistas.temporada', 'equipos.temporada');
     }
 
     /**
@@ -28,6 +30,7 @@ class Equipo extends Model
      */
     public function inscripciones(): HasMany
     {
-        return $this->hasMany(Inscripcion::class, 'cod_equipo', 'cod_equipo');
+        return $this->hasMany(Inscripcion::class, 'cod_equipo')
+                    ->whereColumn('inscripciones.temporada', 'equipos.temporada');
     }
 }

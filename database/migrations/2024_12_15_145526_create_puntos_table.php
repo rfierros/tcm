@@ -16,7 +16,7 @@ return new class extends Migration
 
             $table->integer('temporada');
             $table->integer('posicion');
-            $table->enum('categoria', ['U24', 'WT', 'Conti']); // Nueva columna para la categoría
+            $table->enum('categoria', ['U24', 'WT', 'Conti', 'Pro']); // Nueva columna para la categoría
             $table->enum('tipo', ['Vuelta', 'Clásica', 'Monumento', 'Continental', 'GV']); // Valores permitidos para tipo
             $table->enum('clasificacion', ['general', 'etapa', 'gene-reg', 'gene-mon', 'gene-jov' , 'gene-equi', 'provi-gene', 'provi-reg', 'provi-mon', 'provi-jov']); // Nueva columna para la categoría
             $table->decimal('pts', 7, 4)->nullable(); 

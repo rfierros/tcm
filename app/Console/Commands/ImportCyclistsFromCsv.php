@@ -88,8 +88,9 @@ class ImportCyclistsFromCsv extends Command
                         'res' => $data['res'],
                         'rec' => $data['rec'],
                         'media' => $data['media'],
-                        'u24' => $data['u24'],
-                        'conti' => $data['conti'],
+                        'es_u24' => $data['es_u24'],
+                        'es_conti' => $data['es_conti'],
+                        'es_pro' => $data['es_pro'], // nueva categoria .pro desde t5
                         'cod_equipo' => $data['cod_equipo'], // Dejar null si está vacío
                     ]
                 );

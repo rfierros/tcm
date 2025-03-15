@@ -4,12 +4,17 @@ use App\Http\Controllers\CiclistaController;
 use App\Http\Controllers\EquipoController;
 use App\Http\Controllers\CarreraController;
 use App\Http\Controllers\CalendarioController;
+use App\Http\Controllers\DraftController;
 use App\Http\Controllers\EtapaController;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome');
 
 Route::view('/reglamento', 'reglamento')->name('reglamento');
+
+Route::get('draft', [DraftController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('draft'); 
 
 Route::get('equipos', [EquipoController::class, 'index'])
     ->middleware(['auth', 'verified'])

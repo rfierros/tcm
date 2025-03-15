@@ -49,7 +49,6 @@ return new class extends Migration
             ['temporada' => 4, 'cod_equipo' =>  20 , 'categoria' => 'WT',    'nombre_en_bd' => "UAE Team Emirates"        , 'nombre_equipo' => 'UAE', 'user_id' => 10],
             ['temporada' => 4, 'cod_equipo' =>  24 , 'categoria' => 'Conti', 'nombre_en_bd' => "Roma Cycling Project"     , 'nombre_equipo' => 'Roma Cycling Project', 'user_id' => 23],
             ['temporada' => 4, 'cod_equipo' =>  33 , 'categoria' => 'WT',    'nombre_en_bd' => "F1 Paddock"               , 'nombre_equipo' => 'F1 Paddock', 'user_id' => 1], // user_id 1 corresponde a 'Pawa' para pruebas
-['temporada' => 5, 'cod_equipo' =>  33 , 'categoria' => 'WT',    'nombre_en_bd' => "F1 Paddock"               , 'nombre_equipo' => 'F1 Paddock', 'user_id' => 1], // user_id 1 corresponde a 'Pawa' para pruebas
             ['temporada' => 4, 'cod_equipo' =>  34 , 'categoria' => 'WT',    'nombre_en_bd' => "Phonak"                   , 'nombre_equipo' => 'Phonak', 'user_id' => 2], // user_id 2 corresponde a 'Jonathan9'
             ['temporada' => 4, 'cod_equipo' =>  35 , 'categoria' => 'Conti', 'nombre_en_bd' => "Caja Rural - Seguros RGA" , 'nombre_equipo' => 'Caja Rural', 'user_id' => 19],
             ['temporada' => 4, 'cod_equipo' =>  42 , 'categoria' => 'WT',    'nombre_en_bd' => "Hummel"                   , 'nombre_equipo' => 'Hummel-Carlsberg', 'user_id' => 5],
@@ -57,6 +56,8 @@ return new class extends Migration
             ['temporada' => 4, 'cod_equipo' => 100 , 'categoria' => 'Conti', 'nombre_en_bd' => "Nike"                     , 'nombre_equipo' => 'Nike', 'user_id' => 18],
             ['temporada' => 4, 'cod_equipo' => 207 , 'categoria' => 'WT',    'nombre_en_bd' => "DSM"                      , 'nombre_equipo' => 'DSM', 'user_id' => 6],
             ['temporada' => 4, 'cod_equipo' => 229 , 'categoria' => 'WT',    'nombre_en_bd' => "Sky"                      , 'nombre_equipo' => 'Sky', 'user_id' => null],
+            
+            // ['temporada' => 5, 'cod_equipo' =>  33 , 'categoria' => 'WT',    'nombre_en_bd' => "F1 Paddock"               , 'nombre_equipo' => 'F1 Paddock', 'user_id' => 1], // user_id 1 corresponde a 'Pawa' para pruebas
             ['temporada' => 5, 'cod_equipo' => 2424, 'categoria' => 'WT',    'nombre_en_bd' => "U24"                      , 'nombre_equipo' => 'Draft T5 U24', 'user_id' => null],
             ['temporada' => 5, 'cod_equipo' => 9999, 'categoria' => 'WT',    'nombre_en_bd' => "Libre"                    , 'nombre_equipo' => 'Draft T5 Libre', 'user_id' => null],
         ]);

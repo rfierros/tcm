@@ -23,9 +23,11 @@ php artisan import:cyclists-from-csv
 **Opción 2: Cargamos el Seeder de Ciclistas**
 
 Cargamos el Seeder, o bien el archivo .csv con todos los corredores.
-Así cargamos el archivo:
+Así cargamos el archivo: (temporada y nombre de archivo)
+Si está dentro de la carpeta 4 (temporada 4) el archivo corredores.csv
 ```php
-php artisan import:corredores
+php artisan import:corredores 4 corredores
+php artisan import:corredores 5 draft-u24
 ```
 y luego les corregimos los campos de los nombres y apellidos:
 ```php

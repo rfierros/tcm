@@ -13,22 +13,36 @@ return new class extends Migration
     {
         Schema::create('inscripciones', function (Blueprint $table) {
             $table->id();
-            $table->integer('temporada');
+            $table->integer('temporada'); 
             $table->integer('num_carrera');
-            // clave foránea
-            $table->foreign(['temporada', 'num_carrera'])->references(['temporada', 'num_carrera'])->on('carreras')->onDelete('cascade'); 
-            $table->integer('cod_ciclista'); 
-            $table->foreign('cod_ciclista')->references('cod_ciclista')->on('ciclistas')->onDelete('cascade');
-            $table->integer('cod_equipo'); 
-            $table->foreign('cod_equipo')->references('cod_equipo')->on('equipos')->onDelete('cascade');
-            $table->enum('sancion', ['u', 'c', 'p', 'd'])->nullable(); // u -> sancion u24, c -> sancion conti, p -> sancion pro, d -> sancion repetir dias
-            $table->enum('rol', ['3', '2', '1', '4'])->nullable(); // 3 -> lider, 2 -> libre, 1 -> gregario, 4 -> sprinter
+
+            // Clave foránea con `carreras`
+            $table->foreign(['temporada', 'num_carrera'])
+                ->references(['temporada', 'num_carrera'])->on('carreras')
+                ->onDelete('cascade');
+
+            // Clave foránea con `ciclistas` (corregida)
+            $table->integer('cod_ciclista');
+            $table->foreign(['cod_ciclista', 'temporada'])  // 🔹 Se referencia con temporada
+                ->references(['cod_ciclista', 'temporada'])->on('ciclistas')
+                ->onDelete('cascade');
+
+            // Clave foránea con `equipos` (corregida)
+            $table->integer('cod_equipo');
+            $table->foreign(['cod_equipo', 'temporada'])  // 🔹 Se referencia con temporada
+                ->references(['cod_equipo', 'temporada'])->on('equipos')
+                ->onDelete('cascade');
+
+            // Campos adicionales
+            $table->enum('sancion', ['u', 'c', 'p', 'd'])->nullable(); 
+            $table->enum('rol', ['3', '2', '1', '4'])->nullable(); 
             $table->decimal('forma', 11, 8)->nullable();
             $table->timestamps();
 
             // Índices
             $table->index(['cod_ciclista', 'temporada'], 'idx_ins_ciclista_temporada');
-            // Clave única para soporte de ON CONFLICT
+
+            // Clave única para evitar duplicados
             $table->unique(['temporada', 'num_carrera', 'cod_ciclista'], 'unique_ins_resultado');
         });
 

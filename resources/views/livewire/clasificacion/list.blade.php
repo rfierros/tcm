@@ -17,6 +17,7 @@ new class extends Component {
         'total_pts' => 'Puntos',
         'num_victorias' => 'Victorias',
         'victorias_vueltas' => 'Vueltas',
+        'victorias_etapas_vueltas' => 'V.Etapa',
 //        'etapas_disputadas' => 'Etapas Disputadas',
     ];
 
@@ -38,8 +39,7 @@ new class extends Component {
                 ->join('equipos as e', 'r.cod_equipo', '=', 'e.cod_equipo')
                 ->leftJoin('carreras as c', function ($join) {
                     $join->on('r.num_carrera', '=', 'c.num_carrera')
-                         ->on('r.temporada', '=', 'c.temporada')
-                         ->where('c.num_etapas', '>', 1); // 🔹 Solo vueltas
+                        ->on('r.temporada', '=', 'c.temporada');
                 })
                 ->selectRaw('
                     e.nombre_equipo,
@@ -54,14 +54,21 @@ new class extends Component {
                         AND r.pos_gral = 1 
                         THEN r.num_carrera 
                         ELSE NULL 
-                    END) AS victorias_vueltas
+                    END) AS victorias_vueltas,
+                    COUNT(DISTINCT CASE 
+                        WHEN c.tipo IN ("Vuelta", "GV") 
+                        AND r.posicion = 1 
+                        THEN r.num_carrera || "-" || r.etapa 
+                        ELSE NULL 
+                    END) AS victorias_etapas_vueltas
                 ')
                 ->where('r.num_carrera', '>', 0)
                 ->groupBy('r.cod_equipo', 'e.nombre_equipo')
                 ->orderByDesc('total_pts')
-                ->get()->toArray() // Convertir a array para evitar stdClass
+                ->get()->toArray()
         );
     }
+
     
  
 }; ?>

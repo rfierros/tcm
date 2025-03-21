@@ -12,14 +12,15 @@ use Illuminate\Support\Facades\File;
 
 class ProcessFormaResults extends Command
 {
-    protected $signature = 'process:forma-results {semana?}';
+    protected $signature = 'process:forma-results {num_temporada} {semana?}';
     protected $description = 'Procesa archivos de forma y actualiza la BD. Si no se especifica semana, procesa todos.';
 
     public function handle()
     {
+        $temporada = $this->argument('num_temporada');
         $semana = $this->argument('semana');
-        $importDir = storage_path("app/imports/resultados/formas/");
-        $exportDir = storage_path('app/exports/formas/');
+        $importDir = storage_path("app/imports/resultados/{$temporada}/formas/");
+        $exportDir = storage_path("app/exports/{$temporada}/formas/");
 
         // **Buscar archivos según el parámetro**
         if ($semana) {
@@ -34,7 +35,7 @@ class ProcessFormaResults extends Command
         }
 
         $this->info("Procesando archivos de forma...");
-        $temporada = config('tcm.temporada'); 
+        // $temporada = config('tcm.temporada'); 
         $actualizaciones = [];
 
         foreach ($files as $inputFile) {
@@ -50,11 +51,15 @@ class ProcessFormaResults extends Command
                 continue;
             }
 
-            $this->procesarArchivo($spreadsheet, $actualizaciones);
-            $outputFile = $exportDir . basename($inputFile);
+            // **Crear nuevo archivo de salida**
+            $newSpreadsheet = new Spreadsheet();
+            
+            // Procesar y almacenar en BD
+            $this->procesarArchivo($spreadsheet, $newSpreadsheet, $actualizaciones);
 
-            // Guardar el archivo procesado
-            $this->guardarArchivo($spreadsheet, $outputFile);
+            // **Guardar en el formato correcto**
+            $outputFile = $exportDir . basename($inputFile);
+            $this->guardarArchivo($newSpreadsheet, $outputFile);
         }
 
         // **Actualizar BD con las formas**
@@ -62,7 +67,7 @@ class ProcessFormaResults extends Command
         return Command::SUCCESS;
     }
 
-    private function procesarArchivo($spreadsheet, &$actualizaciones)
+    private function procesarArchivo($spreadsheet, $newSpreadsheet, &$actualizaciones)
     {
         $sheetCount = $spreadsheet->getSheetCount();
         if ($sheetCount % 2 !== 0) {
@@ -110,6 +115,38 @@ class ProcessFormaResults extends Command
                     }
                 }
             }
+
+            // **Obtener los ciclistas con su equipo**
+            $ciclistasData = Ciclista::whereIn('cod_ciclista', array_keys($ciclistasBuscados))
+                ->with('equipo')
+                ->get()
+                ->keyBy('cod_ciclista');
+
+            // **Crear nueva hoja en el archivo de salida**
+            $newSheet = $newSpreadsheet->createSheet();
+            $newSheet->setTitle($sheetName);
+
+            // **Encabezados**
+            $newSheet->setCellValue("A1", "cod_ciclista");
+            $newSheet->setCellValue("B1", "nom_abrev");
+            $newSheet->setCellValue("C1", "equipo");
+            $newSheet->setCellValue("D1", "rol");
+            $newSheet->setCellValue("E1", "forma");
+
+            // **Insertar los datos**
+            $rowNum = 2;
+            foreach ($ciclistasBuscados as $codCiclista => $data) {
+                $ciclista = $ciclistasData[$codCiclista] ?? null;
+                if (!$ciclista) continue;
+
+                $newSheet->setCellValue("A$rowNum", $codCiclista);
+                $newSheet->setCellValue("B$rowNum", $ciclista->nom_abrev ?? 'N/A');
+                $newSheet->setCellValue("C$rowNum", $ciclista->equipo->nombre_equipo ?? 'N/A');
+                $newSheet->setCellValue("D$rowNum", $this->translateRole($data['rol']));
+                $newSheet->setCellValue("E$rowNum", $data['forma'] ?? 'N/A');
+
+                $rowNum++;
+            }
         }
     }
 
@@ -143,6 +180,17 @@ class ProcessFormaResults extends Command
         }
 
         $this->info("Actualización de formas completada.");
+    }
+
+    private function translateRole($role)
+    {
+        return match ((int) $role) {
+            1 => 'Gregario',
+            2 => 'Libre',
+            3 => 'Líder',
+            4 => 'Sprinter',
+            default => 'Desconocido',
+        };
     }
 
     private function extractNumCarrera(string $sheetName): ?int

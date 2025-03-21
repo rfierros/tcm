@@ -54,7 +54,7 @@ return new class extends Migration
             $table->decimal('media', 10, 8)->nullable();
 
             $table->enum('draft', ['libre', 'u24'])->nullable();
-            $table->integer('pos_draft')->nullable();
+            $table->integer('pos_draft')->nullable(); // null significa available en el draft
             $table->boolean('es_u24')->default(false);
             $table->boolean('es_conti')->default(false);
             $table->boolean('es_pro')->default(false);

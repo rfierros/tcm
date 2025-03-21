@@ -40,7 +40,8 @@ class ImportCorredoresU24 extends Command
             while ($row = fgetcsv($file)) {
                 $data = array_combine($header, $row);
 
-                $codEquipo = $equipos[$data['Equipo']] ?? null;;
+                $codEquipo = $equipos[$data['Equipo']] ?? null;
+                $draft = 'u24';
 
                 try {
                     // Inserta en la base de datos
@@ -74,11 +75,14 @@ class ImportCorredoresU24 extends Command
                             $data['SPR'], $data['ACC'], $data['DES'], $data['COM'], $data['ENE'], $data['RES'], 
                             $data['REC']
                         ])->every(fn($value) => (float) str_replace(',', '.', $value) < 78),
-                        'cod_equipo' => 2424, // Directamente el cod_equipo del draft de u24
+                        'draft' => $draft, // seleccionable draft de u24
+                        'pos_draft' => null, // null es available para elegir en el draft de u24
+                        'cod_equipo' => null,
                     ]);
 
                     $addedCount++;
                 } catch (\Exception $e) {
+                    $this->info("Error: $e");
                     $failedCount++;
                     $failedRecords[] = $data['ID'] ?? 'Desconocido';
                 }
@@ -86,7 +90,7 @@ class ImportCorredoresU24 extends Command
 
             DB::commit();
 
-            $this->info("Los datos se han importado correctamente.");
+            $this->info("Los datos u24 se han importado correctamente.");
             $this->info("Registros añadidos: $addedCount");
             if ($failedCount > 0) {
                 $this->warn("Registros fallidos: $failedCount");

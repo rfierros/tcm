@@ -119,7 +119,7 @@ class ImportInscripciones extends Command
                         );
                     }
 
-                    $this->info("Inscripción registrada para: $nomApe en num_carrera: $numCarrera");
+                    $this->info("--> Inscripción ins: $nomApe en num_carrera: $numCarrera");
                 }
 
                 fclose($file);

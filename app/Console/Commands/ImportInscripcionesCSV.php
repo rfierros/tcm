@@ -6,32 +6,55 @@ use App\Models\Ciclista;
 use App\Models\Inscripcion;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 
 class ImportInscripcionesCSV extends Command
 {
-    protected $signature = 'import:inscripciones {temporada} {num_carrera}';
+    protected $signature = 'import:inscripciones {temporada} {num_carrera?}';
     protected $description = 'Importar inscripciones de corredores desde un archivo CSV en el directorio de imports.';
+// php artisan import:inscripciones 5 13  # Procesa el archivo "app/imports/inscripcionescsv/5/13.*.csv"
+// php artisan import:inscripciones 4     # Procesa TODOS los archivos CSV dentro de "app/imports/inscripcionescsv/4"    
 
     public function handle()
     {
         $temporada = $this->argument('temporada');
-        $numCarrera = $this->argument('num_carrera'); // NÃºmero de carrera
+        $numCarrera = $this->argument('num_carrera');
 
-        // ðŸ“Œ Buscar archivo que comience con "{num_carrera}."
-        $importDir = storage_path("app/imports/inscripcionescsv");
-        $files = glob("$importDir/{$numCarrera}.*.csv");
+        // Definir el directorio según la temporada
+        $importDir = storage_path("app/imports/inscripcionescsv/{$temporada}");
+
+        if (!File::exists($importDir)) {
+            $this->error("El directorio $importDir no existe.");
+            return;
+        }
+
+        // Buscar archivos
+        if ($numCarrera) {
+            $files = glob("{$importDir}/{$numCarrera}.*.csv");
+        } else {
+            $files = glob("{$importDir}/*.csv"); // Si no hay num_carrera, tomar todos los archivos
+        }
 
         if (empty($files)) {
-            $this->error("No se encontrÃ³ un archivo CSV que empiece con: {$numCarrera}. en $importDir");
+            $this->error("No se encontraron archivos CSV en $importDir.");
             return;
         }
 
-        if (count($files) > 1) {
-            $this->error("Se encontraron mÃºltiples archivos para num_carrera: {$numCarrera}. Especifique el correcto manualmente.");
-            return;
+        foreach ($files as $rutaArchivo) {
+            $this->procesarArchivo($rutaArchivo, $temporada);
         }
 
-        $rutaArchivo = $files[0]; // Tomamos el Ãºnico archivo encontrado
+        $this->info("Todos los archivos han sido procesados correctamente.");
+    }
+
+    private function procesarArchivo($rutaArchivo, $temporada)
+    {
+        $numCarrera = $this->extraerNumCarrera($rutaArchivo);
+
+        if (!$numCarrera) {
+            $this->warn("No se pudo determinar el num_carrera de " . basename($rutaArchivo) . ". Omitido.");
+            return;
+        }
 
         $this->info("Procesando inscripciones desde: " . basename($rutaArchivo));
 
@@ -44,7 +67,7 @@ class ImportInscripcionesCSV extends Command
                 foreach ($row as $nombre) {
                     $nombre = trim($nombre);
 
-                    // Ignorar valores vacÃ­os o "#N/A"
+                    // Ignorar valores vacíos o "#N/A"
                     if (empty($nombre) || $nombre === '#N/A') {
                         continue;
                     }
@@ -62,7 +85,7 @@ class ImportInscripcionesCSV extends Command
                     $codCiclista = $ciclista->cod_ciclista;
                     $codEquipo = $ciclista->cod_equipo;
 
-                    // ðŸ”¹ Insertar inscripciÃ³n (solo 1 por ciclista y carrera)
+                    // Insertar inscripciones asegurando que no se dupliquen
                     Inscripcion::updateOrCreate(
                         [
                             'temporada' => $temporada,
@@ -74,16 +97,25 @@ class ImportInscripcionesCSV extends Command
                         ]
                     );
 
-                    $this->info("InscripciÃ³n registrada para: $nombre en num_carrera: $numCarrera");
+                    $this->info("Inscripción csv para: $nombre en num_carrera: $numCarrera");
                 }
             }
 
             fclose($file);
             DB::commit();
-            $this->info("âœ… Todas las inscripciones se han importado correctamente.");
         } catch (\Exception $e) {
             DB::rollback();
-            $this->error("âŒ Error al importar inscripciones: " . $e->getMessage());
+            $this->error("Error al importar inscripciones: " . $e->getMessage());
         }
+    }
+
+    private function extraerNumCarrera($filePath)
+    {
+        // Extrae el número de carrera del nombre del archivo (ej: "66.nombre.csv" → 66)
+        if (preg_match('/(\d+)\./', basename($filePath), $matches)) {
+            return (int) $matches[1];
+        }
+
+        return null;
     }
 }

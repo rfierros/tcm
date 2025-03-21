@@ -53,24 +53,22 @@ Una vez tenemos definidas las carreras que van a componer una temporada lanzamos
 Solo genera las etapas, pero habría que editar los perfiles etapa a etapa.
 
 ```php
-   php artisan db:seed --class=EtapaSeeder
+php artisan db:seed --class=EtapaSeeder
 ```
-
-**Cargamos el Seeder de Calendario**
+>> **Cargamos el Seeder de Calendario**
 Una vez tenemos definidas las carreras que van a componer una temporada lanzamos este Seeder que generará el Calendario automáticamente.
 En este caso hemos hecho 2 procesos para la misma tarea. Elegimos cual de las 2 opciones nos gusta más.
+>> 1. **Lanzar el proceso run()**. Perviamente debemos modificar a mano el valor de la temporada que queremos procesar, especificada dentro del propio proceso como $temporada.
 
-1. **Lanzar el proceso run()**. Perviamente debemos modificar a mano el valor de la temporada que queremos procesar, especificada dentro del propio proceso como $temporada.
 ```php
    php artisan db:seed --class=CalendarioSeeder
 ```
-
-2. **Lanzar el proceso runWithTemporada() mediante tinker**.
+>>2. **Lanzar el proceso runWithTemporada() mediante tinker**.
 ```php
    php artisan tinker
 ```
 
-Y una vez dentro de tinker, nótese que le pasamos por parámetro la temporada que queremos generar. Es este caso la 4:
+>> Y una vez dentro de tinker, nótese que le pasamos por parámetro la temporada que queremos generar. Es este caso la 4:
 ```php
       $seeder = new Database\Seeders\CalendarioSeeder();
       $seeder->runWithTemporada(4);
@@ -90,7 +88,11 @@ Los archivos de cada carrera se llamarán {num_carrera}.ins
 El proceso se lanzará con el número de temporada como parámetro e irá procesando todos los archivos uno a uno, inscribiendo a todos los corredores en la tabla Resultados con la posicion = 0.
 Así lanzamos el proceso (para la temporada 4):
 ```php
-php artisan import:inscripciones 4
+php artisan import:inscripciones 4 
+```
+Así lanzamos el proceso (para la temporada 4 carrera 65):
+```php
+php artisan import:inscripciones 4 65
 ```
 
 **Generar una Start List (SL) a partir de los datos de la BD**
@@ -103,16 +105,15 @@ php artisan generate:startlist 33
 
 **Actualizar la BD con las Excels de resultados**
 
-Los archivos se almacenarán en app/imports/resultados. Serán archivos .xlsx y la nomenclatura de los mismos deberá ser empezar por el num_carrera de esa competición, y acabar con "Etapa x" donde x es el número de la etapa. Todo el texto que tengamos en medio será meramente informativo y a nosotros no nos afecta.
-El proceso se lanzará con el nombre exacto del archivo que queremos procesar.
-Aquí vemos un ejemplo para la Etapa 3 de la carrera 9.:
+Los archivos de entrada se almacenarán en app/imports/resultados/semana-XX. Serán archivos "XX descripcion Etapa Y.xlsx".
+Aquí vemos un ejemplo para procesar uno de ellos:
 ```php
-php artisan process:race-results "09 Tour des Alpes-Maritimes Etapa 3.xlsx"
+php artisan process:race-results semana-21
 ```
 
 **Procesar los archivos de Formas**
 
-Los archivos de entrada se almacenarán en app/imports/resultados/semana-XX. Serán archivos importa Semama Forma XX.xlsx.
+Los archivos de entrada se almacenarán en app/imports/resultados/semana-XX. Serán archivos "import Semama Forma XX.xlsx".
 Aquí vemos un ejemplo para procesar uno de ellos:
 ```php
 php artisan process:forma-results 19 

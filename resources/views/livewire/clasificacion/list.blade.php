@@ -34,6 +34,7 @@ new class extends Component {
     #[On('equipo-created')]
     public function cargarClasificacion(): void
     {
+        $temporada = config('tcm.temporada');
         $this->equipos = Equipo::hydrate(
             DB::table('resultados as r')
                 ->join('equipos as e', 'r.cod_equipo', '=', 'e.cod_equipo')
@@ -62,6 +63,7 @@ new class extends Component {
                         ELSE NULL 
                     END) AS victorias_etapas_vueltas
                 ')
+                ->where('r.temporada', '=', $temporada)
                 ->where('r.num_carrera', '>', 0)
                 ->groupBy('r.cod_equipo', 'e.nombre_equipo')
                 ->orderByDesc('total_pts')

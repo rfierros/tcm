@@ -63,6 +63,8 @@ return new class extends Migration
             ['name' => 'Salgado90', 'email' => 'user21@user.com', 'password' => bcrypt('password')],
             ['name' => 'lordgorak', 'email' => 'user22@user.com', 'password' => bcrypt('password')],
             ['name' => 'Chus', 'email' => 'user23@user.com', 'password' => bcrypt('password')],
+            ['name' => 'Makey', 'email' => 'user24@user.com', 'password' => bcrypt('password')],
+            ['name' => 'Salinos', 'email' => 'salinos72@user.com', 'password' => bcrypt('password')],
             // Usuarios adicionales si se requiere
         ]);
     }

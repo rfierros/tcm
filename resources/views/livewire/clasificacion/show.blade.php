@@ -22,10 +22,10 @@ new class extends Component {
 
     public function cargarClasificacion(): void
     {
-        // 🔹 Cargamos TODAS las carreras desde la primera hasta la última
         $this->equipos = Equipo::hydrate(
             DB::table('resultados as r')
                 ->join('equipos as e', 'r.cod_equipo', '=', 'e.cod_equipo')
+                ->where('r.temporada', config('tcm.temporada')) // 🔹 Filtro por temporada
                 ->selectRaw('
                     e.nombre_equipo,
                     r.cod_equipo,
@@ -39,6 +39,7 @@ new class extends Component {
                 ->get()->toArray()
         );
     }
+
 };
 ?>
 

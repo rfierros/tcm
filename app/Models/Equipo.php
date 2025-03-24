@@ -33,4 +33,13 @@ class Equipo extends Model
         return $this->hasMany(Inscripcion::class, 'cod_equipo')
                     ->whereColumn('inscripciones.temporada', 'equipos.temporada');
     }
+    
+    /**
+     * Relación con el modelo Resultado.
+     */
+    public function resultados(): HasMany
+    {
+        return $this->hasMany(Resultado::class, 'cod_equipo', 'cod_equipo')
+                    ->whereColumn('resultados.temporada', 'equipos.temporada');
+    }
 }

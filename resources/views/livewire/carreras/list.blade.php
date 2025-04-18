@@ -10,7 +10,8 @@ new class extends Component {
 
     public $botones = [ // Campo => Cabecera
         'WT' => 'WT',
-        'Conti' => 'Conti .1',
+        'Pro' => '.Pro',
+        'Conti' => '.1',
         'U24' => 'U24',
     ];
  

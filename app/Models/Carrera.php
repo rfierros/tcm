@@ -18,7 +18,7 @@ class Carrera extends Model
     ];
 
     // Valores permitidos para 'categoria' y 'tipo'
-    const CATEGORIAS = ['U24', 'WT', 'Conti'];
+    const CATEGORIAS = ['U24', 'WT', 'Pro', 'Conti'];
     const TIPOS = ['Vuelta', 'Clásica', 'Monumento', 'Continental', 'GV'];
 
     /**

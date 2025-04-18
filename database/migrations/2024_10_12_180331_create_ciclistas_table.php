@@ -58,6 +58,7 @@ return new class extends Migration
             $table->boolean('es_u24')->default(false);
             $table->boolean('es_conti')->default(false);
             $table->boolean('es_pro')->default(false);
+            $table->integer('max_dias')->nullable(); // dias máximos de competición
 
             $table->timestamps();
 

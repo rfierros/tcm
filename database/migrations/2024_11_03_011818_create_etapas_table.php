@@ -23,6 +23,7 @@ return new class extends Migration
             $table->integer('dia'); // Día específico de la etapa dentro de la temporada
             $table->enum('perfil', ['llano', 'montaña', 'media-montaña'])->nullable(); // Perfil de la etapa
             $table->enum('tipo', ['normal', 'cre', 'cri'])->nullable(); // Tipo de etapa
+            $table->enum('paves', [0, 1, 2, 3, 4])->nullable(); // Tipo de paves. 0-Nada 1-verde 2-amarilloclaro 3-amarillofuerte 4-rojo
             $table->string('imagen')->nullable(); // Ruta o URL de la imagen
             $table->timestamps();
 

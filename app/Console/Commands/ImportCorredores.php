@@ -53,6 +53,27 @@ class ImportCorredores extends Command
                     continue;
                 }
 
+                // Convertimos Edad y Media
+                $edad = (int) $data['Edad'];
+                $media = (float) str_replace(',', '.', $data['Media']);
+
+                // Valoramos si es U24
+                $esU24 = $edad <= 24 && $media < 75;
+
+                // Valoramos si es .1 (Conti)
+                $valoresConti = collect([
+                    $data['LLA'], $data['MON'], $data['COL'], $data['CRI'], $data['PRO'], $data['PAV'], 
+                    $data['SPR'], $data['ACC'], $data['DES'], $data['COM'], $data['ENE'], $data['RES'], 
+                    $data['REC']
+                ]);
+                $esConti = $valoresConti->every(fn($value) => (float) str_replace(',', '.', $value) < 78);
+
+                // Valoramos si es .Pro
+                $valoresPro = collect([
+                    $data['MON'], $data['COL'], $data['CRI'], $data['PAV'], $data['SPR']
+                ]);
+                $esPro = $valoresPro->every(fn($value) => (float) str_replace(',', '.', $value) < 80);
+
                 // Insertar nuevo ciclista
                 Ciclista::create([
                     'cod_ciclista' => $data['ID'],
@@ -78,17 +99,10 @@ class ImportCorredores extends Command
                     'res' => (float) str_replace(',', '.', $data['RES']),
                     'rec' => (float) str_replace(',', '.', $data['REC']),
                     'media' => (float) str_replace(',', '.', $data['Media']),
-                    'es_u24' => ($data['Edad'] <= 24 && (float) str_replace(',', '.', $data['Media']) < 75),
-                    'es_conti' => collect([
-                        $data['LLA'], $data['MON'], $data['COL'], $data['CRI'], $data['PRO'], $data['PAV'], 
-                        $data['SPR'], $data['ACC'], $data['DES'], $data['COM'], $data['ENE'], $data['RES'], 
-                        $data['REC']
-                    ])->every(fn($value) => (float) str_replace(',', '.', $value) < 78),
-                    'es_pro' => collect([
-                        $data['LLA'], $data['MON'], $data['COL'], $data['CRI'], $data['PRO'], $data['PAV'], 
-                        $data['SPR'], $data['ACC'], $data['DES'], $data['COM'], $data['ENE'], $data['RES'], 
-                        $data['REC']
-                    ])->every(fn($value) => (float) str_replace(',', '.', $value) < 80),
+                    'es_u24' => $esU24,
+                    'es_conti' => $esConti,
+                    'es_pro' => $esPro,
+                    'max_dias' => $esConti ? 55 : 50, // 55 dias o 50.
                     'cod_equipo' => $codEquipo,
                 ]);
 

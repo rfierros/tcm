@@ -32,7 +32,7 @@ class ImportInscripciones extends Command
         $temporada = $this->argument('temporada');
 
         // Directorio donde están los archivos .ins
-        $importDir = storage_path('app/imports/inscripciones');
+        $importDir = storage_path('app/imports/inscripciones/{$temporada}');
         $files = glob("$importDir/*.ins");
 
         if (empty($files)) {

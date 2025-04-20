@@ -42,13 +42,26 @@ new class extends Component {
 <div class="mt-6 bg-white divide-y rounded-lg shadow-sm"> 
     <div class="p-10">
         <div x-data="{            
-            getColor(categoria) {
+            getColor(categoria, tipo, nombre) {
                 const colors = {
-                    'WT': 'bg-sky-600/30 text-sky-600',
-                    'Conti': 'bg-amber-400/30 text-amber-500',
-                    'U24': 'bg-stone-500/30 text-stone-600',
+                    'Giro de Italia': 'bg-pink-100 text-pink-500 ring-2 ring-pink-500',
+                    'Tour de Francia': 'bg-yellow-200 text-black ring-2 ring-yellow-400',
+                    'Vuelta a España': 'bg-red-500 text-white ring-2 ring-red-800',
+                    'WT-Monumento': 'bg-blue-800 text-yellow-400',
+                    'WT-Vuelta': 'bg-slate-400 text-white ring-2 ring-slate-800',
+                    'Pro-Vuelta': 'bg-blue-500/70 text-white ring-2 ring-blue-800',
+                    'Conti-Vuelta': 'bg-amber-700/60 text-white ring-2 ring-amber-800',
+                    'U24-Vuelta': 'bg-emerald-600/80 text-white ring-2 ring-emerald-800',
+
+                    // valores por defecto si no hay combinación exacta (Clásicas)
+                    'WT': 'bg-slate-400 text-slate-800',
+                    'Pro': 'bg-blue-500/70 text-blue-800',
+                    'Conti': 'bg-amber-700/60 text-amber-900',
+                    'U24': 'bg-emerald-600/60 text-emerald-800',
                 };
-                return colors[categoria] || 'bg-gray-500 text-white';
+
+                const key = `${categoria}-${tipo}`;
+                return colors[nombre] || colors[key] || colors[categoria] || 'bg-gray-500 text-white';
             }
         }">
 
@@ -78,7 +91,7 @@ new class extends Component {
                     <a href="{{ route('etapas', $carrera->slug) }}" class="flex items-center justify-between w-full p-2 space-x-3 text-left border border-gray-300 rounded-lg shadow-sm group hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                     <span class="flex items-center flex-1 min-w-0 space-x-3">
                         <div class="flex-shrink-0">
-                            <span x-bind:class="getColor('{{ $carrera->categoria }}')" class="inline-flex items-center justify-center w-10 h-10 text-xs rounded-lg">
+                            <span x-bind:class="getColor(@js($carrera->categoria), @js($carrera->tipo), @js($carrera->nombre))" class="inline-flex items-center justify-center w-10 h-10 text-xs font-bold rounded-lg ">
                                 {{ $carrera->categoria }}
                             </span>
                         </div>

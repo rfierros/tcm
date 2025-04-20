@@ -16,6 +16,7 @@ class EtapaSeeder extends Seeder
     {
         $carreras = Carrera::all();
 
+        // creamos todas las etapas existentes segun el calendario de carreras, con todo vacío, y después lo completaremos con info específica.
         foreach ($carreras as $carrera) {
             for ($i = 1; $i <= $carrera->num_etapas; $i++) {
                 Etapa::create([

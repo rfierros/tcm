@@ -35,7 +35,7 @@ return new class extends Migration
             $table->integer('victorias')->nullable();
             $table->decimal('pts', 14, 8)->nullable();
 
-            $table->enum('especialidad', ['escalador', 'combatividad', 'sprinter', 'flandes', 'ardenas', 'croner']);
+            $table->enum('especialidad', ['escalador', 'combativo', 'sprinter', 'flandes', 'ardenas', 'croner']);
             $table->integer('edad')->nullable();
 
             $table->decimal('lla', 5, 3)->nullable();

@@ -115,7 +115,7 @@ new class extends Component {
                     'flandes': 'bg-yellow-400/30 text-yellow-500',
                     'sprinter': 'bg-green-500/30 text-green-600',
                     'escalador': 'bg-yellow-800/30 text-yellow-800',
-                    'combatividad': 'bg-purple-800/30 text-purple-800',
+                    'combativo': 'bg-purple-800/30 text-purple-800',
                     'croner': 'bg-cyan-400/30 text-cyan-600',
                 };
                 return colors[especialidad.toLowerCase()] || 'bg-gray-500 text-white';

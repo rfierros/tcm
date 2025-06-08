@@ -29,6 +29,7 @@ class PopulatePuntos extends Command
         }
 
         $temporada = config('tcm.temporada');
+        $this->info("Puntos para la tempodada $temporada ");
         $totalInserted = 0;
 
         foreach ($configurations as $config) {

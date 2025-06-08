@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>Laravel</title>
+        <title>Laravel Welcome</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -12,6 +12,8 @@
 
         <!-- Styles -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+            <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
     </head>
     <body class="font-sans antialiased">
         <div class="bg-gray-50 text-black/50 dark:bg-black dark:text-white/50">

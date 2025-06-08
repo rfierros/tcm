@@ -14,7 +14,7 @@ class GenerateStartlistXML extends Command
      *
      * @var string
      */
-    protected $signature = 'generate:startlist {num_carrera}';
+    protected $signature = 'generate:startlist {temporada} {num_carrera}';
 
     /**
      * The console command description.
@@ -29,12 +29,14 @@ class GenerateStartlistXML extends Command
     public function handle()
     {
         // Obtener parámetros
+        $temporada = $this->argument('temporada');
         $numCarrera = $this->argument('num_carrera');
 
         // Obtener la carrera para recuperar el campo nombre_xml
-        $carrera = Carrera::where('num_carrera', $numCarrera)->first();
+        $carrera = Carrera::where('temporada', $temporada)
+        ->where('num_carrera', $numCarrera)->first();
         if (!$carrera) {
-            $this->error("No se encontró una carrera con num_carrera: $numCarrera");
+            $this->error("No se encontró una carrera de la temporada $temporada con num_carrera: $numCarrera");
             return Command::FAILURE;
         }
 
@@ -42,7 +44,7 @@ class GenerateStartlistXML extends Command
         $nombreXml = $carrera->nombre_xml ?? 'default';
 
         // Directorio donde se guardará el archivo XML
-        $exportDir = storage_path('app/exports/startlists');
+        $exportDir = storage_path("app/exports/startlists/{$temporada}");
 
         // Nombre del archivo de salida
         $outputFile = "$exportDir/{$nombreXml}.xml";

@@ -1,0 +1,204 @@
+<?php
+
+namespace App\Services;
+
+use App\Models\Ciclista;
+use App\Models\Inscripcion;
+use App\Models\Carrera;
+use App\Models\FavoritoEtapa;
+use Illuminate\Support\Facades\Log;
+
+class FavoritosService
+{
+    /**
+     * Devuelve los ciclistas candidatos (lista 2) filtrados por temporada y categoría.
+     */
+    public function obtenerLista2(Carrera $carrera)
+    {
+        $cat = strtolower(trim($carrera->categoria));
+        $temporada = $carrera->temporada;
+
+        // Ciclistas por temporada y equipo
+        $query = Ciclista::where('temporada', $temporada)
+                         ->whereNotNull('cod_equipo')
+                         // filtro extra solo los inscritos en la carrera
+                         ->whereHas('inscripciones', function($q) use ($temporada, $carrera) {
+                             $q->where('temporada', $temporada)
+                               ->where('num_carrera', $carrera->num_carrera);
+                         });
+
+        switch ($cat) {
+            case 'u24':
+                $query->where('es_u24', true);
+                break;
+            case 'conti':
+                $query->where('es_conti', true);
+                break;
+            case 'pro':
+                $query->where('es_pro', true);
+                break;
+            case 'wt':
+            default:
+                // sin filtro adicional
+                break;
+        }
+
+        Log::info("SQL: " . $query->toSql(), $query->getBindings());
+        return $query->get();
+    }
+
+    /**
+     * Genera ranking topN, ponderando bloques de favoritos:
+     * fav1–4: 60%, fav5–8: 30%, fav9–11: 10%.
+     */
+    public function topSimilares(int $temporada, int $num_carrera, int $num_etapa, int $topN = 20)
+    {
+        // 1) Cargo carrera y fila de favoritos
+        $carrera = Carrera::where('temporada', $temporada)
+                          ->where('num_carrera', $num_carrera)
+                          ->firstOrFail();
+
+        $favRow = FavoritoEtapa::where(compact('temporada', 'num_carrera', 'num_etapa'))
+                                 ->firstOrFail();
+
+        $listaFav = array_filter([
+            $favRow->fav1, $favRow->fav2, $favRow->fav3, $favRow->fav4,
+            $favRow->fav5, $favRow->fav6, $favRow->fav7, $favRow->fav8,
+            $favRow->fav9, $favRow->fav10, $favRow->fav11,
+        ], fn($c) => !is_null($c));
+
+        // 2) Lista 2 candidatos
+        $lista2 = $this->obtenerLista2($carrera);
+        if ($lista2->isEmpty()) {
+            return collect();
+        }
+
+        // 3) Lista 1 (favoritos) como modelos
+        $favModels = Ciclista::whereIn('cod_ciclista', $listaFav)
+                              ->where('temporada', $temporada)
+                              ->get()
+                              ->keyBy('cod_ciclista');
+
+        $lista1 = array_values(array_map(fn($code) => $favModels->get($code), $listaFav));
+        $m = count($lista1);
+        if ($m < 2) {
+            return $lista2->sortByDesc('media')->take($topN);
+        }
+
+        // 4) Configuración de features
+        $numeric = ['lla','mon','col','cri','pro','pav','spr','acc','des','com','ene','res','rec','media'];
+        $allSpecs = Ciclista::distinct()->pluck('especialidad')->sort()->values()->toArray();
+        $specIdx  = array_flip($allSpecs);
+
+        // 5) Estadísticas para lista2
+        list($means, $stds) = $this->calcStats($lista2, $numeric);
+
+        // 6) Construir vectores estandarizados para lista1
+        $X1_num = [];
+        $X1_spec = [];
+        foreach ($lista1 as $c) {
+            $row = [];
+            foreach ($numeric as $col) {
+                $row[] = ((float)$c->{$col} - $means[$col]) / $stds[$col];
+            }
+            $X1_num[] = $row;
+
+            $oh = array_fill(0, count($allSpecs), 0.0);
+            if (isset($specIdx[$c->especialidad])) {
+                $oh[$specIdx[$c->especialidad]] = 1.0;
+            }
+            $X1_spec[] = $oh;
+        }
+
+        // 7) Preparar lista2
+        list($X2_num, $X2_spec, $vals2) = $this->prepareList2($lista2, $numeric, $allSpecs, $means, $stds);
+        $n = count($vals2);
+
+        // 8) Pesos por bloques
+        $weights = [];
+        for ($k = 0; $k < $m; $k++) {
+            if ($k < 4) {
+                $weights[$k] = 0.6 / min($m,4);
+            } elseif ($k < 8) {
+                $cnt = min($m,8)-4;
+                $weights[$k] = $cnt>0?0.3/$cnt:0;
+            } else {
+                $cnt = max(0,$m-8);
+                $weights[$k] = $cnt>0?0.1/$cnt:0;
+            }
+        }
+
+        // 9) Vector prototipo
+        $q = count($numeric);
+        $S = count($allSpecs);
+        $proto_num = array_fill(0,$q,0.0);
+        $proto_spec= array_fill(0,$S,0.0);
+        for ($k=0;$k<$m;$k++){
+            for ($j=0;$j<$q;$j++){
+                $proto_num[$j]  += $weights[$k]*$X1_num[$k][$j];
+            }
+            for ($t=0;$t<$S;$t++){
+                $proto_spec[$t] += $weights[$k]*$X1_spec[$k][$t];
+            }
+        }
+
+        //10) Calcular distancias
+        $cands = [];
+        for ($i=0;$i<$n;$i++){
+            $sum2=0.0;
+            for($j=0;$j<$q;$j++){ $d=$X2_num[$i][$j]-$proto_num[$j]; $sum2+=$d*$d; }
+            for($t=0;$t<$S;$t++){ $d=$X2_spec[$i][$t]-$proto_spec[$t]; $sum2+=$d*$d; }
+            $c = $vals2[$i];
+            $c->score = sqrt($sum2);
+            $c->pos = $i;
+            $cands[] = $c;
+        }
+
+        //11) Orden y fusión
+        $col = collect($cands)->sortBy('score');
+        $favPred = $col->whereIn('cod_ciclista',$listaFav);
+        $others  = $col->whereNotIn('cod_ciclista',$listaFav);
+        $final = $favPred->concat($others)->unique('cod_ciclista')->values();
+
+        // 11) Ordenar simplemente por score (distancia) y devolver topN
+        $final = collect($cands)
+            ->sortBy('score')
+            ->values();
+
+        return $final->take($topN);
+    }
+
+    /** Calcula medias y std poblacional */
+    private function calcStats($list2, array $numeric): array
+    {
+        $n = $list2->count();
+        $means=[]; $stds=[];
+        foreach($numeric as $col){
+            $vals = $list2->pluck($col)->map(fn($v)=>(float)$v)->all();
+            $mean = array_sum($vals)/$n; $means[$col]=$mean;
+            $sum2=0; foreach($vals as $v){$d=$v-$mean; $sum2+=$d*$d;}
+            $stds[$col]=sqrt($sum2/$n)?:1.0;
+        }
+        return [$means,$stds];
+    }
+
+    /** Prepara X2 normalizado y one-hot + valores */
+    private function prepareList2($list2, array $numeric, array $allSpecs, array $means, array $stds): array
+    {
+        $n = $list2->count(); $q=count($numeric); $S=count($allSpecs);
+        $vals2 = $list2->values();
+        $X2_num = array_fill(0,$n,array_fill(0,$q,0));
+        $X2_spec= array_fill(0,$n,array_fill(0,$S,0));
+        $specIdx = array_flip($allSpecs);
+        for($i=0;$i<$n;$i++){
+            $c=$vals2[$i];
+            for($j=0;$j<$q;$j++){
+                $col=$numeric[$j];
+                $X2_num[$i][$j]=((float)$c->{$col} - $means[$col])/$stds[$col];
+            }
+            $esp=$c->especialidad;
+            if(isset($specIdx[$esp])) $X2_spec[$i][$specIdx[$esp]]=1;
+        }
+        return [$X2_num,$X2_spec,$vals2];
+    }
+}

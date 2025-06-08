@@ -149,6 +149,8 @@ if ($etapa > 1 && $isLastStage) {
 
             if ($teamName) {
                 // Obtener el cod_equipo desde la tabla equipos
+    $this->warn("LLEGAMOS AQUI ????????????????????????? $teamName");
+
                 $winnerTeam = DB::table('equipos')->where('nombre_en_bd', $teamName)->first();
                 $this->info("Equipo ganador: $teamName cod_equpo: $winnerTeam->cod_equipo");
                 if ($winnerTeam) {
@@ -241,8 +243,6 @@ if ($etapa > 1 && $isLastStage) {
             }
         }
     }
-
-
 
 
     $toUpdate = [];
